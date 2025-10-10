@@ -43,8 +43,6 @@ TEST_F(MulAddn, infershape_bf16)
             // attr
             {"N", Ops::Math::AnyValue::CreateFrom<int64_t>(6)},
         });
-    std::vector<std::vector<int64_t>> expectOutputShape = {
-        {1500, 512, 128},
-    };                                                                            // 预期输出shape
+    std::vector<std::vector<int64_t>> expectOutputShape = {{1500, 512, 128},};                                                                            // 预期输出shape
     ExecuteTestCase(infershapeContextPara, ge::GRAPH_SUCCESS, expectOutputShape); // 框架中已提供该接口
 }
