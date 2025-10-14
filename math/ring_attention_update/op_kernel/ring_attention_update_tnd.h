@@ -80,7 +80,7 @@ public:
         attnGmOffsetLoop = dimTIndexCore * headNum * headDim;
 
         for (int64_t seqNumLoopIndex = 0; seqNumLoopIndex < dimTCore; seqNumLoopIndex++) {
-            if (seqNumBatchTail == seqNumBatch) {
+            while (seqNumBatchTail == seqNumBatch) {
                 startTCount += seqNumBatch;
                 curBatchIndex += 1;
                 seqNumBatchStartIndex = actualSeqQlenGm.GetValue(curBatchIndex);
