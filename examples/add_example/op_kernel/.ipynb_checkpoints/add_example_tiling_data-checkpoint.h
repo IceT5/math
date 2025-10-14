@@ -9,6 +9,16 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
-#include "gtest/gtest.h"
-#include "level2/aclnn_cosh.h"
-#include "op_api_ut_common/tensor_desc.h"
+/*!
+ * \file add_example_tiling_data.h
+ * \brief tiling data struct
+ */
+
+#ifndef _ROTARY_POSITION_EMBEDDING_GRAD_TILING_DATA_H_
+#define _ROTARY_POSITION_EMBEDDING_GRAD_TILING_DATA_H_
+
+struct AddExampleTilingData {
+    int64_t totalLength;
+    int64_t tileNum;
+};
+#endif

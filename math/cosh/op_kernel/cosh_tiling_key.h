@@ -9,6 +9,24 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
-#include "gtest/gtest.h"
-#include "level2/aclnn_cosh.h"
-#include "op_api_ut_common/tensor_desc.h"
+/*!
+ * \file cosh_tiling_key.h
+ * \brief cosh tiling key declare
+ */
+
+#ifndef __COSH_TILING_KEY_H__
+#define __COSH_TILING_KEY_H__
+
+#include "ascendc/host_api/tiling/template_argument.h"
+
+#define ELEMENTWISE_TPL_SCH_MODE_0 0
+#define ELEMENTWISE_TPL_SCH_MODE_1 1
+
+ASCENDC_TPL_ARGS_DECL(
+    Cosh,
+    ASCENDC_TPL_UINT_DECL(schMode, 1, ASCENDC_TPL_UI_LIST, ELEMENTWISE_TPL_SCH_MODE_0, ELEMENTWISE_TPL_SCH_MODE_1));
+
+ASCENDC_TPL_SEL(ASCENDC_TPL_ARGS_SEL(
+    ASCENDC_TPL_UINT_SEL(schMode, ASCENDC_TPL_UI_LIST, ELEMENTWISE_TPL_SCH_MODE_0, ELEMENTWISE_TPL_SCH_MODE_1)));
+
+#endif

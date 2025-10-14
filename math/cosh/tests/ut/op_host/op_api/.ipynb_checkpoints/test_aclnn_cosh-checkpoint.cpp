@@ -9,13 +9,6 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
-#ifndef OP_API_OP_API_COMMON_INC_LEVEL0_OP_COSH_H_
-#define OP_API_OP_API_COMMON_INC_LEVEL0_OP_COSH_H_
-
-#include "opdev/op_executor.h"
-
-namespace l0op {
-const aclTensor* Cosh(const aclTensor* self, aclOpExecutor* executor);
-}
-
-#endif // OP_API_INC_LEVEL0_OP_COSH_H_
+#include "gtest/gtest.h"
+#include "level2/aclnn_cosh.h"
+#include "op_api_ut_common/tensor_desc.h"
