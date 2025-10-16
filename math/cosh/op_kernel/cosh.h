@@ -32,7 +32,8 @@ class Cosh {
 public:
     __aicore__ inline Cosh(){};
 
-    __aicore__ inline void Init(GM_ADDR x, GM_ADDR z, const CoshTilingData* tilingData);
+    __aicore__ inline uint32_t AlignUp(uint32_t a, uint32_t b); 
+    __aicore__ inline void Init(GM_ADDR x, GM_ADDR z, const CoshTilingData &tilingData);
     __aicore__ inline void Process();
 
 private:
@@ -48,30 +49,69 @@ private:
     GlobalTensor<T> inputGMX;
     GlobalTensor<T> outputGMZ;
 
-    int64_t blockLength_ = 0;
-    int64_t tileNum_ = 0;
-    uint32_t tileLength_ = 0;
+    int32_t core_id;
+    uint32_t processDataNum;
+    uint32_t tileLength;
+    uint32_t aligned_tile_size;
+
+    CoshTilingData tiling;
 };
 
 template <typename T>
-__aicore__ inline void Cosh<T>::Init(GM_ADDR x, GM_ADDR z, const CoshTilingData* tilingData)
+__aicore__ inline uint32_t Cosh<T>::AlignUp(uint32_t a, uint32_t b) 
 {
-    blockLength_ = tilingData->totalLength / AscendC::GetBlockNum();
-    tileNum_ = tilingData->tileNum;
-    tileLength_ = blockLength_ / tileNum_ / BUFFER_NUM;
+    if (b == 0)
+        return a;
+    return ((a + 32 / b - 1) / (32 / b)) * (32 / b);
+}
 
-    inputGMX.SetGlobalBuffer((__gm__ T*)x + blockLength_ * AscendC::GetBlockIdx(), blockLength_);
-    outputGMZ.SetGlobalBuffer((__gm__ T*)z + blockLength_ * AscendC::GetBlockIdx(), blockLength_);
+template <typename T>
+__aicore__ inline void Cosh<T>::Init(GM_ADDR x, GM_ADDR z, const CoshTilingData &tilingData)
+{
+    this->tiling = tilingData;
+    ASSERT(AscendC::GetBlockNum() != 0 && "block dim can not be zero!");
+    this->core_id = AscendC::GetBlockIdx();
+    // 如果当前核没有分配到向量，直接返回
+    if (tiling.core_element_count[this->core_id] <= 0) {
+        return ;
+    }
 
-    pipe.InitBuffer(inputQueueX, BUFFER_NUM, tileLength_ * sizeof(T));
-    pipe.InitBuffer(outputQueueZ, BUFFER_NUM, tileLength_ * sizeof(T));
+    uint32_t element_offest = (uint32_t)tiling.core_element_start[this->core_id];
+
+    inputGMX.SetGlobalBuffer((__gm__ T *)x + element_offest, tiling.core_element_count[this->core_id]);
+    outputGMZ.SetGlobalBuffer((__gm__ T *)z + element_offest, tiling.core_element_count[this->core_id]);
+
+    this->aligned_tile_size = AlignUp((uint32_t)tiling.tile_element_num, sizeof(T));
+    pipe.InitBuffer(inputQueueX, BUFFER_NUM, this->aligned_tile_size * sizeof(T));
+    pipe.InitBuffer(outputQueueZ, BUFFER_NUM, this->aligned_tile_size * sizeof(T));
 }
 
 template <typename T>
 __aicore__ inline void Cosh<T>::CopyIn(int32_t progress)
 {
     AscendC::LocalTensor<T> xLocal = inputQueueX.AllocTensor<T>();
-    AscendC::DataCopy(xLocal, inputGMX[progress * tileLength_], tileLength_);
+
+    AscendC::DataCopyExtParams copyParams{
+        1,
+        static_cast<uint32_t>(this->tileLength * sizeof(T)),
+        0, 0, 0
+    };
+        
+    AscendC::DataCopyPadExtParams<T> padParams{
+        true, 
+        0,
+        static_cast<uint8_t>(this->processDataNum - this->tileLength),
+        0
+    };
+        
+    // 使用相对偏移，因为inputGMX的base已经是当前core的起始位置
+    AscendC::DataCopyPad(xLocal, inputGMX[progress * tiling.tile_element_num], copyParams, padParams);
+
+    // 如果需要对齐，填充剩余部分为0
+    if (this->processDataNum > this->tileLength) {
+        xLocal[this->tileLength].SetValue(this->processDataNum - this->tileLength, static_cast<T>(0));
+    }
+
     inputQueueX.EnQue(xLocal);
 }
 
@@ -79,7 +119,19 @@ template <typename T>
 __aicore__ inline void Cosh<T>::CopyOut(int32_t progress)
 {
     AscendC::LocalTensor<T> zLocal = outputQueueZ.DeQue<T>();
-    AscendC::DataCopy(outputGMZ[progress * tileLength_], zLocal, tileLength_);
+
+    // 输出时使用 DataCopyPad 只复制有效数据
+    AscendC::DataCopyExtParams copyParams{
+        1,  // blockCount
+        static_cast<uint32_t>(this->tileLength * sizeof(T)),  // blockLen: 只复制有效数据
+        0,  // srcStride
+        0,  // dstStride
+        0   // rsv
+    };
+        
+    AscendC::DataCopyPad(outputGMZ[progress * tiling.tile_element_num], 
+                        zLocal, 
+                        copyParams);
     outputQueueZ.FreeTensor(zLocal);
 }
 
@@ -88,16 +140,9 @@ __aicore__ inline void Cosh<T>::Compute(int32_t progress)
 {
     AscendC::LocalTensor<T> xLocal = inputQueueX.DeQue<T>();
     AscendC::LocalTensor<T> zLocal = outputQueueZ.AllocTensor<T>();
-    
-    // T scalar = static_cast<T>(0.5);
-    // cosh(x) = (e^x + e^(-x)) / 2
-    // AscendC::Exp(xLocal, xLocal, tileLength_);              // xLocal = e^x
-    // AscendC::DataCopy(zLocal, xLocal, tileLength_);         // zLocal = e^x（保存副本）
-    // AscendC::Reciprocal(xLocal, zLocal, tileLength_);       // xLocal = e^(-x) = 1/e^x
-    // AscendC::Add(zLocal, zLocal, xLocal, tileLength_);      // zLocal = e^x + e^(-x)
-    // AscendC::Muls(zLocal, zLocal, scalar, tileLength_);     // zLocal = (e^x + e^(-x)) / 2
-    
-    AscendC::Cosh(zLocal, xLocal, tileLength_);
+
+    AscendC::Cosh(zLocal, xLocal, this->processDataNum);
+
     outputQueueZ.EnQue<T>(zLocal);
     inputQueueX.FreeTensor(xLocal);
 }
@@ -105,8 +150,22 @@ __aicore__ inline void Cosh<T>::Compute(int32_t progress)
 template <typename T>
 __aicore__ inline void Cosh<T>::Process()
 {
-    int32_t loopCount = tileNum_ * BUFFER_NUM;
-    for (int32_t i = 0; i < loopCount; i++) {
+    int32_t loopCount = tiling.core_loop_times[this->core_id];
+        
+    // 处理完整的循环
+    for (int32_t i = 0; i < loopCount; i++) 
+    {
+        // 判断是否是最后一次循环
+        if (i == loopCount - 1) {
+            // 最后一次循环，处理tail
+            this->tileLength = (uint32_t)tiling.core_tail_elements[this->core_id];
+            this->processDataNum = AlignUp((uint32_t)tiling.core_tail_elements[this->core_id], sizeof(T));
+        } else {
+        // 正常循环
+        this->tileLength = (uint32_t)tiling.tile_element_num;
+            this->processDataNum = this->aligned_tile_size;
+        }
+            
         CopyIn(i);
         Compute(i);
         CopyOut(i);

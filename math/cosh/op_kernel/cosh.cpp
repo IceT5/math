@@ -18,8 +18,8 @@
 
 enum class CoshTilingKey : uint32_t
 {
-    TILING_KEY_EXAMPLE_FLOAT = 0,
-    TILING_KEY_EXAMPLE_FLOAT16 = 1,
+    TILING_KEY_FLOAT = 0,
+    TILING_KEY_FLOAT16 = 1,
 };
 
 template <uint32_t schMode>
@@ -27,14 +27,14 @@ __global__ __aicore__ void cosh(GM_ADDR x, GM_ADDR z, GM_ADDR workspace, GM_ADDR
 {
     REGISTER_TILING_DEFAULT(CoshTilingData);
     GET_TILING_DATA_WITH_STRUCT(CoshTilingData, tilingData, tiling);
-    if constexpr (schMode == static_cast<uint32_t>(CoshTilingKey::TILING_KEY_EXAMPLE_FLOAT)) {
+    if constexpr (schMode == static_cast<uint32_t>(CoshTilingKey::TILING_KEY_FLOAT)) {
         NsCosh::Cosh<float> op; // 算子kernel实例获取
-        op.Init(x, z, &tilingData);      // 算子kernel实例初始化
+        op.Init(x, z, tilingData);      // 算子kernel实例初始化
         op.Process();                       // 算子kernel实例执行
     }
-    if constexpr (schMode == static_cast<uint32_t>(CoshTilingKey::TILING_KEY_EXAMPLE_FLOAT16)) {
+    if constexpr (schMode == static_cast<uint32_t>(CoshTilingKey::TILING_KEY_FLOAT16)) {
         NsCosh::Cosh<half> op; // 算子kernel实例获取
-        op.Init(x, z, &tilingData);        // 算子kernel实例初始化
+        op.Init(x, z, tilingData);        // 算子kernel实例初始化
         op.Process();                         // 算子kernel实例执行
     }
 }

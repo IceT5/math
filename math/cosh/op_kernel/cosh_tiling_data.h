@@ -17,8 +17,20 @@
 #ifndef _ROTARY_POSITION_EMBEDDING_GRAD_TILING_DATA_H_
 #define _ROTARY_POSITION_EMBEDDING_GRAD_TILING_DATA_H_
 
+constexpr int32_t MAX_USE_CORE_NUM = 32;  // 设置合理的最大核数
+
 struct CoshTilingData {
     int64_t totalLength;
-    int64_t tileNum;
+    int32_t coreNum;
+
+    // 核间划分
+    int32_t core_element_start[MAX_USE_CORE_NUM];
+    int32_t core_element_end[MAX_USE_CORE_NUM];
+    int32_t core_element_count[MAX_USE_CORE_NUM];
+
+    // 核内划分
+    int32_t tile_element_num;
+    int32_t core_loop_times[MAX_USE_CORE_NUM];
+    int32_t core_tail_elements[MAX_USE_CORE_NUM];
 };
 #endif
