@@ -19,7 +19,7 @@
 
 #include "experiment_ops.h"
 #include "nn_other.h"
-#include "../op_graph/cosh_proto.h"
+#include "../op_graph/is_finite_proto.h"
 
 #define FAILED -1
 #define SUCCESS 0
@@ -170,12 +170,10 @@ int CreateOppInGraph(
 {
     Status ret = SUCCESS;
     // 自定义代码：添加单算子定义到图中
-    auto add1 = op::Cosh("add1");
-    std::vector<int64_t> xShape = {32, 4, 4, 4};
-    std::vector<int64_t> yShape = {32, 4, 4, 4};
+    auto add1 = op::IsFinite("add1");
+    std::vector<int64_t> xShape = {4, 4};
     ADD_INPUT(1, x, inDtype, xShape);
-
-    ADD_OUTPUT(1, y, inDtype, yShape);
+    ADD_OUTPUT(1, y, DT_BOOL, xShape);
 
     outputs.push_back(add1);
     // 添加完毕
@@ -270,6 +268,10 @@ int main(int argc, char* argv[])
         std::cout << "this is " << i << "th output, output shape size =" << output_shape << std::endl;
         uint32_t data_size = output_shape * GetDataTypeSize(output[i].GetTensorDesc().GetDataType());
         WriteDataToFile((const char*)output_file.c_str(), data_size, output_data_i);
+        uint8_t* resultData = (uint8_t*)output_data_i;
+        for (int64_t j = 0; j < output_shape; j++) {
+            LOG_PRINT("result[%ld] is: %u\n", j, resultData[j]);
+        }
     }
 
     ge::AscendString error_msg = ge::GEGetErrorMsgV2();
