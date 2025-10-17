@@ -9,5 +9,4 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------
 
-#optiling and opapi
-add_modules_sources(OPTYPE sqrt ACLNNTYPE aclnn_exclude) 
+add_modules_sources(OPTYPE sqrt ACLNNTYPE aclnn)

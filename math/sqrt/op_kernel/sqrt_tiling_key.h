@@ -8,14 +8,22 @@
  * BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
  * See LICENSE in the root of the software repository for the full text of the License.
  */
-#ifndef PTA_NPU_OP_API_INC_LEVEL0_OP_SQRT_OP_H_
-#define PTA_NPU_OP_API_INC_LEVEL0_OP_SQRT_OP_H_
 
-#include "opdev/op_executor.h"
-#include "opdev/make_op_executor.h"
+/*!
+ * \file sqrt_tiling_key.h
+ * \brief sqrt tiling key declare
+*/
+#include "ascendc/host_api/tiling/template_argument.h"
 
-namespace l0op {
-const aclTensor* Sqrt(const aclTensor* self, aclOpExecutor* executor);
-}
+#define ELEMENTWISE_TPL_SCH_MODE_0 0
+#define ELEMENTWISE_TPL_SCH_MODE_1 1
 
-#endif // PTA_NPU_OP_API_INC_LEVEL0_OP_SQRT_OP_H_
+ASCENDC_TPL_ARGS_DECL(
+    Sqrt,
+    ASCENDC_TPL_UINT_DECL(schMode, 1, ASCENDC_TPL_UI_LIST, ELEMENTWISE_TPL_SCH_MODE_0, ELEMENTWISE_TPL_SCH_MODE_1));
+
+ASCENDC_TPL_SEL(
+    ASCENDC_TPL_ARGS_SEL(
+    ASCENDC_TPL_UINT_SEL(schMode, ASCENDC_TPL_UI_LIST,ELEMENTWISE_TPL_SCH_MODE_0,ELEMENTWISE_TPL_SCH_MODE_1)
+    ),
+);
