@@ -12,3 +12,6 @@
  * \file sqrt_graph_infer.cpp
  * \brief sqrt operater graph infer resource
  */
+#include "register/op_impl_registry.h"
+#include "log/log.h"
+#include "sqrt_proto.h"
