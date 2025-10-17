@@ -14,29 +14,3 @@
  * \brief
 */
 
-#ifndef OP_PROTO_SQRT_PROTO_H_
-#define OP_PROTO_SQRT_PROTO_H_
-
-#include "graph/operator_reg.h"
-#include "graph/operator.h"
-namespace ge {
-/**
-* @brief Computes the sqrt of a tensor.
-
-*@par Inputs:
-* @li x: A tensor of type float16, float32, bf16.
-*@par Outputs:
-* y: A tensor of type float16, float32, bf16.
-
-*@par Third-party framework compatibility
-* Compatible with the Pytorch operator Sqrt.
-*/
-
-REG_OP(Sqrt)
-    .INPUT(x, TensorType({DT_FLOAT16, DT_FLOAT, DT_BF16}))
-    .OUTPUT(y, TensorType({DT_FLOAT16, DT_FLOAT, DT_BF16}))
-    .OP_END_FACTORY_REG(Sqrt);
-
-} // namespace ge
-
-#endif // OP_PROTO_SQRT_PROTO_H_
