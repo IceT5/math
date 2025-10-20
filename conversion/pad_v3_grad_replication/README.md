@@ -4,14 +4,13 @@
 
 | 产品                                                         | 是否支持 |
 | :----------------------------------------------------------- | :------: |
+|  <term>昇腾910_95 AI处理器</term>                           |     ×    |
 | <term>Atlas A3 训练系列产品/Atlas A3 推理系列产品</term>     |    √     |
 | <term>Atlas A2 训练系列产品/Atlas 800I A2 推理产品/A200I A2 Box 异构组件</term> |    √     |
 
 ## 功能说明
 
-- 算子功能：
-  
-  replication_pad3d的反向传播。
+- 算子功能：replication_pad3d的反向传播。
 
 ## 参数说明
 
@@ -49,14 +48,14 @@
   <tr>
     <td class="tg-0pky">padding</td>
     <td class="tg-0pky">输入</td>
-    <td class="tg-0lax">长度为6，长度为6时表示3d左右上下前后需要填充的值，padding的前两个值都需要小于self最后一维度的数值，第三和第四个值小于self倒数第二维度的数值，第五和第六两个值小于self倒数第三维度的数值。</td>
+    <td class="tg-0lax">padding长度为6，表示三维张量左右上下前后需要填充的值，padding的前两个值都需要小于self最后一维度的数值，第三和第四个值小于self倒数第二维度的数值，第五和第六两个值小于self倒数第三维度的数值。</td>
     <td class="tg-0lax">INT64</td>
     <td class="tg-0lax"></td>
   </tr>
   <tr>
     <td class="tg-0pky">gradInput</td>
     <td class="tg-0pky">输出</td>
-    <td class="tg-0lax">数据类型与self保持一致</td>
+    <td class="tg-0lax">数据类型与self保持一致。</td>
     <td class="tg-0lax">FLOAT16、FLOAT32、DOUBLE、COMPLEX64、COMPLEX128</td>
     <td class="tg-0lax">ND</td>
   </tr>
@@ -64,7 +63,7 @@
 
 ## 约束说明
 
-    无。
+无。
 
 ## 调用说明
 
