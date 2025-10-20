@@ -521,12 +521,19 @@ aclnnStatus aclStftGetWorkspaceSize(
     auto selfContiguous = l0op::Contiguous(self, uniqueExecutor.get());
     CHECK_RET(selfContiguous != nullptr, ACLNN_ERR_INNER_NULLPTR);
 
+    const aclTensor* windowContiguous = nullptr;
+    if (windowOptional != nullptr) {
+        OP_LOGD("window: deal with Contiguous");
+        windowContiguous = l0op::Contiguous(windowOptional, uniqueExecutor.get());
+        CHECK_RET(windowContiguous != nullptr, ACLNN_ERR_INNER_NULLPTR);
+    }
+
     if (!l0op::IsStftAiCoreSupported(
-            selfContiguous, windowOptional, nFft, hopLength, winLength, normalized, onesided, returnComplex)) {
+            selfContiguous, windowContiguous, nFft, hopLength, winLength, normalized, onesided, returnComplex)) {
         // aicpu
         OP_LOGD("Stft: aicpu");
         auto stftResult = l0op::Stft(
-            selfContiguous, nullptr, windowOptional, nFft, hopLength, winLength, normalized, onesided, returnComplex,
+            selfContiguous, nullptr, windowContiguous, nFft, hopLength, winLength, normalized, onesided, returnComplex,
             uniqueExecutor.get());
         CHECK_RET(stftResult != nullptr, ACLNN_ERR_INNER_NULLPTR);
 
@@ -538,9 +545,10 @@ aclnnStatus aclStftGetWorkspaceSize(
         const aclTensor* windowPad;
         int64_t nFftAlign = nFftToAlign(self, nFft, nfftAlignBytes);
         if (winLength < nFftAlign) {
-            windowPad = GeneratePadWindow(self, windowOptional, winLength, nFft, nfftAlignBytes, uniqueExecutor.get());
+            windowPad =
+                GeneratePadWindow(self, windowContiguous, winLength, nFft, nfftAlignBytes, uniqueExecutor.get());
         } else {
-            windowPad = windowOptional;
+            windowPad = windowContiguous;
         }
 
         // 生成辅助矩阵W：w_real（K，N）+ w_imag（K，N）
