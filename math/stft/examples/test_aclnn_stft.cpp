@@ -90,7 +90,7 @@ int main()
     // 创建self aclTensor
     ret = CreateAclTensor(selfHostData, selfShape, &selfDeviceAddr, aclDataType::ACL_FLOAT, &self);
     // 创建window aclTensor
-    ret = CreateAclTensor(windowHostData, windowShape, &windowDeviceAddr, aclDataType::ACL_FLOAT, &self);
+    ret = CreateAclTensor(windowHostData, windowShape, &windowDeviceAddr, aclDataType::ACL_FLOAT, &window);
     CHECK_RET(ret == ACL_SUCCESS, return ret);
     // 创建out aclTensor
     ret = CreateAclTensor(outHostData, outShape, &outDeviceAddr, aclDataType::ACL_FLOAT, &out);
