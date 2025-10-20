@@ -149,6 +149,7 @@ using namespace Ops::Math::OpTiling;
 // }
 const uint32_t BLOCK_SIZE = 32;
 const uint32_t BUFFER_NUM = 2;
+struct SqrtCompileInfo {};
 
 static ge::graphStatus TilingParseForSqrt([[maybe_unused]]gert::TilingParseContext* context)
 {
@@ -163,6 +164,7 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
     OP_CHECK_IF(
         memset_s(tiling, sizeof(SqrtTilingData), 0, sizeof(SqrtTilingData)) != EOK,
         OP_LOGE(context, "set tiling data error"), return ge::GRAPH_FAILED);
+    //获取平台运行信息
     uint64_t ubSize;
     auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
     ascendcPlatform.GetCoreMemSize(platform_ascendc::CoreMemType::UB, ubSize);
@@ -172,6 +174,7 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
         return ge::GRAPH_FAILED;
     }
 
+    //获取输入数据信息
     uint64_t inputNum = context->GetInputShape(0)->GetStorageShape().GetShapeSize();
     uint32_t typeLength = 0;
     ge::TypeUtils::GetDataTypeLength(context->GetInputDesc(0)->GetDataType(), typeLength);
@@ -184,6 +187,7 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
 
     uint64_t inputLengthAlgin32 = (((inputLength + BLOCK_SIZE - 1) / BLOCK_SIZE) * BLOCK_SIZE);
 
+    //计算coreNum
     if(tileDataNum >= inputNum)
     {
         coreNum=1;
@@ -194,6 +198,7 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
         coreNum = (coreNum <  inputLengthAlgin32 / BLOCK_SIZE) ? coreNum : inputLengthAlgin32 / BLOCK_SIZE;
     }
 
+    //计算每个core处理的数据块数
     uint64_t everyCoreInputBlockNum = inputLengthAlgin32 / BLOCK_SIZE / coreNum;
     uint64_t tailBlockNum = (inputLengthAlgin32 / BLOCK_SIZE) % coreNum;
     
@@ -210,16 +215,11 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
     uint64_t bigTailDataNum = bigCoreDataNum - tileDataNum * bigTileNum;
     bigTailDataNum = bigTailDataNum == 0 ? tileDataNum : bigTailDataNum; 
     
+    //计算workspace大小
     size_t *currentWorkspace = context->GetWorkspaceSizes(1);
     currentWorkspace[0] = 0;
-    // tiling.set_smallCoreDataNum((uint32_t)smallCoreDataNum);
-    // tiling.set_bigCoreDataNum((uint32_t)bigCoreDataNum);
-    // tiling.set_tileDataNum((uint32_t)tileDataNum);
-    // tiling.set_smallTailDataNum((uint32_t)smallTailDataNum);
-    // tiling.set_bigTailDataNum((uint32_t)bigTailDataNum);
-    // tiling.set_finalSmallTileNum((uint32_t)finalSmallTileNum);
-    // tiling.set_finalBigTileNum((uint32_t)finalBigTileNum);
-    // tiling.set_tailBlockNum((uint32_t)tailBlockNum);
+
+    //设置tiling数据
     tiling->smallCoreDataNum = (uint32_t)smallCoreDataNum;
     tiling->bigCoreDataNum = (uint32_t)bigCoreDataNum;
     tiling->tileDataNum = (uint32_t)tileDataNum;
@@ -240,7 +240,7 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
 
     return ge::GRAPH_SUCCESS;
 }
-struct SqrtCompileInfo {};
+
 // tiling注册入口.
 IMPL_OP_OPTILING(Sqrt).Tiling(SqrtTilingFunc).TilingParse<SqrtCompileInfo>(TilingParseForSqrt);
 } // namespace optiling
