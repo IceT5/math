@@ -21,7 +21,7 @@ enum class SqrtTilingKey : uint32_t
     TILING_KEY_EXAMPLE_FLOAT = 0,
     TILING_KEY_EXAMPLE_INT32 = 1,
 };
-// template <uint32_t schMode>
+template <uint32_t schMode>
 __global__ __aicore__ void sqrt(GM_ADDR x, GM_ADDR y, GM_ADDR workspace, GM_ADDR tiling)
 {
     AscendC::printf("schMode: %d--------------------------------------------------------------------------------------------------------------------------------------------\n", schMode);
