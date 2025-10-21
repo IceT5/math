@@ -47,7 +47,7 @@ class KernelSqrt {
 public:
     __aicore__ inline KernelSqrt(){};
 
-    __aicore__ inline void Init(GM_ADDR x, GM_ADDR y, GM_ADDR z, uint32_t smallCoreDataNum,
+    __aicore__ inline void Init(GM_ADDR x, GM_ADDR y, uint32_t smallCoreDataNum,
                                 uint32_t bigCoreDataNum, uint32_t finalBigTileNum,
                                 uint32_t finalSmallTileNum, uint32_t tileDataNum,
                                 uint32_t smallTailDataNum, uint32_t bigTailDataNum,
@@ -57,7 +57,7 @@ public:
 private:
     __aicore__ inline void CopyIn(int32_t progress);
     __aicore__ inline void CopyOut(int32_t progress);
-    __aicore__ inline void Compute(const int32_t dataLength);
+    __aicore__ inline void Compute(int32_t progress);
 
 private:
     AscendC::TPipe pipe;
@@ -74,13 +74,13 @@ private:
 };
 
 template <typename TYPE_X, typename TYPE_Y>
-__aicore__ inline void KernelSqrt<TYPE_X, TYPE_Y>::Init(GM_ADDR x, GM_ADDR y, GM_ADDR z, uint32_t smallCoreDataNum,
+__aicore__ inline void KernelSqrt<TYPE_X, TYPE_Y>::Init(GM_ADDR x, GM_ADDR y, uint32_t smallCoreDataNum,
                                 uint32_t bigCoreDataNum, uint32_t finalBigTileNum,
                                 uint32_t finalSmallTileNum, uint32_t tileDataNum,
                                 uint32_t smallTailDataNum, uint32_t bigTailDataNum,
                                 uint32_t tailBlockNum)
 {
-    {
+    
         ASSERT(AscendC::GetBlockNum() != 0 && "block dim can not be zero!");
         uint32_t coreNum = AscendC::GetBlockIdx();
         uint32_t globalBufferIndex = bigCoreDataNum * AscendC::GetBlockIdx();
@@ -102,7 +102,7 @@ __aicore__ inline void KernelSqrt<TYPE_X, TYPE_Y>::Init(GM_ADDR x, GM_ADDR y, GM
         yGm.SetGlobalBuffer((__gm__ TYPE_Y *)y + globalBufferIndex, this->coreDataNum);
         pipe.InitBuffer(inQueueX, BUFFER_NUM, this->tileDataNum * sizeof(TYPE_X));
         pipe.InitBuffer(outQueueY, BUFFER_NUM, this->tileDataNum * sizeof(TYPE_Y));
-        if constexpr ( ! std::is_same_v<T, float32_t>)
+        if constexpr ( ! std::is_same_v<TYPE_X, float32_t>)
         {
             pipe.InitBuffer(tmp1, this->tileDataNum * sizeof(float));
         }
@@ -129,7 +129,7 @@ __aicore__ inline void KernelSqrt<TYPE_X, TYPE_Y>::Compute(int32_t progress)
 {
     AscendC::LocalTensor<TYPE_X> xLocal = inQueueX.DeQue<TYPE_X>();
         AscendC::LocalTensor<TYPE_Y> yLocal = outQueueY.AllocTensor<TYPE_Y>();
-        if constexpr ( ! std::is_same_v<T, float32_t>)
+        if constexpr ( ! std::is_same_v<TYPE_X, float32_t>)
         {
             AscendC::LocalTensor<float> p1 = tmp1.Get<float>();
             AscendC::Cast(p1, xLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);

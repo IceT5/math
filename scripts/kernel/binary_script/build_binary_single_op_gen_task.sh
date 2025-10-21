@@ -258,9 +258,9 @@ main() {
         new_file="${binary_config_new_full_path}_${i}"
         if [ "${val}" = "${impl_mode}" ]; then
           impl_mode_default="${impl_mode},optional"
-          cmd="opc ${op_python_path} --main_func=${op_func} --input_param=${new_file} --soc_version=${opc_soc_version} --output=${binary_bin_path} --impl_mode=${impl_mode_default} ${simplified_key_param} --op_mode=dynamic"
+          cmd="opc ${op_python_path} --main_func=${op_func} --input_param=${new_file} --soc_version=${opc_soc_version} --output=${binary_bin_path} --impl_mode=${impl_mode_default} ${simplified_key_param} --op_mode=dynamic --log=debug"
         else
-          cmd="opc ${op_python_path} --main_func=${op_func} --input_param=${new_file} --soc_version=${opc_soc_version} --output=${binary_bin_path} --impl_mode=${impl_mode} ${simplified_key_param} --op_mode=dynamic"
+          cmd="opc ${op_python_path} --main_func=${op_func} --input_param=${new_file} --soc_version=${opc_soc_version} --output=${binary_bin_path} --impl_mode=${impl_mode} ${simplified_key_param} --op_mode=dynamic --log=debug"
         fi
         echo "[INFO] op:${op_type} do opc cmd is ${cmd}"
         echo ${cmd} >> ${opc_task_cmd_file}
