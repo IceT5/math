@@ -15,3 +15,23 @@
 #include "register/op_impl_registry.h"
 #include "log/log.h"
 #include "sqrt_proto.h"
+namespace ops {
+using namespace ge;
+
+static constexpr int64_t IDX_0 = 0;
+
+static ge::graphStatus InferDataTypeSqrt(gert::InferDataTypeContext* context)
+{
+    OP_LOGD(context->GetNodeName(), "Begin to do InferDataTypeSqrt");
+
+    // 设置输出的dtype
+    ge::DataType sizeDtype = context->GetInputDataType(IDX_0);
+    context->SetOutputDataType(IDX_0, sizeDtype);
+
+    OP_LOGD(context->GetNodeName(), "End to do InferDataTypeSqrt");
+    return GRAPH_SUCCESS;
+}
+
+IMPL_OP(Sqrt).InferDataType(InferDataTypeSqrt);
+
+};
