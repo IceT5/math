@@ -14,7 +14,7 @@
  */
 #include "register/op_impl_registry.h"
 #include "log/log.h"
-#include "sqrt_proto.h"
+
 namespace ops {
 using namespace ge;
 
