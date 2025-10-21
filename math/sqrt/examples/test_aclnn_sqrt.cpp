@@ -1,8 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "acl/acl.h"
-#include "aclnnop/aclnn_sqrt.h"
-// #include "aclnn_sqrt.h"
+#include "aclnn_sqrt.h"
 
 #define CHECK_RET(cond, return_expr) \
   do {                               \
@@ -103,15 +102,6 @@ int main() {
   for (int64_t i = 0; i < size; i++) {
     LOG_PRINT("aclnnSqrt result[%ld] is: %f\n", i, resultData[i]);
   }
-
-  auto inplaceSize = GetShapeSize(selfShape);
-  std::vector<float> inplaceResultData(inplaceSize, 0);
-  ret = aclrtMemcpy(inplaceResultData.data(), inplaceResultData.size() * sizeof(inplaceResultData[0]), selfDeviceAddr, inplaceSize * sizeof(inplaceResultData[0]), ACL_MEMCPY_DEVICE_TO_HOST);
-  CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("copy result from device to host failed. ERROR: %d\n", ret); return ret);
-  for (int64_t i = 0; i < inplaceSize; i++) {
-    LOG_PRINT("aclnnInplaceSqrt result[%ld] is: %f\n", i, inplaceResultData[i]);
-  }
-
   // 6. 释放aclTensor和aclScalar，需要根据具体API的接口定义修改
   aclDestroyTensor(self);
   aclDestroyTensor(out);
