@@ -29,12 +29,12 @@ __global__ __aicore__ void sqrt(GM_ADDR x, GM_ADDR y, GM_ADDR workspace, GM_ADDR
     GET_TILING_DATA_WITH_STRUCT(SqrtTilingData, tilingData, tiling);
    if constexpr (schMode == static_cast<uint32_t>(SqrtTilingKey::TILING_KEY_EXAMPLE_INT32)){
         MySqrt::KernelSqrt<DTYPE_X,DTYPE_Y> op; // 算子kernel实例获取
-        op.Init(x, y,tilingData->smallCoreDataNum,tilingData->bigCoreDataNum, tilingData->finalBigTileNum,tilingData->finalSmallTileNum, tilingData->tileDataNum,tilingData->smallTailDataNum, tilingData->bigTailDataNum,tilingData->tailBlockNum);      // 算子kernel实例初始化
+        op.Init(x, y,tilingData.smallCoreDataNum,tilingData.bigCoreDataNum, tilingData.finalBigTileNum,tilingData.finalSmallTileNum, tilingData.tileDataNum,tilingData.smallTailDataNum, tilingData.bigTailDataNum,tilingData.tailBlockNum);      // 算子kernel实例初始化
         op.Process();                       // 算子kernel实例执行
    }
    else {
         MySqrt::KernelSqrt<DTYPE_X,DTYPE_Y> op; // 算子kernel实例获取
-        op.Init(x, y,tilingData->smallCoreDataNum,tilingData->bigCoreDataNum, tilingData->finalBigTileNum,tilingData->finalSmallTileNum, tilingData->tileDataNum,tilingData->smallTailDataNum, tilingData->bigTailDataNum,tilingData->tailBlockNum);      // 算子kernel实例初始化
+        op.Init(x, y,tilingData.smallCoreDataNum,tilingData.bigCoreDataNum, tilingData.finalBigTileNum,tilingData.finalSmallTileNum, tilingData.tileDataNum,tilingData.smallTailDataNum, tilingData.bigTailDataNum,tilingData.tailBlockNum);      // 算子kernel实例初始化
         op.Process();                        // 算子kernel实例执行
    }
 }
