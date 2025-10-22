@@ -45,6 +45,7 @@ if(UT_TEST_ALL OR OP_HOST_UT)
                                                  ${ASCEND_DIR}/include/base/context_builder ${PROJECT_SOURCE_DIR}/common/inc
                                                  ${ASCEND_DIR}/include/op_common ${ASCEND_DIR}/include/tiling
                                                  ${ASCEND_DIR}/include/op_common/op_host
+                                                 ${ASCEND_DIR}/include/toolchain
       )
     target_link_libraries(${OP_TILING_MODULE_NAME}_cases_obj PRIVATE $<BUILD_INTERFACE:intf_llt_pub_asan_cxx17> gtest)
 
