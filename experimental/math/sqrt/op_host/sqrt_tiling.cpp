@@ -57,8 +57,7 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
     uint32_t typeLength = 0;
     ge::TypeUtils::GetDataTypeLength(context->GetInputDesc(0)->GetDataType(), typeLength);
     uint64_t inputLength = inputNum * typeLength;
-    if(inputNum == 0 || BLOCK_SIZE ==0)
-    {
+    if(inputNum == 0 || BLOCK_SIZE ==0){
         return ge::GRAPH_FAILED;
     }
     uint64_t inputBytes = inputLength / inputNum;
@@ -70,16 +69,16 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
     uint64_t inputLengthAlgin32 = (((inputLength + BLOCK_SIZE - 1) / BLOCK_SIZE) * BLOCK_SIZE);
 
     //计算coreNum
-    if(tileDataNum >= inputNum)
-    {
+    if(tileDataNum >= inputNum){
         coreNum=1;
     }
-    else
-    {
+    else{
         // There is at least 32B of data on each core, satisfying several settings for several cores. The maximum number of audits is the actual number of audits
         coreNum = (coreNum <  inputLengthAlgin32 / BLOCK_SIZE) ? coreNum : inputLengthAlgin32 / BLOCK_SIZE;
     }
-
+    if(coreNum == 0 || BLOCK_SIZE ==0){
+        return ge::GRAPH_FAILED;
+    }
     //计算每个core处理的数据块数
     uint64_t everyCoreInputBlockNum = inputLengthAlgin32 / BLOCK_SIZE / coreNum;
     uint64_t tailBlockNum = (inputLengthAlgin32 / BLOCK_SIZE) % coreNum;
