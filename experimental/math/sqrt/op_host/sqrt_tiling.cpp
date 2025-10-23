@@ -1,5 +1,5 @@
 /**
- * This program is free software, you can redistribute it and/or modify.
+ * This program is free software, you can redistribute it and/or modify it.
  * Copyright (c) 2025 Huawei Technologies Co., Ltd.
  * This file is a part of the CANN Open Software.
  * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
@@ -52,12 +52,15 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
     if (socVersion != platform_ascendc::SocVersion::ASCEND910B && socVersion != platform_ascendc::SocVersion::ASCEND310B && context->GetInputDesc(0)->GetDataType() == ge::DT_BF16) {
         return ge::GRAPH_FAILED;
     }
-
     //获取输入数据信息
     uint64_t inputNum = context->GetInputShape(0)->GetStorageShape().GetShapeSize();
     uint32_t typeLength = 0;
     ge::TypeUtils::GetDataTypeLength(context->GetInputDesc(0)->GetDataType(), typeLength);
     uint64_t inputLength = inputNum * typeLength;
+    if(inputNum == 0)
+    {
+        return ge::GRAPH_FAILED;
+    }
     uint64_t inputBytes = inputLength / inputNum;
 
     uint64_t ubDataNumber = (context->GetInputDesc(0)->GetDataType() == ge::DT_FLOAT) ? 4 : 6;
