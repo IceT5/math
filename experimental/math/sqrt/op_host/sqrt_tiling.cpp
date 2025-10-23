@@ -108,12 +108,17 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
     tiling->finalBigTileNum = (uint32_t)finalBigTileNum;
     tiling->tailBlockNum = (uint32_t)tailBlockNum;
     context->SetBlockDim(coreNum);
-    // tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
-    // context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
+
     uint32_t tilingKey = 0;
     // 区分dtype走不同得tiling key分支.
-    tilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_0);
-    std::cout << "tilingKey: " << tilingKey << std::endl;
+    if(context->GetInputDesc(0)->GetDataType() == ge::DT_FLOAT)
+    {
+        tilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_0);
+    }
+    else {
+        tilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_1);
+    }
+    
     context->SetTilingKey(tilingKey);
     
 
