@@ -70,6 +70,9 @@ namespace optiling {
         inputBytes = inputLength / inputNum;
         uint64_t ubDataNumber = (context->GetInputDesc(0)->GetDataType() == ge::DT_FLOAT) ? 4 : 6;
         tileBlockNum = (ubSize / BLOCK_SIZE) / ubDataNumber;
+        if (inputBytes == 0) {
+            return ge::GRAPH_FAILED;
+        }
         tileDataNum = (tileBlockNum * BLOCK_SIZE) / inputBytes;
         inputLengthAlgin32 = (((inputLength + BLOCK_SIZE - 1) / BLOCK_SIZE) * BLOCK_SIZE);
         return ge::GRAPH_SUCCESS;
