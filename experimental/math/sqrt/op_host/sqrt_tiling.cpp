@@ -57,7 +57,7 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
     uint32_t typeLength = 0;
     ge::TypeUtils::GetDataTypeLength(context->GetInputDesc(0)->GetDataType(), typeLength);
     uint64_t inputLength = inputNum * typeLength;
-    if(inputNum == 0)
+    if(inputNum == 0 || BLOCK_SIZE ==0)
     {
         return ge::GRAPH_FAILED;
     }
