@@ -209,7 +209,12 @@ if(UT_TEST_ALL
 
     if("${MODULE_UT_NAME}" STREQUAL "${OP_API_MODULE_NAME}")
       get_filename_component(OP_HOST_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
-      get_filename_component(UT_DIR ${OP_HOST_DIR} DIRECTORY)
+      get_filename_component(OP_HOST_NAME ${OP_HOST_DIR} NAME)
+      if("${OP_HOST_NAME}" STREQUAL "op_host")
+        get_filename_component(UT_DIR ${OP_HOST_DIR} DIRECTORY)
+      else()
+        get_filename_component(UT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
+      endif()
       get_filename_component(TESTS_DIR ${UT_DIR} DIRECTORY)
       get_filename_component(OP_NAME_DIR ${TESTS_DIR} DIRECTORY)
       get_filename_component(OP_NAME ${OP_NAME_DIR} NAME)
