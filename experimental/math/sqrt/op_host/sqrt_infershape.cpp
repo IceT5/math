@@ -10,7 +10,7 @@
  */
 
 /*!
- * \file sqrt_infer.cpp
+ * \file sqrt_infershape.cpp
  * \brief
 */
 #include "register/op_impl_registry.h"

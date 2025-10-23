@@ -108,9 +108,8 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
     tiling->finalBigTileNum = (uint32_t)finalBigTileNum;
     tiling->tailBlockNum = (uint32_t)tailBlockNum;
     context->SetBlockDim(coreNum);
-
-    uint32_t tilingKey = 0;
     // 区分dtype走不同得tiling key分支.
+    uint32_t tilingKey = 0;
     if(context->GetInputDesc(0)->GetDataType() == ge::DT_FLOAT)
     {
         tilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_0);
@@ -118,10 +117,7 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
     else {
         tilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_1);
     }
-    
     context->SetTilingKey(tilingKey);
-    
-
     return ge::GRAPH_SUCCESS;
 }
 
