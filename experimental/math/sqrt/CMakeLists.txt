@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# This program is free software, you can redistribute it and/or modify it.
+# This program is free software, you can redistribute it and/or modify.
 # Copyright (c) 2025 Huawei Technologies Co., Ltd.
 # This file is a part of the CANN Open Software.
 # Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------------
 
 file(GLOB CURRENT_DIRS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
-if(NOT ENABLE_TEST AND NOT BENCHMARK)
+if(NOT ENABLE_TEST)
     list(REMOVE_ITEM CURRENT_DIRS tests)
 endif()
 foreach(SUB_DIR ${CURRENT_DIRS})
