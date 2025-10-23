@@ -35,6 +35,20 @@ static ge::graphStatus TilingParseForSqrt([[maybe_unused]]gert::TilingParseConte
     return ge::GRAPH_SUCCESS;
 }
 
+static ge::graphStatus GetPlatformInfo(gert::TilingContext* context, uint64_t& ubSize, int64_t& coreNum)
+{
+    // 获取ubsize coreNum
+    auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
+    ascendcPlatform.GetCoreMemSize(platform_ascendc::CoreMemType::UB, ubSize);
+    auto coreNum = ascendcPlatform.GetCoreNum();
+    auto socVersion = ascendcPlatform.GetSocVersion();
+    OP_CHECK_IF(coreNum == 0, OP_LOGE(context, "coreNum is 0"), return ge::GRAPH_FAILED);
+    OP_CHECK_IF(ubSize == 0, OP_LOGE(context, "ubSize is 0"), return ge::GRAPH_FAILED);
+    if (socVersion != platform_ascendc::SocVersion::ASCEND910B && socVersion != platform_ascendc::SocVersion::ASCEND310B && context->GetInputDesc(0)->GetDataType() == ge::DT_BF16) {
+        return ge::GRAPH_FAILED;
+    }
+}
+
 static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
 {
     // SqrtTilingData tiling;
@@ -45,27 +59,21 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
         OP_LOGE(context, "set tiling data error"), return ge::GRAPH_FAILED);
     //获取平台运行信息
     uint64_t ubSize;
-    auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
-    ascendcPlatform.GetCoreMemSize(platform_ascendc::CoreMemType::UB, ubSize);
-    auto coreNum = ascendcPlatform.GetCoreNum();
-    auto socVersion = ascendcPlatform.GetSocVersion();
-    if (socVersion != platform_ascendc::SocVersion::ASCEND910B && socVersion != platform_ascendc::SocVersion::ASCEND310B && context->GetInputDesc(0)->GetDataType() == ge::DT_BF16) {
-        return ge::GRAPH_FAILED;
+    int64_t coreNum;
+    ge::graphStatus ret = GetPlatformInfo(context, ubSize, coreNum);
+    if(ret != ge::GRAPH_SUCCESS){
+        return ret;
     }
     //获取输入数据信息
     uint64_t inputNum = context->GetInputShape(0)->GetStorageShape().GetShapeSize();
     uint32_t typeLength = 0;
     ge::TypeUtils::GetDataTypeLength(context->GetInputDesc(0)->GetDataType(), typeLength);
     uint64_t inputLength = inputNum * typeLength;
-    if(inputNum == 0 || BLOCK_SIZE ==0){
-        return ge::GRAPH_FAILED;
-    }
+    OP_CHECK_IF(inputNum == 0, OP_LOGE(context, "inputNum is 0"), return ge::GRAPH_FAILED);
     uint64_t inputBytes = inputLength / inputNum;
-
     uint64_t ubDataNumber = (context->GetInputDesc(0)->GetDataType() == ge::DT_FLOAT) ? 4 : 6;
     uint64_t tileBlockNum = (ubSize / BLOCK_SIZE ) / ubDataNumber;
     uint64_t tileDataNum = (tileBlockNum * BLOCK_SIZE) / inputBytes;
-
     uint64_t inputLengthAlgin32 = (((inputLength + BLOCK_SIZE - 1) / BLOCK_SIZE) * BLOCK_SIZE);
 
     //计算coreNum
@@ -76,13 +84,9 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
         // There is at least 32B of data on each core, satisfying several settings for several cores. The maximum number of audits is the actual number of audits
         coreNum = (coreNum <  inputLengthAlgin32 / BLOCK_SIZE) ? coreNum : inputLengthAlgin32 / BLOCK_SIZE;
     }
-    if(coreNum == 0 || BLOCK_SIZE ==0){
-        return ge::GRAPH_FAILED;
-    }
     //计算每个core处理的数据块数
     uint64_t everyCoreInputBlockNum = inputLengthAlgin32 / BLOCK_SIZE / coreNum;
     uint64_t tailBlockNum = (inputLengthAlgin32 / BLOCK_SIZE) % coreNum;
-    
     uint64_t smallCoreDataNum = everyCoreInputBlockNum * BLOCK_SIZE / inputBytes;
     uint64_t smallTileNum = everyCoreInputBlockNum / tileBlockNum;
     uint64_t finalSmallTileNum = (everyCoreInputBlockNum % tileBlockNum) == 0 ? smallTileNum : smallTileNum + 1;
