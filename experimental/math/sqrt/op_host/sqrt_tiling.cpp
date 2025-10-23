@@ -28,6 +28,7 @@ using namespace Ops::Math::OpTiling;
 
 const uint32_t BLOCK_SIZE = 32;
 const uint32_t BUFFER_NUM = 2;
+const uint32_t WS_SYS_SIZE =0;
 struct SqrtCompileInfo {};
 
 static ge::graphStatus TilingParseForSqrt([[maybe_unused]]gert::TilingParseContext* context)
@@ -40,15 +41,22 @@ static ge::graphStatus GetPlatformInfo(gert::TilingContext* context, uint64_t& u
     // 获取ubsize coreNum
     auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
     ascendcPlatform.GetCoreMemSize(platform_ascendc::CoreMemType::UB, ubSize);
-    auto coreNum = ascendcPlatform.GetCoreNum();
+    coreNum = ascendcPlatform.GetCoreNum();
     auto socVersion = ascendcPlatform.GetSocVersion();
     OP_CHECK_IF(coreNum == 0, OP_LOGE(context, "coreNum is 0"), return ge::GRAPH_FAILED);
     OP_CHECK_IF(ubSize == 0, OP_LOGE(context, "ubSize is 0"), return ge::GRAPH_FAILED);
     if (socVersion != platform_ascendc::SocVersion::ASCEND910B && socVersion != platform_ascendc::SocVersion::ASCEND310B && context->GetInputDesc(0)->GetDataType() == ge::DT_BF16) {
         return ge::GRAPH_FAILED;
     }
+    return ge::GRAPH_SUCCESS;
 }
-
+ge::graphStatus GetWorkspaceSize(gert::TilingContext* context)
+{
+    size_t* currentWorkspace = context->GetWorkspaceSizes(1);
+    OP_CHECK_NULL_WITH_CONTEXT(context, currentWorkspace);
+    currentWorkspace[0] = WS_SYS_SIZE;
+    return ge::GRAPH_SUCCESS;
+}
 static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
 {
     // SqrtTilingData tiling;
@@ -69,7 +77,9 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
     uint32_t typeLength = 0;
     ge::TypeUtils::GetDataTypeLength(context->GetInputDesc(0)->GetDataType(), typeLength);
     uint64_t inputLength = inputNum * typeLength;
-    OP_CHECK_IF(inputNum == 0, OP_LOGE(context, "inputNum is 0"), return ge::GRAPH_FAILED);
+    if(inputNum == 0){
+        return ge::GRAPH_FAILED;
+    }
     uint64_t inputBytes = inputLength / inputNum;
     uint64_t ubDataNumber = (context->GetInputDesc(0)->GetDataType() == ge::DT_FLOAT) ? 4 : 6;
     uint64_t tileBlockNum = (ubSize / BLOCK_SIZE ) / ubDataNumber;
@@ -82,7 +92,7 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
     }
     else{
         // There is at least 32B of data on each core, satisfying several settings for several cores. The maximum number of audits is the actual number of audits
-        coreNum = (coreNum <  inputLengthAlgin32 / BLOCK_SIZE) ? coreNum : inputLengthAlgin32 / BLOCK_SIZE;
+        coreNum = (static_cast<uint64_t>(coreNum) <  inputLengthAlgin32 / BLOCK_SIZE) ? coreNum : inputLengthAlgin32 / BLOCK_SIZE;
     }
     //计算每个core处理的数据块数
     uint64_t everyCoreInputBlockNum = inputLengthAlgin32 / BLOCK_SIZE / coreNum;
@@ -100,10 +110,6 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
     uint64_t bigTailDataNum = bigCoreDataNum - tileDataNum * bigTileNum;
     bigTailDataNum = bigTailDataNum == 0 ? tileDataNum : bigTailDataNum; 
     
-    //计算workspace大小
-    size_t *currentWorkspace = context->GetWorkspaceSizes(1);
-    currentWorkspace[0] = 0;
-
     //设置tiling数据
     tiling->smallCoreDataNum = (uint32_t)smallCoreDataNum;
     tiling->bigCoreDataNum = (uint32_t)bigCoreDataNum;
@@ -113,6 +119,8 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
     tiling->finalSmallTileNum = (uint32_t)finalSmallTileNum;
     tiling->finalBigTileNum = (uint32_t)finalBigTileNum;
     tiling->tailBlockNum = (uint32_t)tailBlockNum;
+    //计算workspace大小
+    OP_CHECK_IF(GetWorkspaceSize(context) != ge::GRAPH_SUCCESS, OP_LOGE(context, "GetWorkspaceSize error"),return ge::GRAPH_FAILED);
     context->SetBlockDim(coreNum);
     // 区分dtype走不同得tiling key分支.
     uint32_t tilingKey = 0;
