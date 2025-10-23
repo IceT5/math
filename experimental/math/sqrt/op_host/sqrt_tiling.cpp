@@ -57,6 +57,25 @@ ge::graphStatus GetWorkspaceSize(gert::TilingContext* context)
     currentWorkspace[0] = WS_SYS_SIZE;
     return ge::GRAPH_SUCCESS;
 }
+
+ge::graphStatus GetShapeAttrsInfo(gert::TilingContext* context, uint64_t ubSize,uint64_t& inputNum, uint64_t& inputBytes, uint64_t& tileBlockNum, uint64_t& tileDataNum, uint64_t& inputLengthAlgin32)
+{
+    
+    inputNum = context->GetInputShape(0)->GetStorageShape().GetShapeSize();
+    uint32_t typeLength = 0;
+    ge::TypeUtils::GetDataTypeLength(context->GetInputDesc(0)->GetDataType(), typeLength);
+    uint64_t inputLength = inputNum * typeLength;
+    if(inputNum == 0){
+        return ge::GRAPH_FAILED;
+    }
+    inputBytes = inputLength / inputNum;
+    uint64_t ubDataNumber = (context->GetInputDesc(0)->GetDataType() == ge::DT_FLOAT) ? 4 : 6;
+    tileBlockNum = (ubSize / BLOCK_SIZE ) / ubDataNumber;
+    tileDataNum = (tileBlockNum * BLOCK_SIZE) / inputBytes;
+    inputLengthAlgin32 = (((inputLength + BLOCK_SIZE - 1) / BLOCK_SIZE) * BLOCK_SIZE);
+    return ge::GRAPH_SUCCESS;
+}
+
 static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
 {
     // SqrtTilingData tiling;
@@ -72,19 +91,12 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
     if(ret != ge::GRAPH_SUCCESS){
         return ret;
     }
-    //获取输入数据信息
-    uint64_t inputNum = context->GetInputShape(0)->GetStorageShape().GetShapeSize();
-    uint32_t typeLength = 0;
-    ge::TypeUtils::GetDataTypeLength(context->GetInputDesc(0)->GetDataType(), typeLength);
-    uint64_t inputLength = inputNum * typeLength;
-    if(inputNum == 0){
-        return ge::GRAPH_FAILED;
+    //获取输入数据信
+    uint64_t inputNum,inputBytes,tileBlockNum,tileDataNum,inputLengthAlgin32;
+    ret = GetShapeAttrsInfo(context, ubSize,inputNum,inputBytes,tileBlockNum,tileDataNum,inputLengthAlgin32);
+    if(ret != ge::GRAPH_SUCCESS){
+        return ret;
     }
-    uint64_t inputBytes = inputLength / inputNum;
-    uint64_t ubDataNumber = (context->GetInputDesc(0)->GetDataType() == ge::DT_FLOAT) ? 4 : 6;
-    uint64_t tileBlockNum = (ubSize / BLOCK_SIZE ) / ubDataNumber;
-    uint64_t tileDataNum = (tileBlockNum * BLOCK_SIZE) / inputBytes;
-    uint64_t inputLengthAlgin32 = (((inputLength + BLOCK_SIZE - 1) / BLOCK_SIZE) * BLOCK_SIZE);
 
     //计算coreNum
     if(tileDataNum >= inputNum){
