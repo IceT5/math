@@ -16,16 +16,15 @@
 
 #include "register/op_impl_registry.h"
 #include "log/log.h"
-#include "runtime_util.h"
 
 using namespace ge;
 namespace ops {
 
 static ge::graphStatus InferDtypeForRightShift(gert::InferDataTypeContext* context)
 {
-    OP_LOGI(context->GetNodeName(), "Begin to do InferDtypeForRightShift");
-    const auto x_data_type = context->GetInputDataType(kInputIndex0);
-    return context->SetOutputDataType(kOutputIndex0, x_data_type);
+    OP_LOGI(context "Begin to do InferDtypeForRightShift");
+    const auto x_data_type = context->GetInputDataType(0);
+    return context->SetOutputDataType(0, x_data_type);
 }
 
 IMPL_OP(RightShift).InferDataType(InferDtypeForRightShift);
