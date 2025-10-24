@@ -15,23 +15,13 @@
  */
 
 #include "register/op_impl_registry.h"
-#include "log/log.h"
+#include "infershape_broadcast_util.h"
 
 using namespace ge;
 namespace ops {
 static ge::graphStatus InferShapeForRightShift(gert::InferShapeContext* context)
 {
-    OP_LOGI(context, "Begin to do InferShapeForRightShift");
-    const gert::Shape* x_shape = context->GetInputShape(kInputIndex0);
-    OPS_CHECK_NULL_WITH_CONTEXT(context, x_shape);
-    const gert::Shape* y_shape = context->GetInputShape(kInputIndex1);
-    OP_CHECK_NULL_WITH_CONTEXT(context, y_shape);
-    gert::Shape* z_shape = context->GetOutputShape(kOutputIndex0);
-    OP_CHECK_NULL_WITH_CONTEXT(context, z_shape);
-    OP_CHECK_IF(
-        !BroadcastShape(x_shape, y_shape, z_shape), OP_LOGI(context, "call BroadcastShape failed."),
-        return ge::GRAPH_FAILED);
-    return GRAPH_SUCCESS;
+    return Ops::Base::InferShape4Broadcast(context);
 }
 
 IMPL_OP_INFERSHAPE(RightShift).InferShape(InferShapeForRightShift);
