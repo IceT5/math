@@ -29,7 +29,7 @@ static ge::graphStatus InferShapeForRightShift(gert::InferShapeContext* context)
     gert::Shape* z_shape = context->GetOutputShape(kOutputIndex0);
     OP_CHECK_NULL_WITH_CONTEXT(context, z_shape);
     OP_CHECK_IF(
-        !BroadcastShape(x_shape, y_shape, z_shape), ge::GRAPH_FAILED, OP_LOGI(context, "call BroadcastShape failed."));
+        !BroadcastShape(x_shape, y_shape, z_shape), OP_LOGI(context, "call BroadcastShape failed."), ge::GRAPH_FAILED);
     return GRAPH_SUCCESS;
 }
 
