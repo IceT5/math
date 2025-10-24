@@ -53,6 +53,9 @@ static const size_t AI_CORE_REPLICATION_PAD_DIM_BOUND = 5;
 
 inline static bool IsAiCoreSupport(const aclTensor* self, const std::string& mode)
 {
+    if(GetCurrentPlatformInfo().GetSocVersion() == SocVersion::ASCEND910_95){
+        return false;
+    }
     if (VALID_MODES.find(mode) == VALID_MODES.end()) {
         return false;
     }
