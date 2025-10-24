@@ -9,5 +9,4 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------
 
-add_modules_sources(OPTYPE right_shift ACLNNTYPE aclnn_exclude)
-
+add_graph_plugin_sources()
