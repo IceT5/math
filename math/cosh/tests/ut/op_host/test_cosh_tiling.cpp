@@ -9,426 +9,79 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
+/*!
+ * \file test_cosh_tiling.cpp
+ * \brief
+ */
 
 #include <iostream>
 #include <gtest/gtest.h>
 #include "tiling_context_faker.h"
 #include "tiling_case_executor.h"
 #include "../../../op_kernel/cosh_tiling_data.h"
+#include "../../../op_kernel/cosh_tiling_key.h"
 
 using namespace std;
 using namespace ge;
 
-namespace {
-    std::string BuildCoshTilingDataForSmallTensor(int64_t totalElements, int32_t coreNum, 
-                                                 int32_t elementsPerCore, int32_t tileSize) {
-        std::string result;
-        
-        // 基础字段
-        result += std::to_string(totalElements) + " ";
-        result += std::to_string(coreNum) + " ";
-        
-        // 核间划分数组 - 均匀分配
-        for (int i = 0; i < 32; i++) {
-            if (i < coreNum) {
-                result += std::to_string(i * elementsPerCore) + " ";
-            } else {
-                result += "0 ";
-            }
-        }
-        
-        for (int i = 0; i < 32; i++) {
-            if (i < coreNum) {
-                result += std::to_string(i * elementsPerCore + elementsPerCore - 1) + " ";
-            } else {
-                result += "0 ";
-            }
-        }
-        
-        for (int i = 0; i < 32; i++) {
-            if (i < coreNum) {
-                result += std::to_string(elementsPerCore) + " ";
-            } else {
-                result += "0 ";
-            }
-        }
-        
-        // 核内划分
-        result += std::to_string(tileSize) + " ";
-        
-        // 循环次数数组
-        for (int i = 0; i < 32; i++) {
-            if (i < coreNum) {
-                result += "1 ";  // 每个核循环1次
-            } else {
-                result += "0 ";
-            }
-        }
-        
-        // 尾部元素数组
-        for (int i = 0; i < 32; i++) {
-            if (i < coreNum) {
-                result += std::to_string(elementsPerCore) + " ";  // 尾部元素数=每核元素数
-            } else {
-                result += "0 ";
-            }
-        }
-        
-        return result;
-    }
-}
-
 class CoshTilingTest : public testing::Test {
 protected:
-    static void SetUpTestCase() {
+    static void SetUpTestCase()
+    {
         std::cout << "CoshTilingTest SetUp" << std::endl;
     }
 
-    static void TearDownTestCase() {
+    static void TearDownTestCase()
+    {
         std::cout << "CoshTilingTest TearDown" << std::endl;
     }
 };
 
-// 基础功能测试 - FP16小张量
-TEST_F(CoshTilingTest, ascend9101_test_tiling_fp16_001) {
-    optiling::CoshCompileInfo compileInfo = {32, 196608};  // 核心数32, ubSize = 192KB
+TEST_F(CoshTilingTest, cosh_tiling_float16_001)
+{
+    // 测试用例1: float16数据类型, shape [8, 2048]
+    optiling::CoshCompileInfo compileInfo = {32, 191 * 1024};  // 32核心, 191KB UB
     gert::TilingContextPara tilingContextPara(
         "Cosh",
         {
-            {{{128}}, ge::DT_FLOAT16, ge::FORMAT_ND},  // 1D 小张量
+            {{{8, 2048}, {8, 2048}}, ge::DT_FLOAT16, ge::FORMAT_ND},
         },
         {
-            {{{128}}, ge::DT_FLOAT16, ge::FORMAT_ND},
+            {{{8, 2048}, {8, 2048}}, ge::DT_FLOAT16, ge::FORMAT_ND},
         },
         &compileInfo);
-
-    // tilingKey
-    uint64_t expectTilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_1);
-
-    // tilingdata
-    string expectTilingData = BuildCoshTilingDataForSmallTensor(
-        128,    // totalElements
-        32,     // coreNum  
-        4,      // elementsPerCore
-        4       // tileSize
-    );
-
-    std::vector<size_t> expectWorkspaces = {0};  // Cosh不需要workspace
     
-    ExecuteTestCase(tilingContextPara, ge::GRAPH_SUCCESS, expectTilingKey, "", expectWorkspaces);
+    uint64_t expectTilingKey = 1;  // ELEMENTWISE_TPL_SCH_MODE_1 for float16
+    
+    // 基于之前计算的tiling参数序列化
+    // totalLength=16384, coreNum=8, tile_element_num=2048
+    // 每个核心: start=[0,2048,4096,...], end=[2047,4095,6143,...], count=2048, loop_times=1, tail_elements=2048
+    string expectTilingData = 
+        "16384 8 "                    // totalLength, coreNum
+        "0 2048 4096 6144 8192 10240 12288 14336 "  // core_element_start[0-7]
+        "0 0 0 0 0 0 0 0 "            // core_element_start[8-15] (未使用)
+        "0 0 0 0 0 0 0 0 "            // core_element_start[16-23] (未使用)
+        "0 0 0 0 0 0 0 0 "            // core_element_start[24-31] (未使用)
+        "2047 4095 6143 8191 10239 12287 14335 16383 "  // core_element_end[0-7]
+        "-1 -1 -1 -1 -1 -1 -1 -1 "    // core_element_end[8-15] (未使用)
+        "-1 -1 -1 -1 -1 -1 -1 -1 "    // core_element_end[16-23] (未使用)  
+        "-1 -1 -1 -1 -1 -1 -1 -1 "    // core_element_end[24-31] (未使用)
+        "2048 2048 2048 2048 2048 2048 2048 2048 "  // core_element_count[0-7]
+        "0 0 0 0 0 0 0 0 "            // core_element_count[8-15] (未使用)
+        "0 0 0 0 0 0 0 0 "            // core_element_count[16-23] (未使用)
+        "0 0 0 0 0 0 0 0 "            // core_element_count[24-31] (未使用)
+        "2048 "                        // tile_element_num
+        "1 1 1 1 1 1 1 1 "            // core_loop_times[0-7]
+        "0 0 0 0 0 0 0 0 "            // core_loop_times[8-15] (未使用)
+        "0 0 0 0 0 0 0 0 "            // core_loop_times[16-23] (未使用)
+        "0 0 0 0 0 0 0 0 "            // core_loop_times[24-31] (未使用)
+        "2048 2048 2048 2048 2048 2048 2048 2048 "  // core_tail_elements[0-7]
+        "0 0 0 0 0 0 0 0 "            // core_tail_elements[8-15] (未使用)
+        "0 0 0 0 0 0 0 0 "            // core_tail_elements[16-23] (未使用)
+        "0 0 0 0 0 0 0 0 ";           // core_tail_elements[24-31] (未使用)
+    
+    std::vector<size_t> expectWorkspaces = {0};
+    
+    ExecuteTestCase(tilingContextPara, ge::GRAPH_SUCCESS, expectTilingKey, 
+                    expectTilingData, expectWorkspaces);
 }
-
-// // 基础功能测试 - FP32小张量
-// TEST_F(CoshTilingTest, BasicFP32SmallTensor) {
-//     optiling::CoshCompileInfo compileInfo = {};
-//     gert::TilingContextPara tilingContextPara(
-//         "Cosh",
-//         {
-//             {{{256}}, ge::DT_FLOAT, ge::FORMAT_ND},  // 1D 小张量
-//         },
-//         {
-//             {{{256}}, ge::DT_FLOAT, ge::FORMAT_ND},
-//         },
-//         &compileInfo);
-
-//     uint64_t expectTilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_0);
-//     std::vector<size_t> expectWorkspaces = {0};
-    
-//     ExecuteTestCase(tilingContextPara, ge::GRAPH_SUCCESS, expectTilingKey, "", expectWorkspaces);
-// }
-
-// // 多核分配测试 - 触发大核小核策略
-// TEST_F(CoshTilingTest, MultiCoreDistribution) {
-//     optiling::CoshCompileInfo compileInfo = {};
-//     gert::TilingContextPara tilingContextPara(
-//         "Cosh",
-//         {
-//             {{{10000}}, ge::DT_FLOAT16, ge::FORMAT_ND},  // 大张量，触发多核
-//         },
-//         {
-//             {{{10000}}, ge::DT_FLOAT16, ge::FORMAT_ND},
-//         },
-//         &compileInfo);
-
-//     uint64_t expectTilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_1);
-//     std::vector<size_t> expectWorkspaces = {0};
-    
-//     ExecuteTestCase(tilingContextPara, ge::GRAPH_SUCCESS, expectTilingKey, "", expectWorkspaces);
-// }
-
-// // 边界测试 - 元素数刚好整除核数
-// TEST_F(CoshTilingTest, BoundaryDivisibleElements) {
-//     optiling::CoshCompileInfo compileInfo = {};
-//     gert::TilingContextPara tilingContextPara(
-//         "Cosh",
-//         {
-//             {{{1024}}, ge::DT_FLOAT16, ge::FORMAT_ND},  // 1024 = 32 * 32
-//         },
-//         {
-//             {{{1024}}, ge::DT_FLOAT16, ge::FORMAT_ND},
-//         },
-//         &compileInfo);
-
-//     uint64_t expectTilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_1);
-//     std::vector<size_t> expectWorkspaces = {0};
-    
-//     ExecuteTestCase(tilingContextPara, ge::GRAPH_SUCCESS, expectTilingKey, "", expectWorkspaces);
-// }
-
-// // 边界测试 - 质数元素数（最难均衡情况）
-// TEST_F(CoshTilingTest, PrimeNumberElements) {
-//     optiling::CoshCompileInfo compileInfo = {};
-//     gert::TilingContextPara tilingContextPara(
-//         "Cosh",
-//         {
-//             {{{1009}}, ge::DT_FLOAT16, ge::FORMAT_ND},  // 质数
-//         },
-//         {
-//             {{{1009}}, ge::DT_FLOAT16, ge::FORMAT_ND},
-//         },
-//         &compileInfo);
-
-//     uint64_t expectTilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_1);
-//     std::vector<size_t> expectWorkspaces = {0};
-    
-//     ExecuteTestCase(tilingContextPara, ge::GRAPH_SUCCESS, expectTilingKey, "", expectWorkspaces);
-// }
-
-// // 多维张量测试
-// TEST_F(CoshTilingTest, MultiDimensionalTensor) {
-//     optiling::CoshCompileInfo compileInfo = {};
-//     gert::TilingContextPara tilingContextPara(
-//         "Cosh",
-//         {
-//             {{{2, 512, 256}}, ge::DT_FLOAT16, ge::FORMAT_ND},  // 3D张量
-//         },
-//         {
-//             {{{2, 512, 256}}, ge::DT_FLOAT16, ge::FORMAT_ND},
-//         },
-//         &compileInfo);
-
-//     uint64_t expectTilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_1);
-//     std::vector<size_t> expectWorkspaces = {0};
-    
-//     ExecuteTestCase(tilingContextPara, ge::GRAPH_SUCCESS, expectTilingKey, "", expectWorkspaces);
-// }
-
-// // 最小tile大小测试
-// TEST_F(CoshTilingTest, MinimumTileSize) {
-//     optiling::CoshCompileInfo compileInfo = {};
-//     gert::TilingContextPara tilingContextPara(
-//         "Cosh",
-//         {
-//             {{{16}}, ge::DT_FLOAT16, ge::FORMAT_ND},  // 最小tile大小边界
-//         },
-//         {
-//             {{{16}}, ge::DT_FLOAT16, ge::FORMAT_ND},
-//         },
-//         &compileInfo);
-
-//     uint64_t expectTilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_1);
-//     std::vector<size_t> expectWorkspaces = {0};
-    
-//     ExecuteTestCase(tilingContextPara, ge::GRAPH_SUCCESS, expectTilingKey, "", expectWorkspaces);
-// }
-
-// // 最大核数限制测试
-// TEST_F(CoshTilingTest, MaxCoreNumLimit) {
-//     optiling::CoshCompileInfo compileInfo = {};
-//     gert::TilingContextPara tilingContextPara(
-//         "Cosh",
-//         {
-//             {{{50000}}, ge::DT_FLOAT16, ge::FORMAT_ND},  // 大张量，测试核数限制
-//         },
-//         {
-//             {{{50000}}, ge::DT_FLOAT16, ge::FORMAT_ND},
-//         },
-//         &compileInfo);
-
-//     uint64_t expectTilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_1);
-//     std::vector<size_t> expectWorkspaces = {0};
-    
-//     ExecuteTestCase(tilingContextPara, ge::GRAPH_SUCCESS, expectTilingKey, "", expectWorkspaces);
-// }
-
-// // 错误处理测试 - 不支持的数据类型
-// TEST_F(CoshTilingTest, InvalidDataType) {
-//     optiling::CoshCompileInfo compileInfo = {};
-//     gert::TilingContextPara tilingContextPara(
-//         "Cosh",
-//         {
-//             {{{256}}, ge::DT_INT32, ge::FORMAT_ND},  // 不支持的INT32
-//         },
-//         {
-//             {{{256}}, ge::DT_INT32, ge::FORMAT_ND},
-//         },
-//         &compileInfo);
-
-//     ExecuteTestCase(tilingContextPara, ge::GRAPH_FAILED, 0, "", {});
-// }
-
-// // 错误处理测试 - 零元素张量
-// TEST_F(CoshTilingTest, ZeroElements) {
-//     optiling::CoshCompileInfo compileInfo = {};
-//     gert::TilingContextPara tilingContextPara(
-//         "Cosh",
-//         {
-//             {{{0}}, ge::DT_FLOAT16, ge::FORMAT_ND},  // 0元素
-//         },
-//         {
-//             {{{0}}, ge::DT_FLOAT16, ge::FORMAT_ND},
-//         },
-//         &compileInfo);
-
-//     ExecuteTestCase(tilingContextPara, ge::GRAPH_FAILED, 0, "", {});
-// }
-
-// // 错误处理测试 - 空形状
-// TEST_F(CoshTilingTest, EmptyShape) {
-//     optiling::CoshCompileInfo compileInfo = {};
-//     gert::TilingContextPara tilingContextPara(
-//         "Cosh",
-//         {
-//             {{{}}},  // 空形状
-//         },
-//         {
-//             {{{}}},
-//         },
-//         &compileInfo);
-
-//     ExecuteTestCase(tilingContextPara, ge::GRAPH_FAILED, 0, "", {});
-// }
-
-// // 混合数据类型测试 - 输入输出类型匹配
-// TEST_F(CoshTilingTest, MixedDataTypes) {
-//     optiling::CoshCompileInfo compileInfo = {};
-    
-//     // 测试FP16路径
-//     gert::TilingContextPara tilingContextParaFP16(
-//         "Cosh",
-//         {
-//             {{{512}}, ge::DT_FLOAT16, ge::FORMAT_ND},
-//         },
-//         {
-//             {{{512}}, ge::DT_FLOAT16, ge::FORMAT_ND},
-//         },
-//         &compileInfo);
-
-//     uint64_t expectTilingKeyFP16 = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_1);
-//     ExecuteTestCase(tilingContextParaFP16, ge::GRAPH_SUCCESS, expectTilingKeyFP16, "", {0});
-
-//     // 测试FP32路径
-//     gert::TilingContextPara tilingContextParaFP32(
-//         "Cosh",
-//         {
-//             {{{512}}, ge::DT_FLOAT, ge::FORMAT_ND},
-//         },
-//         {
-//             {{{512}}, ge::DT_FLOAT, ge::FORMAT_ND},
-//         },
-//         &compileInfo);
-
-//     uint64_t expectTilingKeyFP32 = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_0);
-//     ExecuteTestCase(tilingContextParaFP32, ge::GRAPH_SUCCESS, expectTilingKeyFP32, "", {0});
-// }
-
-// // 性能边界测试 - 刚好超过单核处理能力
-// TEST_F(CoshTilingTest, PerformanceBoundary) {
-//     optiling::CoshCompileInfo compileInfo = {};
-//     gert::TilingContextPara tilingContextPara(
-//         "Cosh",
-//         {
-//             {{{4097}}, ge::DT_FLOAT16, ge::FORMAT_ND},  // 刚好超过单核边界
-//         },
-//         {
-//             {{{4097}}, ge::DT_FLOAT16, ge::FORMAT_ND},
-//         },
-//         &compileInfo);
-
-//     uint64_t expectTilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_1);
-//     std::vector<size_t> expectWorkspaces = {0};
-    
-//     ExecuteTestCase(tilingContextPara, ge::GRAPH_SUCCESS, expectTilingKey, "", expectWorkspaces);
-// }
-
-// // 复杂形状测试 - 不规则多维形状
-// TEST_F(CoshTilingTest, ComplexIrregularShape) {
-//     optiling::CoshCompileInfo compileInfo = {};
-//     gert::TilingContextPara tilingContextPara(
-//         "Cosh",
-//         {
-//             {{{3, 17, 89, 23}}, ge::DT_FLOAT16, ge::FORMAT_ND},  // 不规则多维
-//         },
-//         {
-//             {{{3, 17, 89, 23}}, ge::DT_FLOAT16, ge::FORMAT_ND},
-//         },
-//         &compileInfo);
-
-//     uint64_t expectTilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_1);
-//     std::vector<size_t> expectWorkspaces = {0};
-    
-//     ExecuteTestCase(tilingContextPara, ge::GRAPH_SUCCESS, expectTilingKey, "", expectWorkspaces);
-// }
-
-// // 内存对齐边界测试
-// TEST_F(CoshTilingTest, MemoryAlignmentBoundary) {
-//     optiling::CoshCompileInfo compileInfo = {};
-    
-//     // 测试各种对齐边界情况
-//     std::vector<int64_t> testSizes = {31, 32, 33, 63, 64, 65, 127, 128, 129};
-    
-//     for (auto size : testSizes) {
-//         gert::TilingContextPara tilingContextPara(
-//             "Cosh",
-//             {
-//                 {{{size}}, ge::DT_FLOAT16, ge::FORMAT_ND},
-//             },
-//             {
-//                 {{{size}}, ge::DT_FLOAT16, ge::FORMAT_ND},
-//             },
-//             &compileInfo);
-
-//         uint64_t expectTilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_1);
-//         ExecuteTestCase(tilingContextPara, ge::GRAPH_SUCCESS, expectTilingKey, "", {0});
-//     }
-// }
-
-// // 大规模数据测试
-// TEST_F(CoshTilingTest, LargeScaleData) {
-//     optiling::CoshCompileInfo compileInfo = {};
-//     gert::TilingContextPara tilingContextPara(
-//         "Cosh",
-//         {
-//             {{{1000000}}, ge::DT_FLOAT16, ge::FORMAT_ND},  // 百万级元素
-//         },
-//         {
-//             {{{1000000}}, ge::DT_FLOAT16, ge::FORMAT_ND},
-//         },
-//         &compileInfo);
-
-//     uint64_t expectTilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_1);
-//     std::vector<size_t> expectWorkspaces = {0};
-    
-//     ExecuteTestCase(tilingContextPara, ge::GRAPH_SUCCESS, expectTilingKey, "", expectWorkspaces);
-// }
-
-// // 核数边界测试
-// TEST_F(CoshTilingTest, CoreNumBoundary) {
-//     optiling::CoshCompileInfo compileInfo = {};
-    
-//     // 测试刚好使用最大核数的情况
-//     gert::TilingContextPara tilingContextPara(
-//         "Cosh",
-//         {
-//             {{{32000}}, ge::DT_FLOAT16, ge::FORMAT_ND},  // 需要接近32核
-//         },
-//         {
-//             {{{32000}}, ge::DT_FLOAT16, ge::FORMAT_ND},
-//         },
-//         &compileInfo);
-
-//     uint64_t expectTilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_1);
-//     std::vector<size_t> expectWorkspaces = {0};
-    
-//     ExecuteTestCase(tilingContextPara, ge::GRAPH_SUCCESS, expectTilingKey, "", expectWorkspaces);
-// }
