@@ -26,7 +26,6 @@
 #include "data_utils.h"
 
 using namespace std;
-using namespace ge;
 
 extern "C" __global__ __aicore__ void cosh(GM_ADDR x, GM_ADDR z, GM_ADDR workspace, GM_ADDR tiling);
 
