@@ -9,6 +9,8 @@
 #include "tiling_base/tiling_templates_registry.h"
 #include "math/cosh/op_kernel/cosh_tiling_data.h"
 #include "math/cosh/op_kernel/cosh_tiling_key.h"
+#include "register/op_impl_registry.h"
+#include "tiling/platform/platform_ascendc.h"
 
 namespace optiling {
 
@@ -26,14 +28,20 @@ constexpr uint32_t INDEXONE = 1;
 constexpr uint32_t INDEXTWO = 2;
 constexpr uint32_t INDEXTHREE = 3;
 
-struct CoshCompileInfo {};
-
 static uint32_t AlignUp(uint32_t a, uint32_t b) 
 {
     if (b == 0)
         return a;
     return (a + b - 1) / b * b;
 }
+
+// inline static ge::graphStatus SetTilingDataForCosh(gert::TilingContext* context, CoshTilingData& tilingData)
+// {
+//     tilingData.SaveToBuffer(context->GetRawTilingData()->GetData(), 
+//                            context->GetRawTilingData()->GetCapacity());
+//     context->GetRawTilingData()->SetDataSize(tilingData.GetDataSize());
+//     return ge::GRAPH_SUCCESS;
+// }
 
 // 获取平台信息如ubSize, coreNum
 static ge::graphStatus GetPlatformInfo(gert::TilingContext* context, uint64_t& ubSize, int64_t& coreNum)
@@ -290,6 +298,10 @@ static ge::graphStatus CoshTilingFunc(gert::TilingContext* context)
         return ge::GRAPH_FAILED;
     }
         
+    // OP_CHECK_IF(
+    //     SetTilingDataForCosh(context, tiling) != ge::GRAPH_SUCCESS,
+    //     OP_LOGE(context, "PowsSetTilingData set tiling data fail."), return ge::GRAPH_FAILED);    
+
     // 打印调试信息
     OP_LOGI(context, "Cosh Tiling: totalElements=%ld, coreNum=%ld, tileElementNum=%d", 
            totalElements, coreNum, tileElementNum);
@@ -297,8 +309,28 @@ static ge::graphStatus CoshTilingFunc(gert::TilingContext* context)
     return ge::GRAPH_SUCCESS;
 }
 
-static ge::graphStatus TilingParseForCosh([[maybe_unused]] gert::TilingParseContext* context)
+
+static ge::graphStatus TilingParseForCosh(gert::TilingParseContext* context)
 {
+    OP_LOGD(context, "TilingParseForCosh enter.");
+
+    auto compileInfo = context->GetCompiledInfo<CoshCompileInfo>();
+    OP_CHECK_NULL_WITH_CONTEXT(context, compileInfo);
+    auto platformInfo = context->GetPlatformInfo();
+    OP_CHECK_NULL_WITH_CONTEXT(context, platformInfo);
+    auto ascendcPlatform = platform_ascendc::PlatformAscendC(platformInfo);
+    compileInfo->totalCoreNum = ascendcPlatform.GetCoreNumAiv();
+    OP_CHECK_IF(
+        (compileInfo->totalCoreNum <= 0), OP_LOGE(context, "TilingParseForCosh fail to get core num."),
+        return ge::GRAPH_FAILED);
+
+    uint64_t ubSizePlatForm;
+    ascendcPlatform.GetCoreMemSize(platform_ascendc::CoreMemType::UB, ubSizePlatForm);
+    compileInfo->ubSizePlatForm = static_cast<int64_t>(ubSizePlatForm);
+    OP_CHECK_IF(
+        (compileInfo->ubSizePlatForm <= 0), OP_LOGE(context, "TilingParseForCosh fail to get ub size."),
+        return ge::GRAPH_FAILED);
+    OP_LOGD(context, "TilingParseForCosh exit.");
     return ge::GRAPH_SUCCESS;
 }
 

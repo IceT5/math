@@ -14,10 +14,22 @@
  * \brief tiling data struct
  */
 
-#ifndef _ROTARY_POSITION_EMBEDDING_GRAD_TILING_DATA_H_
-#define _ROTARY_POSITION_EMBEDDING_GRAD_TILING_DATA_H_
+#ifndef _COSH_TILING_DATA_H_
+#define _COSH_TILING_DATA_H_
 
 constexpr int32_t MAX_USE_CORE_NUM = 32;  // 设置合理的最大核数
+
+
+namespace optiling {
+    struct CoshCompileInfo {
+        int64_t totalCoreNum;      // 总核数
+        int64_t ubSizePlatForm;    // UB内存大小
+        
+        CoshCompileInfo() : totalCoreNum(0), ubSizePlatForm(0) {}
+    };
+}
+
+// namespace optiling
 
 struct CoshTilingData {
     int64_t totalLength;
@@ -33,4 +45,5 @@ struct CoshTilingData {
     int32_t core_loop_times[MAX_USE_CORE_NUM];
     int32_t core_tail_elements[MAX_USE_CORE_NUM];
 };
+
 #endif
