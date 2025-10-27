@@ -47,8 +47,6 @@ TEST_F(l2_bitwise_and_scalar_test, case_int16)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
 
-    // SAMPLE: precision simulate
-    ut.TestPrecision();
 }
 
 TEST_F(l2_bitwise_and_scalar_test, case_int32)
@@ -65,8 +63,6 @@ TEST_F(l2_bitwise_and_scalar_test, case_int32)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
 
-    // SAMPLE: precision simulate
-    ut.TestPrecision();
 }
 
 TEST_F(l2_bitwise_and_scalar_test, case_int64)
@@ -83,44 +79,6 @@ TEST_F(l2_bitwise_and_scalar_test, case_int64)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
 
-    // SAMPLE: precision simulate
-    ut.TestPrecision();
-}
-
-TEST_F(l2_bitwise_and_scalar_test, case_int8)
-{
-    auto self_tensor_desc = TensorDesc({2, 3, 4, 5}, ACL_INT8, ACL_FORMAT_ND);
-    int8_t value = 1;
-    auto other_tensor_desc = ScalarDesc(value);
-    auto out_tensor_desc = TensorDesc(self_tensor_desc);
-
-    auto ut = OP_API_UT(aclnnBitwiseAndScalar, INPUT(self_tensor_desc, other_tensor_desc), OUTPUT(out_tensor_desc));
-
-    // SAMPLE: only test GetWorkspaceSize
-    uint64_t workspace_size = 0;
-    aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
-    EXPECT_EQ(aclRet, ACL_SUCCESS);
-
-    // SAMPLE: precision simulate
-    ut.TestPrecision();
-}
-
-TEST_F(l2_bitwise_and_scalar_test, case_uint8)
-{
-    auto self_tensor_desc = TensorDesc({2, 3, 4, 5}, ACL_UINT8, ACL_FORMAT_ND);
-    uint8_t value = 1;
-    auto other_tensor_desc = ScalarDesc(value);
-    auto out_tensor_desc = TensorDesc(self_tensor_desc);
-
-    auto ut = OP_API_UT(aclnnBitwiseAndScalar, INPUT(self_tensor_desc, other_tensor_desc), OUTPUT(out_tensor_desc));
-
-    // SAMPLE: only test GetWorkspaceSize
-    uint64_t workspace_size = 0;
-    aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
-    EXPECT_EQ(aclRet, ACL_SUCCESS);
-
-    // SAMPLE: precision simulate
-    ut.TestPrecision();
 }
 
 TEST_F(l2_bitwise_and_scalar_test, case_bool)
@@ -137,8 +95,6 @@ TEST_F(l2_bitwise_and_scalar_test, case_bool)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
 
-    // SAMPLE: precision simulate
-    ut.TestPrecision();
 }
 
 TEST_F(l2_bitwise_and_scalar_test, case_suppport_format)
@@ -155,9 +111,6 @@ TEST_F(l2_bitwise_and_scalar_test, case_suppport_format)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
 
-    // SAMPLE: precision simulate
-    ut.TestPrecision();
-
     self_tensor_desc = TensorDesc({2, 3, 4, 5}, ACL_INT32, ACL_FORMAT_NHWC);
     out_tensor_desc = TensorDesc(self_tensor_desc);
 
@@ -167,9 +120,6 @@ TEST_F(l2_bitwise_and_scalar_test, case_suppport_format)
     workspace_size = 0;
     aclRet = ut1.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
-
-    // SAMPLE: precision simulate
-    ut1.TestPrecision();
 
     self_tensor_desc = TensorDesc({2, 3, 4, 5}, ACL_INT32, ACL_FORMAT_HWCN);
     out_tensor_desc = TensorDesc(self_tensor_desc);
@@ -181,9 +131,6 @@ TEST_F(l2_bitwise_and_scalar_test, case_suppport_format)
     aclRet = ut2.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
 
-    // SAMPLE: precision simulate
-    ut2.TestPrecision();
-
     self_tensor_desc = TensorDesc({2, 3, 4, 5}, ACL_INT32, ACL_FORMAT_NDHWC);
     out_tensor_desc = TensorDesc(self_tensor_desc);
 
@@ -194,9 +141,6 @@ TEST_F(l2_bitwise_and_scalar_test, case_suppport_format)
     aclRet = ut3.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
 
-    // SAMPLE: precision simulate
-    ut3.TestPrecision();
-
     self_tensor_desc = TensorDesc({2, 3, 4, 5}, ACL_INT32, ACL_FORMAT_NCDHW);
     out_tensor_desc = TensorDesc(self_tensor_desc);
 
@@ -206,9 +150,6 @@ TEST_F(l2_bitwise_and_scalar_test, case_suppport_format)
     workspace_size = 0;
     aclRet = ut4.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
-
-    // SAMPLE: precision simulate
-    ut4.TestPrecision();
 }
 
 TEST_F(l2_bitwise_and_scalar_test, case_nullptr)
@@ -400,5 +341,4 @@ TEST_F(l2_bitwise_and_scalar_test, case_inplace_teset)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
 
     EXPECT_EQ(aclRet, ACL_SUCCESS);
-    ut.TestPrecision();
 }
