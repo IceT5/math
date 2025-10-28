@@ -26,15 +26,15 @@ namespace ge {
 *@par Inputs:
 * @li x: A tensor of type float16, float32, bf16.
 *@par Outputs:
-* y: A tensor of type float16, float32, bf16.
+* @li y: A tensor of type float16, float32, bf16.
 
 *@par Third-party framework compatibility
 * Compatible with the Pytorch operator Sqrt.
 */
 
 REG_OP(Sqrt)
-    .INPUT(x, TensorType({DT_FLOAT16, DT_FLOAT, DT_BF16}))
-    .OUTPUT(y, TensorType({DT_FLOAT16, DT_FLOAT, DT_BF16}))
+    .INPUT(x, TensorType({DT_FLOAT16, DT_FLOAT, DT_BF16,DT_DOUBLE, DT_COMPLEX64, DT_COMPLEX128}))
+    .OUTPUT(y, TensorType({DT_FLOAT16, DT_FLOAT, DT_BF16,DT_DOUBLE, DT_COMPLEX64, DT_COMPLEX128}))
     .OP_END_FACTORY_REG(Sqrt);
 
 } // namespace ge

@@ -23,6 +23,7 @@ static constexpr int64_t IDX_0 = 0;
 
 static ge::graphStatus InferShapeSqrt(gert::InferShapeContext* context)
 {
+    OP_CHECK_IF(context == nullptr, OP_LOGE(context, "context is nullptr"), return ge::GRAPH_FAILED);
     OP_LOGD(context->GetNodeName(), "Begin to do InferShapeSqrt");
 
     // get input shapes

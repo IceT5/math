@@ -24,16 +24,9 @@ enum class SqrtTilingKey : uint32_t
 template <uint32_t schMode>
 __global__ __aicore__ void sqrt(GM_ADDR x, GM_ADDR y, GM_ADDR workspace, GM_ADDR tiling)
 {
-    REGISTER_TILING_DEFAULT(SqrtTilingData);
-    GET_TILING_DATA_WITH_STRUCT(SqrtTilingData, tilingData, tiling);
-   if constexpr (schMode == static_cast<uint32_t>(SqrtTilingKey::TILING_KEY_EXAMPLE_FLOAT)){
-        MySqrt::KernelSqrt<DTYPE_X,DTYPE_Y> op; 
-        op.Init(x, y,tilingData.smallCoreDataNum,tilingData.bigCoreDataNum, tilingData.finalBigTileNum,tilingData.finalSmallTileNum, tilingData.tileDataNum,tilingData.smallTailDataNum, tilingData.bigTailDataNum,tilingData.tailBlockNum);      // 算子kernel实例初始化
-        op.Process();                       
-   }
-   else {
-        MySqrt::KernelSqrt<DTYPE_X,DTYPE_Y> op; // 算子kernel实例获取
-        op.Init(x, y,tilingData.smallCoreDataNum,tilingData.bigCoreDataNum, tilingData.finalBigTileNum,tilingData.finalSmallTileNum, tilingData.tileDataNum,tilingData.smallTailDataNum, tilingData.bigTailDataNum,tilingData.tailBlockNum);      // 算子kernel实例初始化
-        op.Process();                        // 算子kernel实例执行
-   }
+     REGISTER_TILING_DEFAULT(SqrtTilingData);
+     GET_TILING_DATA_WITH_STRUCT(SqrtTilingData, tilingData, tiling);
+     MySqrt::KernelSqrt<DTYPE_X,DTYPE_Y> op; 
+     op.Init(x, y,tilingData.smallCoreDataNum,tilingData.bigCoreDataNum, tilingData.finalBigTileNum,tilingData.finalSmallTileNum, tilingData.tileDataNum,tilingData.smallTailDataNum, tilingData.bigTailDataNum,tilingData.tailBlockNum);      // 算子kernel实例初始化
+     op.Process();                       
 }

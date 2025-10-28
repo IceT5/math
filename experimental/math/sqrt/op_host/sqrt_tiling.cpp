@@ -26,40 +26,42 @@ namespace optiling {
 
     using namespace Ops::Math::OpTiling;
 
-    const uint32_t BLOCK_SIZE = 32;
-    const uint32_t BUFFER_NUM = 2;
-    const uint32_t WS_SYS_SIZE = 0;
+    constexpr uint32_t BLOCK_SIZE = 32;
+    constexpr uint32_t BUFFER_NUM = 2;
+    constexpr uint32_t WS_SYS_SIZE = 0;
     struct SqrtCompileInfo {};
 
     static ge::graphStatus TilingParseForSqrt([[maybe_unused]] gert::TilingParseContext* context)
     {
+        OP_CHECK_IF(context == nullptr, OP_LOGE(context, "context is nullptr"), return ge::GRAPH_FAILED);
         return ge::GRAPH_SUCCESS;
     }
 
     static ge::graphStatus GetPlatformInfo(gert::TilingContext* context, uint64_t& ubSize, int64_t& coreNum)
     {
+        OP_CHECK_IF(context == nullptr, OP_LOGE(context, "context is nullptr"), return ge::GRAPH_FAILED);
         // 获取ubsize coreNum
         auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
         ascendcPlatform.GetCoreMemSize(platform_ascendc::CoreMemType::UB, ubSize);
         coreNum = ascendcPlatform.GetCoreNum();
-        auto socVersion = ascendcPlatform.GetSocVersion();
-        OP_CHECK_IF(coreNum == 0, OP_LOGE(context, "coreNum is 0"), return ge::GRAPH_FAILED);
-        OP_CHECK_IF(ubSize == 0, OP_LOGE(context, "ubSize is 0"), return ge::GRAPH_FAILED);
-        if (socVersion != platform_ascendc::SocVersion::ASCEND910B && socVersion != platform_ascendc::SocVersion::ASCEND310B && context->GetInputDesc(0)->GetDataType() == ge::DT_BF16) {
-            return ge::GRAPH_FAILED;
-        }
+        OP_CHECK_IF(coreNum <= 0, OP_LOGE(context, "coreNum is 0"), return ge::GRAPH_FAILED);
+        OP_CHECK_IF(ubSize <= 0, OP_LOGE(context, "ubSize is 0"), return ge::GRAPH_FAILED);
         return ge::GRAPH_SUCCESS;
     }
     ge::graphStatus GetWorkspaceSize(gert::TilingContext* context)
     {
-        size_t* currentWorkspace = context->GetWorkspaceSizes(1);
-        OP_CHECK_NULL_WITH_CONTEXT(context, currentWorkspace);
-        currentWorkspace[0] = WS_SYS_SIZE;
+        OP_CHECK_IF(context == nullptr, OP_LOGE(context, "context is nullptr"), return ge::GRAPH_FAILED);
+        size_t usrSize = 256;
+        auto ascendcPlatform = platform_ascendc:: PlatformAscendC(context->GetPlatformInfo());
+        uint32_t sysWorkspaceSize = ascendcPlatform.GetLibApiWorkSpaceSize();
+        size_t *currentWorkspace = context->GetWorkspaceSizes(1); // 通过框架获取workspace的指针，GetWorkspaceSizes入参为所需workspace的块数。当前限制使用一块。
+        currentWorkspace[0] = usrSize + sysWorkspaceSize;
         return ge::GRAPH_SUCCESS;
     }
 
     ge::graphStatus GetShapeAttrsInfo(gert::TilingContext* context, uint64_t ubSize, uint64_t& inputNum, uint64_t& inputBytes, uint64_t& tileBlockNum, uint64_t& tileDataNum, uint64_t& inputLengthAlgin32)
     {
+        OP_CHECK_IF(context == nullptr, OP_LOGE(context, "context is nullptr"), return ge::GRAPH_FAILED);
         inputNum = context->GetInputShape(0)->GetStorageShape().GetShapeSize();
         uint32_t typeLength = 0;
         ge::TypeUtils::GetDataTypeLength(context->GetInputDesc(0)->GetDataType(), typeLength);
@@ -161,16 +163,6 @@ namespace optiling {
         //计算workspace大小
         OP_CHECK_IF(GetWorkspaceSize(context) != ge::GRAPH_SUCCESS, OP_LOGE(context, "GetWorkspaceSize error"), return ge::GRAPH_FAILED);
         context->SetBlockDim(coreNum);
-        // 设置tilingKey.
-        uint32_t tilingKey = 0;
-        if (context->GetInputDesc(0)->GetDataType() == ge::DT_FLOAT)
-        {
-            tilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_0);
-        }
-        else {
-            tilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_1);
-        }
-        context->SetTilingKey(tilingKey);
         return ge::GRAPH_SUCCESS;
     }
 
