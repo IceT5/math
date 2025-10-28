@@ -122,8 +122,8 @@ __aicore__ inline void FeedsRepeatND<T1, T2>::Init(
     pipe.InitBuffer(in_out_queue, 2, elem_per_loop * sizeof(T1));
     pipe.InitBuffer(in_queue, 1, length_aligned * sizeof(T2));
     pipe.InitBuffer(feeds_repeat_times_float_buf, length_aligned * sizeof(float));
-    pipe.InitBuffer(end_sum_buf, align_num);
-    pipe.InitBuffer(end_sum_int64_buf, align_num);
+    pipe.InitBuffer(end_sum_buf, align_num * sizeof(float));
+    pipe.InitBuffer(end_sum_int64_buf, align_num * sizeof(int64_t));
     pipe.InitBuffer(sum_result_buf, align_num);
     pipe.InitBuffer(sum_result_int64_buf, align_num);
 

@@ -63,6 +63,7 @@ TEST_F(feeds_repeat_test, test_case_fp32_int32)
     FeedsRepeatTilingData* tilingDatafromBin = reinterpret_cast<FeedsRepeatTilingData*>(tiling);
 
     ICPU_SET_TILING_KEY(1);
+    AscendC::SetKernelMode(KernelMode::AIV_MODE);
     ICPU_RUN_KF(feeds_repeat, blockDim, feeds, feeds_repeat_times, y, workspace, tiling);
 
     AscendC::GmFree(feeds);
