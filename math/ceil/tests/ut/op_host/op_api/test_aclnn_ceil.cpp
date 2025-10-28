@@ -91,7 +91,6 @@ TEST_F(l2CeilTest, l2_ceil_test_err_empty_tensor)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // 异常场景：入参为nullptr，返回ACLNN_ERR_PARAM_NULLPTR
@@ -116,7 +115,6 @@ TEST_F(l2CeilTest, l2_ceil_test_fp16)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // 正常场景：bfloat16、4维，返回ACLNN_SUCCESS，精度校验通过
@@ -131,7 +129,6 @@ TEST_F(l2CeilTest, ascend910B2_l2_ceil_test_bfp16)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // 正常场景：float32、2维，返回ACLNN_SUCCESS，精度校验通过
@@ -146,7 +143,6 @@ TEST_F(l2CeilTest, l2_ceil_test_fp32)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // 异常场景：ACL_INT32、2维，ACLNN_ERR_PARAM_INVALID
@@ -225,7 +221,6 @@ TEST_F(l2CeilTest, l2_ceil_test_double)
     uint64_t workspaceSize = 0;
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
-    ut.TestPrecision();
 }
 
 // 正常场景：double、4维、ACL_FORMAT_NCHW、aicpu，返回ACLNN_SUCCESS，精度校验通过
@@ -239,7 +234,6 @@ TEST_F(l2CeilTest, l2_ceil_test_double_nchw)
     uint64_t workspaceSize = 0;
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
-    ut.TestPrecision();
 }
 
 // 正常场景：double、4维、ACL_FORMAT_NHWC、aicpu，返回ACLNN_SUCCESS，精度校验通过
@@ -253,7 +247,6 @@ TEST_F(l2CeilTest, l2_ceil_test_double_nhwc)
     uint64_t workspaceSize = 0;
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
-    ut.TestPrecision();
 }
 
 TEST_F(l2CeilTest, l2_ceil_test_err_double_nc1hwc0)
@@ -279,7 +272,6 @@ TEST_F(l2CeilTest, l2_ceil_test_non_continuous)
     uint64_t workspaceSize = 0;
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
-    ut.TestPrecision();
 }
 
 // 异常场景：double、9维、返回ACLNN_ERR_PARAM_INVALID

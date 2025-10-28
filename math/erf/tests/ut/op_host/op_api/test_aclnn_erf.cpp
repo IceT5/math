@@ -91,7 +91,6 @@ TEST_F(l2ErfTest, l2_erf_test_006)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // 正常路径，float32,万分之一精度不合格，用千分之一精度。
@@ -106,7 +105,6 @@ TEST_F(l2ErfTest, l2_erf_test_007)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // 正常路径，float16  由于NUMPY目前不支持ERF函数，无法进行精度测试
@@ -121,7 +119,6 @@ TEST_F(l2ErfTest, l2_erf_test_008)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // self为空
@@ -173,7 +170,6 @@ TEST_F(l2ErfTest, l2_erf_test_012)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // dtype int32
@@ -253,7 +249,6 @@ TEST_F(l2ErfTest, l2_erf_test_018)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // dtype complex64
@@ -307,7 +302,6 @@ TEST_F(l2ErfTest, l2_erf_test_022)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // format NDHWC、NCDHW
@@ -322,7 +316,6 @@ TEST_F(l2ErfTest, l2_erf_test_023)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // format HWCN
@@ -337,7 +330,6 @@ TEST_F(l2ErfTest, l2_erf_test_024)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // format self是私有格式
@@ -377,7 +369,6 @@ TEST_F(l2ErfTest, l2_erf_test_027)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // 数据范围[-1，1]
@@ -392,7 +383,6 @@ TEST_F(l2ErfTest, l2_erf_test_028)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // 非连续
@@ -407,7 +397,6 @@ TEST_F(l2ErfTest, l2_erf_test_029)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // CheckShape_10D

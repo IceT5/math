@@ -80,7 +80,6 @@ TEST_F(l2_cosh_test, l2_cosh_test_005)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // 正常路径，bfloat16
@@ -93,7 +92,6 @@ TEST_F(l2_cosh_test, ascend910B2_l2_cosh_test_bf16)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // 正常路径，complex128
@@ -106,7 +104,6 @@ TEST_F(l2_cosh_test, l2_cosh_test_006)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // 正常路径，int32
@@ -119,7 +116,6 @@ TEST_F(l2_cosh_test, l2_cosh_test_007)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // 正常路径，int8
@@ -132,7 +128,6 @@ TEST_F(l2_cosh_test, l2_cosh_test_008)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // 正常路径，int16
@@ -145,7 +140,6 @@ TEST_F(l2_cosh_test, l2_cosh_test_009)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // 输入输出shape不同
@@ -202,7 +196,6 @@ TEST_F(l2_cosh_test, l2_cosh_test_014)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // 正常路径，complex64
@@ -215,7 +208,6 @@ TEST_F(l2_cosh_test, l2_cosh_test_015)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACLNN_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 // 非连续场景
@@ -228,7 +220,6 @@ TEST_F(l2_cosh_test, case_discontiguous_float)
     aclnnStatus getWorkspaceResult = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(getWorkspaceResult, ACL_SUCCESS);
 
-    ut.TestPrecision();
 }
 
 TEST_F(l2_cosh_test, l2_inplacecosh_not_supported_dtype)

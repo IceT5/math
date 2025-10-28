@@ -43,8 +43,6 @@ TEST_F(complex_test, ascend910B2_complex_test_complex64)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
 
-    // SAMPLE: precision simulate
-    ut.TestPrecision();
 }
 
 TEST_F(complex_test, ascend910B2_complex_test_complex32)

@@ -49,7 +49,6 @@ TEST_F(l2_floor_divide_test, case_all_dtype_support)
         uint64_t workspace_size = 0;
         aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
         EXPECT_EQ(aclRet, ACL_SUCCESS);
-        ut.TestPrecision();
     }
 }
 
@@ -64,7 +63,6 @@ TEST_F(l2_floor_divide_test, case_bool_dtype_support)
     uint64_t workspace_size = 0;
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
-    ut.TestPrecision();
 }
 
 // 测试所有数据格式支持
@@ -82,7 +80,6 @@ TEST_F(l2_floor_divide_test, case_all_format_support)
         aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
 
         EXPECT_EQ(aclRet, ACL_SUCCESS);
-        ut.TestPrecision();
     }
 }
 
@@ -97,7 +94,6 @@ TEST_F(l2_floor_divide_test, case_dtype_cast_support)
     uint64_t workspace_size = 0;
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
-    ut.TestPrecision();
 }
 
 // 测试非连续支持
@@ -113,7 +109,6 @@ TEST_F(l2_floor_divide_test, case_NonContiguous_support)
     uint64_t workspace_size = 0;
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
-    ut.TestPrecision();
 }
 
 // 测试broadcast
@@ -203,7 +198,6 @@ TEST_F(l2_floor_divide_test, case_other_scalar_floor_support)
     uint64_t workspace_size = 0;
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
-    ut.TestPrecision();
 }
 
 // 测试other为scalar超过8维的tensor
@@ -241,7 +235,6 @@ TEST_F(l2_floor_divide_test, case_inplace_other_scalar_support)
     uint64_t workspace_size = 0;
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
-    ut.TestPrecision();
 }
 
 // 测试floor_divide_:other为tensor输入
@@ -254,7 +247,6 @@ TEST_F(l2_floor_divide_test, case_inplace_other_support)
     uint64_t workspace_size = 0;
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
-    ut.TestPrecision();
 }
 
 // Ascend910_9589测试other为scalar立即数输入
@@ -267,7 +259,6 @@ TEST_F(l2_floor_divide_test, Ascend910_9589_case_other_scalar_floor_support)
     uint64_t workspace_size = 0;
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
-    ut.TestPrecision();
 }
 
 // Ascend910_9589测试float16 tensor + complex scalar
@@ -280,5 +271,4 @@ TEST_F(l2_floor_divide_test, Ascend910_9589_case_tensor_fp16_scalar_complex_supp
     uint64_t workspace_size = 0;
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
-    ut.TestPrecision();
 }

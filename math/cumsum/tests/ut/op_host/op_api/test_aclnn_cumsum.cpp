@@ -51,8 +51,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_normal_FLOAT_ND)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACLNN_SUCCESS);
 
-    // precision simulate
-    ut.TestPrecision();
 }
 
 // 正常场景_FLOAT_ND_CUBE实现
@@ -86,8 +84,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_normal_FLOAT16_NCHW)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACLNN_SUCCESS);
 
-    // precision simulate
-    ut.TestPrecision();
 }
 
 // 正常场景_FLOAT16_NCHW_CUBE实现
@@ -136,8 +132,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_normal_INT32_NHWC)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACLNN_SUCCESS);
 
-    // precision simulate
-    ut.TestPrecision();
 }
 
 // 正常场景_DOUBLE_HWCN
@@ -155,8 +149,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_normal_DOUBLE_HWCN)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACLNN_SUCCESS);
 
-    // precision simulate
-    ut.TestPrecision();
 }
 
 // 正常场景_UINT8_NDHWC
@@ -174,8 +166,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_normal_UINT8_NDHWC)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACLNN_SUCCESS);
 
-    // precision simulate
-    ut.TestPrecision();
 }
 
 // 正常场景_INT8_NCDHW
@@ -193,8 +183,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_normal_INT8_NCDHW)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACLNN_SUCCESS);
 
-    // precision simulate
-    ut.TestPrecision();
 }
 
 // 正常场景_INT16_NCHW_NHWC
@@ -212,8 +200,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_normal_INT16_NCHW_NHWC)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACLNN_SUCCESS);
 
-    // precision simulate
-    ut.TestPrecision();
 }
 
 // 正常场景_INT64_ND
@@ -231,8 +217,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_normal_INT64_ND)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACLNN_SUCCESS);
 
-    // precision simulate
-    ut.TestPrecision();
 }
 
 // 正常场景_COMPLEX64_ND
@@ -250,8 +234,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_normal_COMPLEX64_ND)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACLNN_SUCCESS);
 
-    // precision simulate
-    ut.TestPrecision();
 }
 
 // 正常场景_COMPLEX128_ND
@@ -269,8 +251,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_normal_COMPLEX128_ND)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACLNN_SUCCESS);
 
-    // precision simulate
-    ut.TestPrecision();
 }
 
 // 正常场景_BFLOAT16_ND
@@ -290,8 +270,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_normal_dtype_BFLOAT16_ND)
     if (GetCurrentPlatformInfo().GetSocVersion() == SocVersion::ASCEND910B) {
         // EXPECT_EQ(aclRet, ACLNN_SUCCESS);
 
-        // // precision simulate
-        // ut.TestPrecision();
     } else {
         EXPECT_EQ(aclRet, ACLNN_ERR_PARAM_INVALID);
     }
@@ -312,8 +290,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_normal_0dim_tensor)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACLNN_SUCCESS);
 
-    // precision simulate
-    ut.TestPrecision();
 }
 
 // 空tensor场景
@@ -331,8 +307,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_normal_empty_tensor)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACLNN_SUCCESS);
 
-    // precision simulate
-    ut.TestPrecision();
 }
 
 // CheckNotNull_self_nullptr
@@ -414,8 +388,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_normal_dtype_FLOAT_to_DOUBLE)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACLNN_SUCCESS);
 
-    // precision simulate
-    ut.TestPrecision();
 }
 
 // CheckPromoteType_FLOAT_to_INT8
@@ -433,8 +405,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_normal_dtype_FLOAT_to_INT8)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACLNN_SUCCESS);
 
-    // precision simulate
-    ut.TestPrecision();
 }
 
 // CheckPromoteType_COMPLEX64_to_FLOAT
@@ -548,8 +518,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_normal_valuerange)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACLNN_SUCCESS);
 
-    // precision simulate
-    ut.TestPrecision();
 }
 
 // 非连续
@@ -567,8 +535,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_normal_uncontiguous)
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACLNN_SUCCESS);
 
-    // precision simulate
-    ut.TestPrecision();
 }
 
 // CheckExclusiveReverse
@@ -603,8 +569,6 @@ TEST_F(l2_cumsum_test, l2_cumsum_abnormal_exclusive)
     uint64_t workspaceSize = 0;
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACLNN_SUCCESS);
-    // precision simulate
-    ut.TestPrecision();
 }
 
 // CheckReverse

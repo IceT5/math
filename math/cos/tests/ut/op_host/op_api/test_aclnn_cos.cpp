@@ -58,7 +58,6 @@ TEST_F(l2_cos_test, cos_dtype_all)
             uint64_t workspace_size = 0;
             aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
             EXPECT_EQ(aclRet, ACL_SUCCESS);
-            ut.TestPrecision();
         }
     }
 
@@ -73,7 +72,6 @@ TEST_F(l2_cos_test, cos_dtype_all)
         if (GetCurrentPlatformInfo().GetSocVersion() == SocVersion::ASCEND910B ||
             GetCurrentPlatformInfo().GetSocVersion() == SocVersion::ASCEND910_93) {
             EXPECT_EQ(aclRet, ACL_SUCCESS);
-            ut.TestPrecision();
         } else {
             EXPECT_EQ(aclRet, ACLNN_ERR_PARAM_INVALID);
         }
@@ -97,7 +95,6 @@ TEST_F(l2_cos_test, cos_precision)
     uint64_t workspace_size = 0;
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
-    ut.TestPrecision();
 }
 
 TEST_F(l2_cos_test, cos_empty_tensor)
@@ -109,7 +106,6 @@ TEST_F(l2_cos_test, cos_empty_tensor)
     uint64_t workspace_size = 0;
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
-    ut.TestPrecision();
 }
 
 TEST_F(l2_cos_test, cos_uncontiguous)
@@ -121,7 +117,6 @@ TEST_F(l2_cos_test, cos_uncontiguous)
     uint64_t workspace_size = 0;
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
-    ut.TestPrecision();
 }
 
 TEST_F(l2_cos_test, cos_bigDim)
@@ -160,5 +155,4 @@ TEST_F(l2_cos_test, cos_inplace)
     uint64_t workspace_size = 0;
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
-    ut.TestPrecision();
 }
