@@ -13,8 +13,8 @@
  * \file sqrt.h
  * \brief
 */
-#ifndef ADD_EXAMPLE_H
-#define ADD_EXAMPLE_H
+#ifndef SQRT_H
+#define SQRT_H
 
 #include "kernel_operator.h"
 #include "kernel_tiling/kernel_tiling.h"
@@ -66,10 +66,10 @@ __aicore__ inline void KernelSqrt<TYPE_X, TYPE_Y>::Init(GM_ADDR x, GM_ADDR y, ui
                                 uint32_t tailBlockNum)
 {
     ASSERT(AscendC::GetBlockNum() != 0 && "block dim can not be zero!");
-    uint32_t coreNum = AscendC::GetBlockIdx();
+    uint32_t coreId = AscendC::GetBlockIdx();
     uint32_t globalBufferIndex = bigCoreDataNum * AscendC::GetBlockIdx();
     this->tileDataNum = tileDataNum;
-    if (coreNum < tailBlockNum)
+    if (coreId < tailBlockNum)
     {
         this->coreDataNum = bigCoreDataNum;
         this->tileNum = finalBigTileNum;
@@ -112,20 +112,22 @@ template <typename TYPE_X, typename TYPE_Y>
 __aicore__ inline void KernelSqrt<TYPE_X, TYPE_Y>::Compute(int32_t progress)
 {
     AscendC::LocalTensor<TYPE_X> xLocal = inQueueX.DeQue<TYPE_X>();
-        AscendC::LocalTensor<TYPE_Y> yLocal = outQueueY.AllocTensor<TYPE_Y>();
-        if constexpr ( ! std::is_same_v<TYPE_X, float32_t>)
-        {
-            AscendC::LocalTensor<float> p1 = tmp1.Get<float>();
-            AscendC::Cast(p1, xLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
-            AscendC::Sqrt(p1, p1, this->processDataNum);
-            AscendC::Cast(yLocal, p1, AscendC::RoundMode::CAST_RINT, this->processDataNum);
-        }
-        else
-        {
-            AscendC::Sqrt(yLocal, xLocal, this->processDataNum);
-        }
-        outQueueY.EnQue<TYPE_Y>(yLocal);
-        inQueueX.FreeTensor(xLocal);
+    AscendC::LocalTensor<TYPE_Y> yLocal = outQueueY.AllocTensor<TYPE_Y>();
+    if constexpr ( ! std::is_same_v<TYPE_X, float32_t>)
+    {
+        AscendC::LocalTensor<float> p1 = tmp1.Get<float>();
+        AscendC::Cast(p1, xLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
+        AscendC::PipeBarrier<PIPE_V>();
+        AscendC::Sqrt(p1, p1, this->processDataNum);
+        AscendC::PipeBarrier<PIPE_V>();
+        AscendC::Cast(yLocal, p1, AscendC::RoundMode::CAST_RINT, this->processDataNum);
+    }
+    else
+    {
+        AscendC::Sqrt(yLocal, xLocal, this->processDataNum);
+    }
+    outQueueY.EnQue<TYPE_Y>(yLocal);
+    inQueueX.FreeTensor(xLocal);
 }
 
 template <typename TYPE_X, typename TYPE_Y>

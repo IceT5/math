@@ -26,7 +26,9 @@ namespace optiling {
 
     using namespace Ops::Math::OpTiling;
 
-    constexpr uint32_t BLOCK_SIZE = 32;
+    #define BLOCK_SIZE 32U
+    #define UB_DATA_NUM_FLOAT 4U    // 对应DT_FLOAT类型的ub分块数量
+    #define UB_DATA_NUM_OTHER 6U    // 对应其他数据类型的ub分块数量
     constexpr uint32_t BUFFER_NUM = 2;
     constexpr uint32_t WS_SYS_SIZE = 0;
     struct SqrtCompileInfo {};
@@ -61,7 +63,7 @@ namespace optiling {
 
     ge::graphStatus GetShapeAttrsInfo(gert::TilingContext* context, uint64_t ubSize, uint64_t& inputNum, uint64_t& inputBytes, uint64_t& tileBlockNum, uint64_t& tileDataNum, uint64_t& inputLengthAlgin32)
     {
-        OP_CHECK_IF(context == nullptr, OP_LOGE(context, "context is nullptr"), return ge::GRAPH_FAILED);
+        OP_CHECK_IF(context == nullptr || context->GetInputShape(0) == nullptr, OP_LOGE(context, "context is nullptr"), return ge::GRAPH_FAILED);
         inputNum = context->GetInputShape(0)->GetStorageShape().GetShapeSize();
         uint32_t typeLength = 0;
         ge::TypeUtils::GetDataTypeLength(context->GetInputDesc(0)->GetDataType(), typeLength);
@@ -70,7 +72,7 @@ namespace optiling {
             return ge::GRAPH_FAILED;
         }
         inputBytes = inputLength / inputNum;
-        uint64_t ubDataNumber = (context->GetInputDesc(0)->GetDataType() == ge::DT_FLOAT) ? 4 : 6;
+        uint64_t ubDataNumber = (context->GetInputDesc(0)->GetDataType() == ge::DT_FLOAT) ? UB_DATA_NUM_FLOAT : UB_DATA_NUM_OTHER;
         tileBlockNum = (ubSize / BLOCK_SIZE) / ubDataNumber;
         if (inputBytes == 0) {
             return ge::GRAPH_FAILED;
@@ -152,14 +154,14 @@ namespace optiling {
             return ret;
         }
         //设置tiling数据
-        tiling->smallCoreDataNum = (uint32_t)smallCoreDataNum;
-        tiling->bigCoreDataNum = (uint32_t)bigCoreDataNum;
-        tiling->tileDataNum = (uint32_t)tileDataNum;
-        tiling->smallTailDataNum = (uint32_t)smallTailDataNum;
-        tiling->bigTailDataNum = (uint32_t)bigTailDataNum;
-        tiling->finalSmallTileNum = (uint32_t)finalSmallTileNum;
-        tiling->finalBigTileNum = (uint32_t)finalBigTileNum;
-        tiling->tailBlockNum = (uint32_t)tailBlockNum;
+        tiling->smallCoreDataNum = static_cast<uint32_t>(smallCoreDataNum);
+        tiling->bigCoreDataNum = static_cast<uint32_t>(bigCoreDataNum);
+        tiling->tileDataNum = static_cast<uint32_t>(tileDataNum);
+        tiling->smallTailDataNum = static_cast<uint32_t>(smallTailDataNum);
+        tiling->bigTailDataNum = static_cast<uint32_t>(bigTailDataNum);
+        tiling->finalSmallTileNum = static_cast<uint32_t>(finalSmallTileNum);
+        tiling->finalBigTileNum = static_cast<uint32_t>(finalBigTileNum);
+        tiling->tailBlockNum = static_cast<uint32_t>(tailBlockNum);
         //计算workspace大小
         OP_CHECK_IF(GetWorkspaceSize(context) != ge::GRAPH_SUCCESS, OP_LOGE(context, "GetWorkspaceSize error"), return ge::GRAPH_FAILED);
         context->SetBlockDim(coreNum);
