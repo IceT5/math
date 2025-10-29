@@ -47,6 +47,7 @@ if(UT_TEST_ALL OR OP_HOST_UT)
   add_dependencies(${OP_HOST_UT_EXE} ${OPHOST_NAME}_ut)
   target_include_directories(${OP_HOST_UT_EXE} PRIVATE
       ${ASCEND_DIR}/pkg_inc
+      ${ASCEND_DIR}/pkg_inc/op_common
       )
   target_link_directories(${OP_HOST_UT_EXE} PRIVATE
       ${ASCEND_DIR}/${SYSTEM_PREFIX}/lib64
