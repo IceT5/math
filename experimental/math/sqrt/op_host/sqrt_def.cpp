@@ -30,9 +30,17 @@ public:
             .DataType({ge::DT_FLOAT16, ge::DT_FLOAT, ge::DT_BF16})
             .Format({ge::FORMAT_ND, ge::FORMAT_ND, ge::FORMAT_ND})
             .UnknownShapeFormat({ge::FORMAT_ND, ge::FORMAT_ND, ge::FORMAT_ND});
-            
+
+        OpAICoreConfig aicoreConfig;
+        aicoreConfig.DynamicCompileStaticFlag(true)
+            .DynamicFormatFlag(false)
+            .DynamicRankSupportFlag(true)
+            .DynamicShapeSupportFlag(true)
+            .NeedCheckSupportFlag(false)
+            .PrecisionReduceFlag(true)
+            .ExtendCfgInfo("opFile.value", "sqrt_apt");    
         this->AICore().AddConfig("ascend910b")
-                    .AddConfig("ascend310b"); // 其他的soc版本补充部分配置项
+                    .AddConfig("ascend310b");
     }
 };
 OP_ADD(Sqrt); // 添加算子信息库

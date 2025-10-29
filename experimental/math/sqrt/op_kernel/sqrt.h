@@ -12,7 +12,7 @@
 /*!
  * \file sqrt.h
  * \brief
-*/
+ */
 #ifndef SQRT_H
 #define SQRT_H
 
@@ -32,11 +32,10 @@ class KernelSqrt {
 public:
     __aicore__ inline KernelSqrt(){};
 
-    __aicore__ inline void Init(GM_ADDR x, GM_ADDR y, uint32_t smallCoreDataNum,
-                                uint32_t bigCoreDataNum, uint32_t finalBigTileNum,
-                                uint32_t finalSmallTileNum, uint32_t tileDataNum,
-                                uint32_t smallTailDataNum, uint32_t bigTailDataNum,
-                                uint32_t tailBlockNuma);
+    __aicore__ inline void Init(
+        GM_ADDR x, GM_ADDR y, uint32_t smallCoreDataNum, uint32_t bigCoreDataNum, uint32_t finalBigTileNum,
+        uint32_t finalSmallTileNum, uint32_t tileDataNum, uint32_t smallTailDataNum, uint32_t bigTailDataNum,
+        uint32_t tailBlockNuma);
     __aicore__ inline void Process();
 
 private:
@@ -59,35 +58,30 @@ private:
 };
 
 template <typename TYPE_X, typename TYPE_Y>
-__aicore__ inline void KernelSqrt<TYPE_X, TYPE_Y>::Init(GM_ADDR x, GM_ADDR y, uint32_t smallCoreDataNum,
-                                uint32_t bigCoreDataNum, uint32_t finalBigTileNum,
-                                uint32_t finalSmallTileNum, uint32_t tileDataNum,
-                                uint32_t smallTailDataNum, uint32_t bigTailDataNum,
-                                uint32_t tailBlockNum)
+__aicore__ inline void KernelSqrt<TYPE_X, TYPE_Y>::Init(
+    GM_ADDR x, GM_ADDR y, uint32_t smallCoreDataNum, uint32_t bigCoreDataNum, uint32_t finalBigTileNum,
+    uint32_t finalSmallTileNum, uint32_t tileDataNum, uint32_t smallTailDataNum, uint32_t bigTailDataNum,
+    uint32_t tailBlockNum)
 {
     ASSERT(AscendC::GetBlockNum() != 0 && "block dim can not be zero!");
     uint32_t coreId = AscendC::GetBlockIdx();
     uint32_t globalBufferIndex = bigCoreDataNum * AscendC::GetBlockIdx();
     this->tileDataNum = tileDataNum;
-    if (coreId < tailBlockNum)
-    {
+    if (coreId < tailBlockNum) {
         this->coreDataNum = bigCoreDataNum;
         this->tileNum = finalBigTileNum;
         this->tailDataNum = bigTailDataNum;
-    }
-    else
-    {
+    } else {
         this->coreDataNum = smallCoreDataNum;
         this->tileNum = finalSmallTileNum;
         this->tailDataNum = smallTailDataNum;
         globalBufferIndex -= (bigCoreDataNum - smallCoreDataNum) * (AscendC::GetBlockIdx() - tailBlockNum);
     }
-    xGm.SetGlobalBuffer((__gm__ TYPE_X *)x + globalBufferIndex, this->coreDataNum);
-    yGm.SetGlobalBuffer((__gm__ TYPE_Y *)y + globalBufferIndex, this->coreDataNum);
+    xGm.SetGlobalBuffer((__gm__ TYPE_X*)x + globalBufferIndex, this->coreDataNum);
+    yGm.SetGlobalBuffer((__gm__ TYPE_Y*)y + globalBufferIndex, this->coreDataNum);
     pipe.InitBuffer(inQueueX, BUFFER_NUM, this->tileDataNum * sizeof(TYPE_X));
     pipe.InitBuffer(outQueueY, BUFFER_NUM, this->tileDataNum * sizeof(TYPE_Y));
-    if constexpr ( ! std::is_same_v<TYPE_X, float32_t>)
-    {
+    if constexpr (!std::is_same_v<TYPE_X, float32_t>) {
         pipe.InitBuffer(tmp1, this->tileDataNum * sizeof(float));
     }
 }
@@ -113,17 +107,14 @@ __aicore__ inline void KernelSqrt<TYPE_X, TYPE_Y>::Compute(int32_t progress)
 {
     AscendC::LocalTensor<TYPE_X> xLocal = inQueueX.DeQue<TYPE_X>();
     AscendC::LocalTensor<TYPE_Y> yLocal = outQueueY.AllocTensor<TYPE_Y>();
-    if constexpr ( ! std::is_same_v<TYPE_X, float32_t>)
-    {
+    if constexpr (!std::is_same_v<TYPE_X, float32_t>) {
         AscendC::LocalTensor<float> p1 = tmp1.Get<float>();
         AscendC::Cast(p1, xLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
         AscendC::PipeBarrier<PIPE_V>();
         AscendC::Sqrt(p1, p1, this->processDataNum);
         AscendC::PipeBarrier<PIPE_V>();
-        AscendC::Cast(yLocal, p1, AscendC::RoundMode::CAST_RINT, this->processDataNum);
-    }
-    else
-    {
+        AscendC::Cast(yLocal, p1, AscendC::RoundMode::CAST_CEIL, this->processDataNum);
+    } else {
         AscendC::Sqrt(yLocal, xLocal, this->processDataNum);
     }
     outQueueY.EnQue<TYPE_Y>(yLocal);
@@ -135,17 +126,16 @@ __aicore__ inline void KernelSqrt<TYPE_X, TYPE_Y>::Process()
 {
     int32_t loopCount = this->tileNum;
     this->processDataNum = this->tileDataNum;
-    for (int32_t i = 0; i < loopCount-1; i++)
-    {
+    for (int32_t i = 0; i < loopCount - 1; i++) {
         CopyIn(i);
         Compute(i);
         CopyOut(i);
     }
     this->processDataNum = this->tailDataNum;
-    CopyIn(loopCount-1);
-    Compute(loopCount-1);
-    CopyOut(loopCount-1);
+    CopyIn(loopCount - 1);
+    Compute(loopCount - 1);
+    CopyOut(loopCount - 1);
 }
 
-} // namespace KernelSqrt
-#endif // ADD_EXAMPLE_H
+} // namespace MySqrt
+#endif // SQRT_H
