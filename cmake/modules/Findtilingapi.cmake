@@ -17,7 +17,7 @@ endif()
 include(FindPackageHandleStandardArgs)
 
 set(TILINGAPI_HEAD_SEARCH_PATHS
-  ${ASCEND_DIR}/${SYSTEM_PREFIX}/include
+  ${ASCEND_DIR}/${SYSTEM_PREFIX}/pkg_inc
 )
 
 set(TILINGAPI_LIB_SEARCH_PATHS
