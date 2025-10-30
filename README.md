@@ -8,7 +8,7 @@
 
 ops-math是[CANN](https://hiascend.com/software/cann) （Compute Architecture for Neural Networks）算子库中提供数学类计算的基础算子库，包括math类、conversion类等算子，算子库架构图如下：
 
-<img src="docs/figures/architecture.png" alt="架构图"  width="750px" height="400px">
+<img src="docs/figures/architecture.png" alt="架构图"  width="700px" height="320px">
 
 ## 🔍目录结构
 关键目录如下，详细目录介绍参见[项目目录](./docs/context/dir_structure.md)。
@@ -55,9 +55,7 @@ ops-math是[CANN](https://hiascend.com/software/cann) （Compute Architecture fo
 
 若您希望深入体验项目功能并修改算子源码，请访问如下文档获取详细教程。
 - [算子调用方式](docs/context/op_invocation.md)：介绍不同的调用算子方式，方便快速应用于不同的AI业务场景。
-
 - [算子调试调优](docs/context/op_debug_prof.md)：介绍常见的算子调试和调优方法，如DumpTensor、msProf等。
-
 - [算子基本概念](docs/context/基本概念.md)：介绍算子领域相关术语和概念，如非连续Tensor、量化模式等。
 
 
