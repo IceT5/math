@@ -1,6 +1,8 @@
 [
     {"name":"AddLora", "compute_units": ["ascend310p", "ascend910b"], "auto_sync":true},
     {"name":"AddExample", "compute_units": ["ascend910b"], "auto_sync":true, "impl_mode" : "high_performance"},
+    {"name":"Myop", "compute_units": ["ascend910b"], "auto_sync":true, "impl_mode" : "high_performance"},
+    {"name":"Myop2", "compute_units": ["ascend910b"], "auto_sync":true, "impl_mode" : "high_performance"},
     {"name":"CircularPad", "compute_units": ["ascend910b","ascend910_93"], "auto_sync" : true},
     {"name":"CircularPadGrad", "compute_units": ["ascend910b","ascend910_93"], "auto_sync" : true},
     {"name":"CoalesceSparse", "compute_units": ["ascend910b", "ascend910_93"], "auto_sync" : true},
@@ -33,5 +35,10 @@
     {"name":"Segsum", "compute_units": ["ascend910b", "ascend910_93"], "auto_sync" : false},
     {"name":"Sinkhorn", "compute_units": ["ascend910b", "ascend910_93"], "auto_sync" : true},
     {"name":"STFT", "compute_units": ["ascend910b", "ascend910_93"], "auto_sync" : false},
-    {"name":"TransformBiasRescaleQkv", "compute_units": ["ascend910b", "ascend910_93"], "auto_sync" : false}
+    {"name":"TransformBiasRescaleQkv", "compute_units": ["ascend910b", "ascend910_93"], "auto_sync" : false},
+    {"name":"AddV2", "compute_units": ["ascend910b"], "auto_sync":true, "impl_mode" : "high_performance"},
+    {"name":"SquareV2", "compute_units": ["ascend910b"], "auto_sync":true, "impl_mode" : "high_performance"},
+    {"name":"CeilV2", "compute_units": ["ascend910b"], "auto_sync":true, "impl_mode" : "high_performance"},
+    {"name":"TruncV2", "compute_units": ["ascend910b"], "auto_sync":true, "impl_mode" : "high_performance"},
+    {"name":"LogSigmoid", "compute_units": ["ascend910b"], "auto_sync":true, "impl_mode" : "high_performance"}
 ]
