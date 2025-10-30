@@ -30,7 +30,7 @@ if(UT_TEST_ALL OR OP_HOST_UT)
     target_include_directories(
       ${OP_TILING_MODULE_NAME}_common_obj PRIVATE ${JSON_INCLUDE_DIR} ${GTEST_INCLUDE}
                                                   ${ASCEND_DIR}/include/base/context_builder ${ASCEND_DIR}/pkg_inc
-                                                   ${ASCEND_DIR}/include/op_common ${ASCEND_DIR}/include/op_common/op_host
+                                                   ${ASCEND_DIR}/pkg_inc/op_common ${ASCEND_DIR}/pkg_inc/op_common/op_host
       )
     target_link_libraries(
       ${OP_TILING_MODULE_NAME}_common_obj PRIVATE $<BUILD_INTERFACE:intf_llt_pub_asan_cxx17> json gtest c_sec
