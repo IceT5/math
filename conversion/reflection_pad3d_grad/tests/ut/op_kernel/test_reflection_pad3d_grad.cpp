@@ -102,6 +102,7 @@ void CallSimpleKernel(
     tilingDataFromBin->tilingKey = tiling_key;
 
     ICPU_SET_TILING_KEY(tiling_key);
+    AscendC::SetKernelMode(KernelMode::AIV_MODE);
     ICPU_RUN_KF(
         reflection_pad3d_grad, tilingDataFromBin->blockNum, input, padvalues, output, workspace,
         (uint8_t*)(tilingDataFromBin));

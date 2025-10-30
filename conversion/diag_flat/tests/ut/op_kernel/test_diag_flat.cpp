@@ -21,6 +21,8 @@
 #include "kernel_fp16.h"
 #include "gtest/gtest.h"
 #include "test_diag_flat_tiling.h"
+#include "tiling_context_faker.h"
+#include "tiling_case_executor.h"
 
 #ifdef __CCE_KT_TEST__
 #include <cstdint>
@@ -121,11 +123,12 @@ TEST_F(diag_flat_test, test_case_3) {
     uint8_t *x = (uint8_t *)AscendC::GmAlloc(inputBytesSize);
     uint8_t *y = (uint8_t *)AscendC::GmAlloc(outputBytesSize);
     uint8_t *workspace = (uint8_t *)AscendC::GmAlloc(tilingInfo.workspaceSizes[0]);
-    uint8_t *tiling = (uint8_t *)AscendC::GmAlloc(tilingInfo.tiling_data_size);
+    uint8_t *tiling = (uint8_t *)AscendC::GmAlloc(tilingInfo.tilingDataSize);
     std::memcpy(tiling, tilingInfo.tilingData.get(), tilingInfo.tilingDataSize);
     uint32_t blockDim = 1;
 
     ICPU_SET_TILING_KEY(tilingInfo.tilingKey);
+    AscendC::SetKernelMode(KernelMode::AIV_MODE);
     ICPU_RUN_KF(diag_flat, blockDim, x, y, workspace, tiling);
 
     AscendC::GmFree(x);
