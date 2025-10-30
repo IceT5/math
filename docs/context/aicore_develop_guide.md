@@ -639,6 +639,7 @@ __aicore__ inline void AddExample<T>::CopyOut(int32_t progress)
 ```
 ${op_name}                              # 替换为实际算子名的小写下划线形式
 ├── op_host                             # Host侧实现
+│   ├── ${op_name}_def.cpp              # 算子信息库，定义算子基本信息，如名称、输入输出、数据类型等
 │   └── ${op_name}_infershape.cpp       # InferShape实现，实现算子形状推导，在运行时推导输出shape
 ├── op_graph                            # 图融合相关实现
 │   ├── CMakeLists.txt                  # op_graph侧cmakelist文件
@@ -722,3 +723,34 @@ REG_OP(AddExample)
 ```
 
 完整代码请参考`examples/add_example/op_graph`目录下[add_example_proto.h](../../examples/add_example/op_graph/add_example_proto.h)。
+
+### 算子信息库配置
+算子开发者需要通过配置算子信息库文件，将算子在NPU处理器上相关实现信息注册到算子信息库中。
+
+示例代码如下，展示了如何注册`AddExample`算子的信息库：
+
+```CPP
+class AddExample : public OpDef {
+public:
+    explicit AddExample(const char* name) : OpDef(name)
+    {
+        this->Input("x1")                                       // 输入x1定义
+            .ParamType(REQUIRED)
+            ...;
+        this->Input("x2")                                       // 输入x2定义
+            .ParamType(REQUIRED)
+            ...;
+        this->Output("y")                                       // 输出y定义
+            .ParamType(REQUIRED)
+            ...;
+
+        OpAICoreConfig aicoreConfig;
+        aicoreConfig.DynamicCompileStaticFlag(true)
+            ...;
+        this->AICore().AddConfig(${soc_version}, aicoreConfig); // 其他的soc版本补充部分配置项
+    }
+};
+OP_ADD(AddExample); // 添加算子信息库
+```
+
+完整代码请参考`examples/add_example/op_host`目录下[add_example_def.cpp](../../examples/add_example/op_host/add_example_def.cpp)。
