@@ -21,7 +21,7 @@ OP_TYPE_REGISTER(ReduceProd);
 
 static const std::initializer_list<op::DataType> AICORE_910_95_DTYPE_SUPPORT_LIST = {
     op::DataType::DT_FLOAT, op::DataType::DT_FLOAT16, op::DataType::DT_INT8, op::DataType::DT_UINT8,
-    op::DataType::DT_INT64, op::DataType::DT_BF16,    op::DataType::DT_BOOL};
+    op::DataType::DT_INT64, op::DataType::DT_BF16,    op::DataType::DT_BOOL, op::DataType::DT_INT32};
 
 static const std::initializer_list<op::DataType> AICORE_910B_DTYPE_SUPPORT_LIST = {
     op::DataType::DT_FLOAT, op::DataType::DT_FLOAT16, op::DataType::DT_INT8, op::DataType::DT_UINT8,
