@@ -126,7 +126,7 @@ bash build.sh --genop=${op_class}/${op_name}
 ```bash
 Create the initial directory for ${op_name} under ${op_class} success
 ```
-创建完成后，目录结构如下所示：
+创建完成后，关键目录结构如下所示：
 
 ```
 ${op_name}                              # 替换为实际算子名的小写下划线形式
@@ -352,7 +352,7 @@ ASCENDC_TPL_SEL(
 #endif
 ```
 
-如需实现复杂参数组合完成分支选择（涉及多TilingKey场景），请参考[《Ascend C算子开发》](https://hiascend.com/document/redirect/CannCommunityOpdevAscendC)中"算子实现 > 工程化算子开发 > Host侧Tiling实现 > Tiling模板编程"。
+如需实现复杂参数组合完成分支选择（涉及多TilingKey场景），请参考[《Ascend C算子开发》](https://hiascend.com/document/redirect/CannCommunityOpdevAscendC)中"算子实现 > 工程化算子开发 > Host侧Tiling实现"。
 
 ## Kernel实现
 
@@ -637,14 +637,18 @@ __aicore__ inline void AddExample<T>::CopyOut(int32_t progress)
 ## 附录
 自定义算子如需运行图模式，不需要[aclnn适配](#aclnn适配)，做如下交付件适配：
 ```
-${op_name}                              # 替换为实际算子名的小写下划线形式
-├── op_host                             # Host侧实现
-│   ├── ${op_name}_def.cpp              # 算子信息库，定义算子基本信息，如名称、输入输出、数据类型等
-│   └── ${op_name}_infershape.cpp       # InferShape实现，实现算子形状推导，在运行时推导输出shape
-├── op_graph                            # 图融合相关实现
-│   ├── CMakeLists.txt                  # op_graph侧cmakelist文件
-│   ├── ${op_name}_graph_infer.cpp      # InferDataType文件，实现算子类型推导，在运行时推导输出dataType
-└── └── ${op_name}_proto.h              # 算子原型定义，用于图优化和融合阶段识别算子
+${op_name}                                  # 替换为实际算子名的小写下划线形式
+├── op_host                                 # Host侧实现
+│   ├── ${op_name}_def.cpp                  # 算子信息库，定义算子基本信息，如名称、输入输出、数据类型等
+│   ├── ${op_name}_infershape.cpp           # 可选，InferShape实现，根据算子形状推导输出shape，若未配置则输出shape与输入shape一样
+│   ├── ${op_name}_tiling_${sub_case}.cpp   # 可选，针对某些子场景下的Tiling优化，${sub_case}表示子场景，如${op_name}_tiling_arch35是针对arch35架构的优化，若无该文件表明该算子没有对应子场景的特定Tiling策略
+│   ├── ${op_name}_tiling_${sub_case}.h     # 可选，${sub_case}子场景下Tiling实现用的头文件
+│   ├── ${op_name}_tiling.cpp               # 可选，若无该文件表明对应场景下无Tiling实现(将张量划分为多个小块，区分数据类型进行并行计算)
+│   └── ${op_name}_tiling.h                 # 可选，Tiling实现用的头文件
+├── op_graph                                # 图融合相关实现
+│   ├── CMakeLists.txt                      # op_graph侧cmakelist文件
+│   ├── ${op_name}_graph_infer.cpp          # InferDataType文件，实现算子类型推导，在运行时推导输出dataType
+└── └── ${op_name}_proto.h                  # 算子原型定义，用于图优化和融合阶段识别算子
 ```
 
 ### Shape与DataType推导
@@ -708,6 +712,55 @@ IMPL_OP(AddExample).InferDataType(InferDataTypeAddExample);
 ```
 
 完整代码请参考`examples/add_example/op_host`目录下[add_example_infershape.cpp](../../examples/add_example/op_host/add_example_infershape.cpp)，以及`examples/add_example/op_graph`目录下[add_example_graph_infer.cpp](../../examples/add_example/op_graph/add_example_graph_infer.cpp)。
+
+
+### 算子tiling实现
+因NPU中AI Core内部存储空间有限，无法一次性将整个张量数据加载到计算单元中处理，因此需要将输入张量切分为多个小块（Tile），逐块进行计算，这一过程称为Tiling。
+
+示例代码如下，展示了如何注册`AddExample`算子的tiling：
+
+```CPP
+struct AddExampleCompileInfo {};
+
+
+// tiling 分发入口
+static ge::graphStatus AddExampleTilingFunc(gert::TilingContext* context)
+{
+    // 1、获取平台运行信息
+    uint64_t ubSize;
+    int64_t coreNum;
+    OP_CHECK_IF(
+        GetPlatformInfo(context, ubSize, coreNum) != ge::GRAPH_SUCCESS, OP_LOGE(context, "GetPlatformInfo error"),
+        return ge::GRAPH_FAILED);
+    // 2、获取shape、属性信息
+    int64_t totalIdx;
+    ge::DataType dataType;
+
+    OP_CHECK_IF(
+        GetShapeAttrsInfo(context, totalIdx, dataType) != ge::GRAPH_SUCCESS,
+        OP_LOGE(context, "GetShapeAttrsInfo error"), return ge::GRAPH_FAILED);
+    // 3、获取WorkspaceSize信息
+    OP_CHECK_IF(
+        GetWorkspaceSize(context) != ge::GRAPH_SUCCESS, OP_LOGE(context, "GetWorkspaceSize error"),
+        return ge::GRAPH_FAILED);
+
+    // 4、设置tiling信息
+    AddExampleTilingData* tiling = context->GetTilingData<AddExampleTilingData>();
+    OP_CHECK_NULL_WITH_CONTEXT(context, tiling);
+    ...
+
+    return ge::GRAPH_SUCCESS;
+}
+
+static ge::graphStatus TilingParseForAddExample([[maybe_unused]] gert::TilingParseContext* context)
+{
+    return ge::GRAPH_SUCCESS;
+}
+
+// tiling注册入口.
+IMPL_OP_OPTILING(AddExample).Tiling(AddExampleTilingFunc).TilingParse<AddExampleCompileInfo>(TilingParseForAddExample);
+```
+完整代码请参考`examples/add_example/op_host`目录下[add_example_tiling.cpp](../../examples/add_example/op_host/add_example_tiling.cpp)。
 
 ### 算子原型配置
 图模式调用需要将算子原型注册到[Graph Engine](https://www.hiascend.com/cann/graph-engine)（简称GE）中，以便GE能够识别该类型算子的输入、输出及属性信息。注册通过`REG_OP`接口完成，开发者需要定义算子的输入、输出张量类型及数量等基本信息。
