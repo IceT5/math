@@ -10,16 +10,21 @@
  */
 
 /*!
- * \file sqrt_tiling_data.h
- * \brief tiling data struct
-*/
-struct SqrtTilingData{
-    uint64_t smallCoreDataNum;
-    uint64_t bigCoreDataNum;
-    uint64_t finalBigTileNum;
-    uint64_t finalSmallTileNum;
-    uint64_t tileDataNum;
-    uint64_t smallTailDataNum;
-    uint64_t bigTailDataNum;
-    uint64_t tailBlockNum;
-} ;
+ * \file sqrt_tiling_def.h
+ * \brief
+ */
+
+#ifndef SQRT_TILING_DEF_H
+#define SQRT_TILING_DEF_H
+
+#include "register/tilingdata_base.h"
+
+namespace optiling {
+struct SqrtCompileInfo {
+    int32_t totalCoreNum = 0;
+    int64_t ubSize = 0;
+    bool isRegbase = false;
+};
+} // namespace optiling
+
+#endif // SQRT_TILING_DEF_H

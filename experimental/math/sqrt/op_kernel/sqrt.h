@@ -33,9 +33,9 @@ public:
     __aicore__ inline KernelSqrt(){};
 
     __aicore__ inline void Init(
-        GM_ADDR x, GM_ADDR y, uint32_t smallCoreDataNum, uint32_t bigCoreDataNum, uint32_t finalBigTileNum,
-        uint32_t finalSmallTileNum, uint32_t tileDataNum, uint32_t smallTailDataNum, uint32_t bigTailDataNum,
-        uint32_t tailBlockNuma);
+        GM_ADDR x, GM_ADDR y, uint64_t smallCoreDataNum, uint64_t bigCoreDataNum, uint64_t finalBigTileNum,
+        uint64_t finalSmallTileNum, uint64_t tileDataNum, uint64_t smallTailDataNum, uint64_t bigTailDataNum,
+        uint64_t tailBlockNuma);
     __aicore__ inline void Process();
 
 private:
@@ -50,22 +50,22 @@ private:
     AscendC::TBuf<AscendC::QuePosition::VECCALC> tmp1;
     AscendC::GlobalTensor<TYPE_X> xGm;
     AscendC::GlobalTensor<TYPE_Y> yGm;
-    uint32_t coreDataNum;
-    uint32_t tileNum;
-    uint32_t tileDataNum;
-    uint32_t tailDataNum;
-    uint32_t processDataNum;
+    uint64_t coreDataNum;
+    uint64_t tileNum;
+    uint64_t tileDataNum;
+    uint64_t tailDataNum;
+    uint64_t processDataNum;
 };
 
 template <typename TYPE_X, typename TYPE_Y>
 __aicore__ inline void KernelSqrt<TYPE_X, TYPE_Y>::Init(
-    GM_ADDR x, GM_ADDR y, uint32_t smallCoreDataNum, uint32_t bigCoreDataNum, uint32_t finalBigTileNum,
-    uint32_t finalSmallTileNum, uint32_t tileDataNum, uint32_t smallTailDataNum, uint32_t bigTailDataNum,
-    uint32_t tailBlockNum)
+    GM_ADDR x, GM_ADDR y, uint64_t smallCoreDataNum, uint64_t bigCoreDataNum, uint64_t finalBigTileNum,
+    uint64_t finalSmallTileNum, uint64_t tileDataNum, uint64_t smallTailDataNum, uint64_t bigTailDataNum,
+    uint64_t tailBlockNum)
 {
     ASSERT(AscendC::GetBlockNum() != 0 && "block dim can not be zero!");
-    uint32_t coreId = AscendC::GetBlockIdx();
-    uint32_t globalBufferIndex = bigCoreDataNum * AscendC::GetBlockIdx();
+    uint64_t coreId = AscendC::GetBlockIdx();
+    uint64_t globalBufferIndex = bigCoreDataNum * AscendC::GetBlockIdx();
     this->tileDataNum = tileDataNum;
     if (coreId < tailBlockNum) {
         this->coreDataNum = bigCoreDataNum;

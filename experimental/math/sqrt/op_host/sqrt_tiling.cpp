@@ -53,7 +53,7 @@ static ge::graphStatus GetPlatformInfo(gert::TilingContext* context, uint64_t& u
 ge::graphStatus GetWorkspaceSize(gert::TilingContext* context)
 {
     OP_CHECK_IF(context == nullptr, OP_LOGE(context, "context is nullptr"), return ge::GRAPH_FAILED);
-    size_t usrSize = 256;
+    size_t usrSize = 0;
     auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
     uint32_t sysWorkspaceSize = ascendcPlatform.GetLibApiWorkSpaceSize();
     size_t* currentWorkspace = context->GetWorkspaceSizes(
@@ -149,18 +149,21 @@ static ge::graphStatus SqrtTilingFunc(gert::TilingContext* context)
         smallTailDataNum, bigTailDataNum, finalSmallTileNum, finalBigTileNum, tailBlockNum);
     OP_CHECK_IF(ret != ge::GRAPH_SUCCESS, OP_LOGE(context, "CalculateCoreBlockNums error"), return ge::GRAPH_FAILED);
     // 设置tiling数据
-    tiling->smallCoreDataNum = static_cast<uint32_t>(smallCoreDataNum);
-    tiling->bigCoreDataNum = static_cast<uint32_t>(bigCoreDataNum);
-    tiling->tileDataNum = static_cast<uint32_t>(tileDataNum);
-    tiling->smallTailDataNum = static_cast<uint32_t>(smallTailDataNum);
-    tiling->bigTailDataNum = static_cast<uint32_t>(bigTailDataNum);
-    tiling->finalSmallTileNum = static_cast<uint32_t>(finalSmallTileNum);
-    tiling->finalBigTileNum = static_cast<uint32_t>(finalBigTileNum);
-    tiling->tailBlockNum = static_cast<uint32_t>(tailBlockNum);
+    tiling->smallCoreDataNum = static_cast<uint64_t>(smallCoreDataNum);
+    tiling->bigCoreDataNum = static_cast<uint64_t>(bigCoreDataNum);
+    tiling->tileDataNum = static_cast<uint64_t>(tileDataNum);
+    tiling->smallTailDataNum = static_cast<uint64_t>(smallTailDataNum);
+    tiling->bigTailDataNum = static_cast<uint64_t>(bigTailDataNum);
+    tiling->finalSmallTileNum = static_cast<uint64_t>(finalSmallTileNum);
+    tiling->finalBigTileNum = static_cast<uint64_t>(finalBigTileNum);
+    tiling->tailBlockNum = static_cast<uint64_t>(tailBlockNum);
     // 计算workspace大小
     OP_CHECK_IF(
         GetWorkspaceSize(context) != ge::GRAPH_SUCCESS, OP_LOGE(context, "GetWorkspaceSize error"),
         return ge::GRAPH_FAILED);
+    uint64_t tilingKey = 0;
+    tilingKey = GET_TPL_TILING_KEY(0);
+    context->SetTilingKey(tilingKey);
     context->SetBlockDim(coreNum);
     return ge::GRAPH_SUCCESS;
 }
