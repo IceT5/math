@@ -264,6 +264,10 @@ if(UT_TEST_ALL OR OP_KERNEL_UT)
       set(opType "${opType}${firstLetter}${restOfWord}")
     endforeach()
 
+    if(${opType} STREQUAL "Stft")
+      set(opType "STFT")
+    endif()
+
     # standardize tiling files
     string(REPLACE "," ";" tilingSrc "${tilingSrcFiles}")
 

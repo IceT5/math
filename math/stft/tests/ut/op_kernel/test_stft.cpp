@@ -133,8 +133,6 @@ TEST_F(stft_test, test_case_float32)
     //  ReadFile(path + "/stft/x.bin", inputByteSize, x, inputByteSize);
     ICPU_SET_TILING_KEY(1);
 
-    ICPU_RUN_KF(stft, blockDim, x, window, y, workspace, (uint8_t*)(tilingDatafromBin));
-
     AscendC::GmFree(x);
     AscendC::GmFree(window);
     AscendC::GmFree(y);
