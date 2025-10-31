@@ -19,8 +19,7 @@ $$
 
 - aclnnErf和aclnnInplaceErf实现相同的功能，使用区别如下，请根据自身实际场景选择合适的算子。
   - aclnnErf：需新建一个输出张量对象存储计算结果。
-  - aclnnInplaceErf：无需新建输出张量对象，直接在输入张量的内存中存储计算结果。
-- 每个算子分为[两段式接口](common/两段式接口.md)，必须先调用 “aclnnErfGetWorkspaceSize” 或者 “aclnnInplaceErfGetWorkspaceSize” 接口获取入参并根据计算流程计算所需workspace大小，再调用 “aclnnErf” 或者 “aclnnInplaceErf” 接口执行计算。
+- 每个算子分为[两段式接口](common/两段式接口.md)，必须先调用 “aclnnErfGetWorkspaceSize” 接口获取入参并根据计算流程计算所需workspace大小，再调用 “aclnnErf” 接口执行计算。
   * `aclnnStatus aclnnErfGetWorkspaceSize(const aclTensor *self, aclTensor *out, uint64_t *workspaceSize, aclOpExecutor **executor)`
   * `aclnnStatus aclnnErf(void *workspace, uint64_t workspaceSize, aclOpExecutor *executor, aclrtStream stream)`
   * `aclnnStatus aclnnInplaceErfGetWorkspaceSize(aclTensor *selfRef, uint64_t *workspaceSize, aclOpExecutor **executor)`
@@ -80,19 +79,6 @@ $$
   161002(ACLNN_ERR_PARAM_INVALID)：1. selfRef的数据类型和数据格式不在支持的范围之内。
                                    2. selfRef的维度超过8。
   ```
-
-## aclnnInplaceErf
-
-- **参数说明：**
-
-  * workspace(void \*, 入参)：在Device侧申请的workspace内存地址。
-  * workspaceSize(uint64_t, 入参)：在Device侧申请的workspace大小，由第一段接口aclnnInplaceErfGetWorkspaceSize获取。
-  * stream(aclrtStream, 入参)：指定执行任务的Stream。
-  * executor(aclOpExecutor \*, 入参)：op执行器，包含了算子计算流程。
-
-- **返回值：**
-
-  aclnnStatus：返回状态码，具体参见[aclnn返回码](common/aclnn返回码.md)。
 
 ## 约束说明
 无
