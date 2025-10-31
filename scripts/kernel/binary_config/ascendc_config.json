@@ -33,5 +33,6 @@
     {"name":"Segsum", "compute_units": ["ascend910b", "ascend910_93"], "auto_sync" : false},
     {"name":"Sinkhorn", "compute_units": ["ascend910b", "ascend910_93"], "auto_sync" : true},
     {"name":"STFT", "compute_units": ["ascend910b", "ascend910_93"], "auto_sync" : false},
-    {"name":"TransformBiasRescaleQkv", "compute_units": ["ascend910b", "ascend910_93"], "auto_sync" : false}
+    {"name":"TransformBiasRescaleQkv", "compute_units": ["ascend910b", "ascend910_93"], "auto_sync" : false},
+    {"name":"Cosh", "compute_units": ["ascend910b"], "auto_sync" : true}
 ]
