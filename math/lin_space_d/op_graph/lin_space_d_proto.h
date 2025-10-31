@@ -24,13 +24,13 @@ namespace ge {
 
 *@par Inputs:
 * Three ND inputs, including:
-*@li start: A 1D Tensor, for the first entry in the range.
+*@li start: A Scalar, for the first entry in the range.
 * Type must be one of the following types:
 * float32, float16, bfloat16, int32, int16, int8, uint8.
-*@li end: A 1D Tensor, for the last entry in the range.
+*@li end: A Scalar, for the last entry in the range.
 * Type must be one of the following types:
 * float32, float16, bfloat16, int32, int16, int8, uint8.
-*@li num: A 1D Tensor of type int64, for the common difference of the entries . \n
+*@li num: A Scalar of type int64, for the common difference of the entries . \n
 
 *@par Outputs:
 *z: A 1D Tensor, Type is float32. \n

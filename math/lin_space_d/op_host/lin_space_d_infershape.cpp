@@ -55,7 +55,7 @@ static ge::graphStatus InferShapeLinSpaceD(gert::InferShapeContext* context)
     outShape->SetDim(0, numValue); 
 
     OP_LOGD(context->GetNodeName(), "End to do InferShapeLinSpaceD");
-    return GRAPH_SUCCESS;
+    return ge::GRAPH_SUCCESS;
 }
 
 IMPL_OP_INFERSHAPE(LinSpaceD).InputsDataDependency({IDX_IN_NUM}).InferShape(InferShapeLinSpaceD);

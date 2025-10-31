@@ -13,8 +13,9 @@
  * \file lin_space_d_tiling_key.h
  * \brief LinSpaceD operator tiling template parameter declaration
  */
-#ifndef LIN_SPACE_D_TILING_KEY_H
-#define LIN_SPACE_D_TILING_KEY_H
+
+#ifndef __LIN_SPACE_D_TILING_KEY_H__
+#define __LIN_SPACE_D_TILING_KEY_H__
 
 #include "ascendc/host_api/tiling/template_argument.h"
 
@@ -27,9 +28,9 @@
 #define LIN_SPACE_D_TPL_INT32   3      // int32
 
 ASCENDC_TPL_ARGS_DECL(
-    KernelLinSpaceD, 
+    LinSpaceD, 
     ASCENDC_TPL_DTYPE_DECL(
-        DTYPE_START,  
+        TYPE_START,  
         LIN_SPACE_D_TPL_BF16,
         LIN_SPACE_D_TPL_UINT8,
         LIN_SPACE_D_TPL_FP16,
@@ -39,7 +40,7 @@ ASCENDC_TPL_ARGS_DECL(
         LIN_SPACE_D_TPL_INT32
     ),
     ASCENDC_TPL_DTYPE_DECL(
-        DTYPE_END,
+        TYPE_END,
         LIN_SPACE_D_TPL_BF16,
         LIN_SPACE_D_TPL_UINT8,
         LIN_SPACE_D_TPL_FP16,
@@ -53,7 +54,7 @@ ASCENDC_TPL_ARGS_DECL(
 ASCENDC_TPL_SEL(
     ASCENDC_TPL_ARGS_SEL(
         ASCENDC_TPL_DTYPE_SEL(
-            DTYPE_START,
+            TYPE_START,
             LIN_SPACE_D_TPL_BF16,
             LIN_SPACE_D_TPL_UINT8,
             LIN_SPACE_D_TPL_FP16,
@@ -63,7 +64,7 @@ ASCENDC_TPL_SEL(
             LIN_SPACE_D_TPL_INT32
         ),
         ASCENDC_TPL_DTYPE_SEL(
-            DTYPE_END,
+            TYPE_END,
             LIN_SPACE_D_TPL_BF16,
             LIN_SPACE_D_TPL_UINT8,
             LIN_SPACE_D_TPL_FP16,
@@ -75,4 +76,4 @@ ASCENDC_TPL_SEL(
     )
 );
 
-#endif // LIN_SPACE_D_TILING_KEY_H
+#endif // __LIN_SPACE_D_TILING_KEY_H__

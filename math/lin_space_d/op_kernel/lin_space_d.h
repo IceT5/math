@@ -18,16 +18,16 @@
 
 #include "kernel_operator.h"
 #include "kernel_tiling/kernel_tiling.h"
-#include "add_example_tiling_data.h"
-#include "add_example_tiling_key.h"
+#include "lin_space_d_tiling_data.h"
+#include "lin_space_d_tiling_key.h"
 
-namespace LinSpaceD {
+namespace NsLinSpaceD {
 using namespace AscendC;
 
 template <typename TStart, typename TEnd> 
-class KernelLinSpaceD {
+class LinSpaceD {
 public:
-    __aicore__ inline KernelLinSpaceD() {};
+    __aicore__ inline LinSpaceD() {};
     __aicore__ inline void Init(GM_ADDR x, GM_ADDR y, GM_ADDR z, const LinSpaceDTilingData* tilingData);
     __aicore__ inline void Process();
 
@@ -61,7 +61,7 @@ private:
 };
 
 template <typename TStart, typename TEnd> 
-__aicore__ inline void KernelLinSpaceD<TStart, TEnd>::Init(GM_ADDR x, GM_ADDR y, GM_ADDR z, const LinSpaceDTilingData* tilingData)
+__aicore__ inline void LinSpaceD<TStart, TEnd>::Init(GM_ADDR x, GM_ADDR y, GM_ADDR z, const LinSpaceDTilingData* tilingData)
 {
     startGm.SetGlobalBuffer((__gm__ TStart*)x, 1);
     endGm.SetGlobalBuffer((__gm__ TEnd*)y, 1);
@@ -79,7 +79,7 @@ __aicore__ inline void KernelLinSpaceD<TStart, TEnd>::Init(GM_ADDR x, GM_ADDR y,
 }
 
 template <typename TStart, typename TEnd> 
-__aicore__ inline void KernelLinSpaceD<TStart, TEnd>::Process()
+__aicore__ inline void LinSpaceD<TStart, TEnd>::Process()
 {
     if constexpr (Std::is_same<TStart, bfloat16_t>::value) {
         this->startF = ToFloat(this->start);
@@ -112,7 +112,7 @@ __aicore__ inline void KernelLinSpaceD<TStart, TEnd>::Process()
         Cast(floatLocal, halfLocal, RoundMode::CAST_NONE, 1);
         this->endF = floatLocal.GetValue(0);
     }      
-    else if constexpr (Std::is_same<TStart, float>::value) {
+    else if constexpr (Std::is_same<TEnd, float>::value) {
         this->endF = this->end;
     }      
     else {
@@ -139,7 +139,7 @@ __aicore__ inline void KernelLinSpaceD<TStart, TEnd>::Process()
 }
 
 template <typename TStart, typename TEnd> 
-__aicore__ inline void KernelLinSpaceD<TStart, TEnd>::ParseTilingData(const LinSpaceDTilingData* tilingData)
+__aicore__ inline void LinSpaceD<TStart, TEnd>::ParseTilingData(const LinSpaceDTilingData* tilingData)
 {
     uint32_t coreId = GetBlockIdx();
     this->currentBlockLength = 0; 
@@ -160,10 +160,11 @@ __aicore__ inline void KernelLinSpaceD<TStart, TEnd>::ParseTilingData(const LinS
         this->blockOffset = tilingData->formerLength * tilingData->formerNum + tilingData->tailLength * (coreId - tilingData->formerNum);
         this->currentBlockLength = tilingData->tailLength;
     }    
+    this->origSize = tilingData->totalLength;
 }
 
 template <typename TStart, typename TEnd> 
-__aicore__ inline void KernelLinSpaceD<TStart, TEnd>::Compute(int32_t tileIdx)
+__aicore__ inline void LinSpaceD<TStart, TEnd>::Compute(int32_t tileIdx)
 {
     LocalTensor<float> tileOutput = outQueueZ.AllocTensor<float>();
     int32_t tileElemNum = TILE_ELEM_NUM;  // 8
@@ -175,7 +176,7 @@ __aicore__ inline void KernelLinSpaceD<TStart, TEnd>::Compute(int32_t tileIdx)
 }
 
 template <typename TStart, typename TEnd> 
-__aicore__ inline void KernelLinSpaceD<TStart, TEnd>::CopyOut(int32_t tileIdx)
+__aicore__ inline void LinSpaceD<TStart, TEnd>::CopyOut(int32_t tileIdx)
 {
     LocalTensor<float> zLocal = outQueueZ.DeQue<float>();
     int32_t copyElemNum;                         
@@ -194,5 +195,5 @@ __aicore__ inline void KernelLinSpaceD<TStart, TEnd>::CopyOut(int32_t tileIdx)
     outQueueZ.FreeTensor(zLocal);
 }
 
-} // namespace LinSpaceD
+} // namespace NsLinSpaceD
 #endif // LIN_SPACE_D_H

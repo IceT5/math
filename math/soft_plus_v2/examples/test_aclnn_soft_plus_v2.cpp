@@ -12,7 +12,7 @@
 #include <iostream>
 #include <vector>
 #include "acl/acl.h"
-#include "aclnn_lin_space_d.h"
+#include "aclnn_soft_plus_v2.h"
 
 #define CHECK_RET(cond, return_expr) \
     do {                             \
@@ -95,56 +95,27 @@ int main()
     CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("Init acl failed. ERROR: %d\n", ret); return ret);
 
     // 2. 构造输入与输出，需要根据API的接口自定义构造
-    uint8_t startValue = 0;
-    float endValue = 3.0;
-    const int64_t numValue = 8;
+    aclTensor* selfX = nullptr;
+    void* selfXDeviceAddr = nullptr;
+    std::vector<int64_t> selfXShape = {32, 4, 4, 4};
+    std::vector<float> selfXHostData(2048, 1);
+    ret = CreateAclTensor(selfXHostData, selfXShape, &selfXDeviceAddr, aclDataType::ACL_FLOAT, &selfX);
+    CHECK_RET(ret == ACL_SUCCESS, return ret);
 
-    aclTensor* selfStart = nullptr;
-    void* selfStartDeviceAddr = nullptr;
-    std::vector<int64_t> selfStartShape = {1};
-    std::vector<uint8_t> selfStartHostData(1, startValue);
-    ret = CreateAclTensor(selfStartHostData, selfStartShape, &selfStartDeviceAddr, aclDataType::ACL_UINT8, &selfStart);
-    CHECK_RET(ret == ACL_SUCCESS, return ret);
-    //LOG_PRINT("  startTensor: %p\n", selfStart);    // 第1个参数：start 张量
-
-    aclTensor* selfEnd = nullptr;
-    void* selfEndDeviceAddr = nullptr;
-    std::vector<int64_t> selfEndShape = {1};
-    std::vector<float> selfEndHostData(1, endValue);
-    ret = CreateAclTensor(selfEndHostData, selfEndShape, &selfEndDeviceAddr, aclDataType::ACL_FLOAT, &selfEnd);
-    CHECK_RET(ret == ACL_SUCCESS, return ret);
-    //LOG_PRINT("  endTensor: %p\n", selfEnd);        // 第2个参数：end 张量
-    
-    aclTensor* selfNum = nullptr;
-    void* selfNumDeviceAddr = nullptr;
-    std::vector<int64_t> selfNumShape = {1};
-    std::vector<int64_t> selfNumHostData(1, numValue);
-    ret = CreateAclTensor(selfNumHostData, selfNumShape, &selfNumDeviceAddr, aclDataType::ACL_INT64, &selfNum);
-    CHECK_RET(ret == ACL_SUCCESS, return ret);
-    const std::vector<int64_t> numVec = {numValue};
-    aclIntArray* numArray = aclCreateIntArray(numVec.data(), numVec.size());
-    //LOG_PRINT("  numArray: %p\n", numArray);      // 第3个参数：steps 数组
-    
     aclTensor* out = nullptr;
     void* outDeviceAddr = nullptr;
-    std::vector<int64_t> outShape = {numValue};
-    std::vector<float> outHostData(numValue, 0);
+    std::vector<int64_t> outShape = {32, 4, 4, 4};
+    std::vector<float> outHostData(2048, 1);
     ret = CreateAclTensor(outHostData, outShape, &outDeviceAddr, aclDataType::ACL_FLOAT, &out);
     CHECK_RET(ret == ACL_SUCCESS, return ret);
-    //LOG_PRINT("  outTensor: %p\n", out);        // 第4个参数：out 张量
-    
+
     // 3. 调用CANN算子库API，需要修改为具体的Api名称
     uint64_t workspaceSize = 0;
     aclOpExecutor* executor;
 
-    // 4. 调用aclnn第一段接口
-    ret = aclnnLinSpaceDGetWorkspaceSize(selfStart, selfEnd, numArray, out, &workspaceSize, &executor);
-    //ret = aclnnLinSpaceDTensorGetWorkspaceSize(selfStart, selfEnd, selfNum, out, &workspaceSize, &executor);
-    if (ret != ACL_SUCCESS) {
-        const char* errMsg = aclGetRecentErrMsg();
-        LOG_PRINT("[ERROR] aclnnLinSpaceDGetWorkspaceSize failed: %s", errMsg ? errMsg : "nullptr");
-    }
-    CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("aclnnLinSpaceDGetWorkspaceSize failed. ERROR: %d\n", ret); return ret);
+    // 4. 调用aclnnAddExample第一段接口
+    ret = aclnnSoftPlusV2GetWorkspaceSize(selfX, out, &workspaceSize, &executor);
+    CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("aclnnAddExampleGetWorkspaceSize failed. ERROR: %d\n", ret); return ret);
 
     // 根据第一段接口计算出的workspaceSize申请device内存
     void* workspaceAddr = nullptr;
@@ -153,9 +124,9 @@ int main()
         CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("allocate workspace failed. ERROR: %d\n", ret); return ret);
     }
 
-    // 5. 调用aclnn第二段接口
-    ret = aclnnLinSpaceD(workspaceAddr, workspaceSize, executor, stream);
-    CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("aclnnLinSpaceD failed. ERROR: %d\n", ret); return ret);
+    // 5. 调用aclnnAddExample第二段接口
+    ret = aclnnSoftPlusV2(workspaceAddr, workspaceSize, executor, stream);
+    CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("aclnnAddExample failed. ERROR: %d\n", ret); return ret);
 
     // 6. （固定写法）同步等待任务执行结束
     ret = aclrtSynchronizeStream(stream);
@@ -165,16 +136,11 @@ int main()
     PrintOutResult(outShape, &outDeviceAddr);
 
     // 7. 释放aclTensor，需要根据具体API的接口定义修改
-    aclDestroyTensor(selfStart);
-    aclDestroyTensor(selfEnd);
-    aclDestroyTensor(selfNum);
-    aclDestroyIntArray(numArray); 
+    aclDestroyTensor(selfX);
     aclDestroyTensor(out);
-    
+
     // 8. 释放device资源
-    aclrtFree(selfStartDeviceAddr);
-    aclrtFree(selfEndDeviceAddr);
-    aclrtFree(selfNumDeviceAddr);
+    aclrtFree(selfXDeviceAddr);
     aclrtFree(outDeviceAddr);
     if (workspaceSize > static_cast<uint64_t>(0)) {
         aclrtFree(workspaceAddr);

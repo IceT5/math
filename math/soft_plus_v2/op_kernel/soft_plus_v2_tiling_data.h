@@ -10,20 +10,14 @@
  */
 
 /*!
- * \file lin_space_d_tiling_data.h
+ * \file soft_plus_v2_tiling_data.h
  * \brief tiling data struct
  */
-#ifndef _ROTARY_POSITION_EMBEDDING_GRAD_TILING_DATA_H_
-#define _ROTARY_POSITION_EMBEDDING_GRAD_TILING_DATA_H_
+#ifndef _SOFT_PLUS_V2_TILING_DATA_H_
+#define _SOFT_PLUS_V2_TILING_DATA_H_
 
-struct LinSpaceDTilingData {
-    uint32_t totalLength;   
-    uint32_t formerNum;
-    uint32_t formerLength;        
-    uint32_t formerTileNum;  
-    uint32_t formerLastTileLength;
-    uint32_t tailLength;          
-    uint32_t tailTileNum;
-    uint32_t tailLastTileLength; 
+struct SoftPlusV2TilingData {
+    uint32_t totalLength;
+    uint32_t tileNum;
 };
-#endif // _ROTARY_POSITION_EMBEDDING_GRAD_TILING_DATA_H_
+#endif // _SOFT_PLUS_V2_TILING_DATA_H_

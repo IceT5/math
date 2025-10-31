@@ -17,13 +17,13 @@
 #include "util/math_util.h"
 #include "tiling_base/tiling_util.h"
 #include "tiling_base/tiling_templates_registry.h"
-#include "tiling/platform/platform_ascendc.h"
 #include "../op_kernel/lin_space_d_tiling_data.h"
 #include "../op_kernel/lin_space_d_tiling_key.h"
 
 namespace optiling {
 
 using namespace Ops::Math::OpTiling;
+
 static const size_t INPUT_IDX_START = 0;
 static const size_t INPUT_IDX_STOP = 1;
 static const size_t INPUT_IDX_NUM = 2;
@@ -31,7 +31,7 @@ static const uint32_t BLOCK_SIZE = 32;
 static const uint32_t BUFFER_NUM = 2;
 static const uint32_t WS_SYS_SIZE = 0; 
 
-struct LinSpaceDCustomCompileInfo {};
+struct LinSpaceDCompileInfo {};
 
 // 获取平台信息如ubSize, coreNum
 static ge::graphStatus GetPlatformInfo(gert::TilingContext* context, uint64_t& ubSize, int64_t& coreNum)
@@ -48,7 +48,7 @@ static ge::graphStatus GetPlatformInfo(gert::TilingContext* context, uint64_t& u
 
 // 获取shape和数据类型信息
 static ge::graphStatus GetShapeAndTypeInfo(gert::TilingContext* context, uint32_t& totalLength, 
-                                         int& start_type, int& end_type)
+                                         ge::DataType& start_type, ge::DataType& end_type)
 {
     // 获取num输入张量
     auto tensorN = context->GetInputTensor(INPUT_IDX_NUM);
@@ -165,7 +165,7 @@ static ge::graphStatus LinSpaceDTilingFunc(gert::TilingContext* context)
     
     // 获取shape和类型信息
     uint32_t totalLength;
-    int start_type, end_type;
+    ge::DataType start_type, end_type;
     OP_CHECK_IF(
         GetShapeAndTypeInfo(context, totalLength, start_type, end_type) != ge::GRAPH_SUCCESS,
         OP_LOGE(context, "GetShapeAndTypeInfo error"), 
@@ -220,6 +220,5 @@ static ge::graphStatus TilingParseForLinSpaceD([[maybe_unused]] gert::TilingPars
 }
 
 // tiling注册入口
-IMPL_OP_OPTILING(LinSpaceD).Tiling(LinSpaceDTilingFunc).TilingParse<LinSpaceDCustomCompileInfo>(TilingParseForLinSpaceD);
-
+IMPL_OP_OPTILING(LinSpaceD).Tiling(LinSpaceDTilingFunc).TilingParse<LinSpaceDCompileInfo>(TilingParseForLinSpaceD);
 } // namespace optiling

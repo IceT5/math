@@ -10,20 +10,15 @@
  */
 
 /*!
- * \file lin_space_d_tiling_data.h
- * \brief tiling data struct
+ * \file soft_plus_v2.cpp
+ * \brief
  */
-#ifndef _ROTARY_POSITION_EMBEDDING_GRAD_TILING_DATA_H_
-#define _ROTARY_POSITION_EMBEDDING_GRAD_TILING_DATA_H_
+#include "soft_plus_v2.h"
 
-struct LinSpaceDTilingData {
-    uint32_t totalLength;   
-    uint32_t formerNum;
-    uint32_t formerLength;        
-    uint32_t formerTileNum;  
-    uint32_t formerLastTileLength;
-    uint32_t tailLength;          
-    uint32_t tailTileNum;
-    uint32_t tailLastTileLength; 
-};
-#endif // _ROTARY_POSITION_EMBEDDING_GRAD_TILING_DATA_H_
+extern "C" __global__ __aicore__ void soft_plus_v2(GM_ADDR x, GM_ADDR z, GM_ADDR workspace, GM_ADDR tiling) {
+    REGISTER_TILING_DEFAULT(SoftPlusV2TilingData);
+    GET_TILING_DATA_WITH_STRUCT(SoftPlusV2TilingData, tilingData, tiling);
+    NsSoftPlusV2::SoftPlusV2 op;
+    op.Init(x, z, &tilingData);
+    op.Process();
+}

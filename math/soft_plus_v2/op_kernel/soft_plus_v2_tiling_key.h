@@ -10,20 +10,13 @@
  */
 
 /*!
- * \file lin_space_d_tiling_data.h
- * \brief tiling data struct
+ * \file soft_plus_v2_tiling_key.h
+ * \brief soft_plus_v2 tiling key declare
  */
-#ifndef _ROTARY_POSITION_EMBEDDING_GRAD_TILING_DATA_H_
-#define _ROTARY_POSITION_EMBEDDING_GRAD_TILING_DATA_H_
 
-struct LinSpaceDTilingData {
-    uint32_t totalLength;   
-    uint32_t formerNum;
-    uint32_t formerLength;        
-    uint32_t formerTileNum;  
-    uint32_t formerLastTileLength;
-    uint32_t tailLength;          
-    uint32_t tailTileNum;
-    uint32_t tailLastTileLength; 
-};
-#endif // _ROTARY_POSITION_EMBEDDING_GRAD_TILING_DATA_H_
+#ifndef __SOFT_PLUS_V2_TILING_KEY_H__
+#define __SOFT_PLUS_V2_TILING_KEY_H__
+
+/* 无tilingKey实现 */
+
+#endif // __SOFT_PLUS_V2_TILING_KEY_H__
