@@ -632,7 +632,7 @@ __aicore__ inline void AddExample<T>::CopyOut(int32_t progress)
 
 ## 算子验证
 
-开发好的算子完成编译部署后，可通过aclnn方式验证功能，方法请参考[算子调用方式](./op_invocation.md)。
+开发好的算子完成编译部署后，可通过aclnn方式验证功能，方法请参考[算子调用方式](../invocation/op_invocation.md)。
 
 ## 附录
 自定义算子如需运行图模式，不需要[aclnn适配](#aclnn适配)，做如下交付件适配：
