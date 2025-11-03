@@ -33,8 +33,8 @@ namespace ge {
 */
 
 REG_OP(Sqrt)
-    .INPUT(x, TensorType({DT_FLOAT16, DT_FLOAT, DT_BF16,DT_DOUBLE, DT_COMPLEX64, DT_COMPLEX128}))
-    .OUTPUT(y, TensorType({DT_FLOAT16, DT_FLOAT, DT_BF16,DT_DOUBLE, DT_COMPLEX64, DT_COMPLEX128}))
+    .INPUT(x, TensorType({DT_FLOAT16, DT_FLOAT, DT_BF16}))
+    .OUTPUT(y, TensorType({DT_FLOAT16, DT_FLOAT, DT_BF16}))
     .OP_END_FACTORY_REG(Sqrt);
 
 } // namespace ge

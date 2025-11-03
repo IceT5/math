@@ -13,6 +13,8 @@
  * \file sqrt_tiling_data.h
  * \brief tiling data struct
 */
+#ifndef SQRT_TILING_DATA_H_
+#define SQRT_TILING_DATA_H_
 struct SqrtTilingData{
     uint64_t smallCoreDataNum;
     uint64_t bigCoreDataNum;

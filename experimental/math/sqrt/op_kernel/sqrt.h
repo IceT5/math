@@ -65,7 +65,7 @@ __aicore__ inline void KernelSqrt<TYPE_X, TYPE_Y>::Init(
 {
     ASSERT(AscendC::GetBlockNum() != 0 && "block dim can not be zero!");
     uint64_t coreId = AscendC::GetBlockIdx();
-    uint64_t globalBufferIndex = bigCoreDataNum * AscendC::GetBlockIdx();
+    uint64_t globalBufferIndex = bigCoreDataNum * coreId;
     this->tileDataNum = tileDataNum;
     if (coreId < tailBlockNum) {
         this->coreDataNum = bigCoreDataNum;
@@ -75,7 +75,7 @@ __aicore__ inline void KernelSqrt<TYPE_X, TYPE_Y>::Init(
         this->coreDataNum = smallCoreDataNum;
         this->tileNum = finalSmallTileNum;
         this->tailDataNum = smallTailDataNum;
-        globalBufferIndex -= (bigCoreDataNum - smallCoreDataNum) * (AscendC::GetBlockIdx() - tailBlockNum);
+        globalBufferIndex -= (bigCoreDataNum - smallCoreDataNum) * (coreId - tailBlockNum);
     }
     xGm.SetGlobalBuffer((__gm__ TYPE_X*)x + globalBufferIndex, this->coreDataNum);
     yGm.SetGlobalBuffer((__gm__ TYPE_Y*)y + globalBufferIndex, this->coreDataNum);
