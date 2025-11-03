@@ -332,6 +332,10 @@ if (dataType == ge::DT_FLOAT) {
     OP_LOGE(context, "get dtype error");
     return ge::GRAPH_FAILED;
 }
+
+// tiling注册入口
+IMPL_OP_OPTILING(AddExample).Tiling(AddExampleTilingFunc).TilingParse<AddExampleCompileInfo>(TilingParseForAddExample);
+
 ```
 注意，TilingKey可通过模板化编程实现，示例代码如下，完整代码请参考`examples/add_example/op_kernel`下[add_example_tiling_key.h](../../examples/add_example/op_kernel/add_example_tiling_key.h)。
 
