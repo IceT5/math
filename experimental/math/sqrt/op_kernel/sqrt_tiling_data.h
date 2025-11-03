@@ -25,3 +25,4 @@ struct SqrtTilingData{
     uint64_t bigTailDataNum;
     uint64_t tailBlockNum;
 } ;
+#endif
