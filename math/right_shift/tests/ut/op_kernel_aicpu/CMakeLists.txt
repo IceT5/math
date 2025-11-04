@@ -17,5 +17,5 @@ foreach(SUB_DIR ${CURRENT_SOURCE_DIRS})
 endforeach()
 
 if (UT_TEST_ALL OR FAST_OP_UT)
-    # AddOpTestCase(lin_space "ascend910B1;ascend910_9599" "-DDTYPE_X=float" "${lin_space_tiling_files}")
+    AddOpTestCase(lin_space "ascend910B1;ascend910_9599" "-DDTYPE_X=float" "${lin_space_tiling_files}")
 endif()
