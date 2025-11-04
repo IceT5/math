@@ -9,5 +9,4 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------
 
-add_modules_sources(OPTYPE floor_div ACLNNTYPE aclnn)
-set(SUPPORT_DTYPE_LIST "float;float16;int32;int16")
+add_graph_plugin_sources()
