@@ -40,8 +40,6 @@ protected:
 
 TEST_F(transform_bias_rescale_qkv_test, test_transform_bias_rescale_qkv_float_0)
 {
-// #undef DTYPE_QKV
-// #define DTYPE_QKV DT_FP32
     system(
         "cp -rf "
         "../../../../math/transform_bias_rescale_qkv/tests/ut/op_kernel/transform_bias_rescale_qkv_data ./");
@@ -109,8 +107,6 @@ TEST_F(transform_bias_rescale_qkv_test, test_transform_bias_rescale_qkv_float_0)
 
 TEST_F(transform_bias_rescale_qkv_test, test_transform_bias_rescale_qkv_float16_1)
 {
-// #undef DTYPE_QKV
-// #define DTYPE_QKV DT_FP16
     system(
         "cp -rf "
         "../../../../math/transform_bias_rescale_qkv/tests/ut/op_kernel/transform_bias_rescale_qkv_data ./");
@@ -178,8 +174,6 @@ TEST_F(transform_bias_rescale_qkv_test, test_transform_bias_rescale_qkv_float16_
 
 TEST_F(transform_bias_rescale_qkv_test, test_transform_bias_rescale_qkv_bfloat16_2)
 {
-// #undef DTYPE_QKV
-// #define DTYPE_QKV DT_BF16
     system(
         "cp -rf "
         "../../../../math/transform_bias_rescale_qkv/tests/ut/op_kernel/transform_bias_rescale_qkv_data ./");
