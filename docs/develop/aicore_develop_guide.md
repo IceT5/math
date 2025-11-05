@@ -515,7 +515,8 @@ __aicore__ inline void AddExample<T>::CopyOut(int32_t progress)
     ....
 }
 ```
-## aclnn适配
+## aclnn适配 
+<span style="color:#e60000;">// 鸿蒙不支持</span>
 
 通常算子开发和编译完成后，会自动生成aclnn接口（一套基于C 的API），可直接在应用程序中调用aclnn接口实现调用算子。
 
@@ -633,6 +634,8 @@ __aicore__ inline void AddExample<T>::CopyOut(int32_t progress)
 ## 算子验证
 
 开发好的算子完成编译部署后，可通过aclnn方式验证功能，方法请参考[算子调用方式](../invocation/op_invocation.md)。
+
+<span style="color:#e60000;">// 鸿蒙不支持</span>
 
 ## 附录
 自定义算子如需运行图模式，不需要[aclnn适配](#aclnn适配)，做如下交付件适配：
