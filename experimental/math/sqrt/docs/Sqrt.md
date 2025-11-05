@@ -84,4 +84,4 @@ Atlas A2 训练系列产品/Atlas 200I/500 A2推理产品
 
 ## 调用示例
 
-详见[sqrt/examples](../examples/test_aclnn_sqrt.cpp #算子调用)
+详见[test_aclnn_sqrt.cpp](../examples/test_aclnn_sqrt.cpp)
