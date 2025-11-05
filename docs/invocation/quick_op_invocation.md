@@ -3,6 +3,8 @@
 >
 > **说明2**：本项目可调用的算子参见[算子列表](../op_list.md)，算子对应aclnn接口参见[aclnn列表](../op_api_list.md)。
 
+<span style="color:#e60000;">// 鸿蒙不支持</span>
+
 ## 前提条件
 
 使用本项目前，请确保如下基础依赖、NPU驱动和固件已安装。
@@ -27,6 +29,8 @@
 2. **安装驱动与固件（运行态依赖）**
 
    运行算子时必须安装驱动与固件，若仅编译算子，可跳过本操作，安装指导详见《[CANN 软件安装指南](https://www.hiascend.com/document/redirect/CannCommunityInstSoftware)》。
+   
+<span style="color:#e60000;">   // 鸿蒙不需要安装运行态依赖</span>
 
 ## 环境准备
 
