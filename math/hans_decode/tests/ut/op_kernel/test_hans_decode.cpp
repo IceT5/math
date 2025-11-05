@@ -1,5 +1,5 @@
 /**
- * This program is free software, you can redistribute it and/or modify.
+ * This program is free software, you can redistribute it and/or modify it.
  * Copyright (c) 2025 Huawei Technologies Co., Ltd.
  * This file is a part of the CANN Open Software.
  * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
@@ -66,7 +66,7 @@ TEST_F(hans_decode_test, test_case_0)
     uint8_t* recover = (uint8_t*)AscendC::GmAlloc(inputByteSize);
     uint8_t* workspace = (uint8_t*)AscendC::GmAlloc(workSpaceSize);
 
-    system("cp -r ../../../../../../../ops/math/hans_decode/tests/ut/op_kernel/hans_decode_data ./");
+    system("cp -r ../../../../math/hans_decode/tests/ut/op_kernel/hans_decode_data ./");
     system("chmod -R 755 ./hans_decode_data/");
     system("cd ./hans_decode_data/ && rm -rf ./*bin");
     system("cd ./hans_decode_data/ && python3 gen_data.py '(1, 32768)' 'float32'");
@@ -132,7 +132,7 @@ TEST_F(hans_decode_test, test_case_1)
     uint8_t* recover = (uint8_t*)AscendC::GmAlloc(inputByteSize);
     uint8_t* workspace = (uint8_t*)AscendC::GmAlloc(workSpaceSize);
 
-    system("cp -r ../../../../../../../ops/math/hans_decode/tests/ut/op_kernel/hans_decode_data ./");
+    system("cp -r ../../../../math/hans_decode/tests/ut/op_kernel/hans_decode_data ./");
     system("chmod -R 755 ./hans_decode_data/");
     system("cd ./hans_decode_data/ && rm -rf ./*bin");
     system("cd ./hans_decode_data/ && python3 gen_data.py '(1, 32768)' 'float16'");

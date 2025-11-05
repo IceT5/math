@@ -1,5 +1,5 @@
 /**
- * This program is free software, you can redistribute it and/or modify.
+ * This program is free software, you can redistribute it and/or modify it.
  * Copyright (c) 2025 Huawei Technologies Co., Ltd.
  * This file is a part of the CANN Open Software.
  * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
@@ -156,6 +156,7 @@ TEST_F(histogram_v2_test, test_case_0)
     uint64_t tilingKey = 0;
     auto tilingData = GetTilingData(tilingKey, tiling, blockDim);
     ICPU_SET_TILING_KEY(tilingKey);
+    AscendC::SetKernelMode(KernelMode::AIV_MODE);
     ICPU_RUN_KF(histogram_v2, blockDim, self, min, max, binsCount, workspace, (uint8_t*)(tilingData));
 
     AscendC::GmFree(self);

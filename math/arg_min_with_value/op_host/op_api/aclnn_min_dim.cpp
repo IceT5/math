@@ -1,5 +1,5 @@
 /**
- * This program is free software, you can redistribute it and/or modify.
+ * This program is free software, you can redistribute it and/or modify it.
  * Copyright (c) 2025 Huawei Technologies Co., Ltd.
  * This file is a part of the CANN Open Software.
  * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
@@ -106,6 +106,12 @@ static bool CheckDim(const aclTensor* self, const int64_t dim)
     }
     if ((dim > dimMax) || (dim < dimMin)) {
         OP_LOGE(ACLNN_ERR_PARAM_INVALID, "dim should within the range of [[%ld], [%ld]].", dimMin, dimMax);
+        return false;
+    }
+
+    uint64_t realDim = dim >= 0 ? dim : dim + shapeSize;
+    if (shapeSize != 0 && self->GetViewShape().GetDim(realDim) == 0) {
+        OP_LOGE(ACLNN_ERR_PARAM_INVALID, "Excepted reduction dim %ld to have non-zero size.", dim);
         return false;
     }
     return true;

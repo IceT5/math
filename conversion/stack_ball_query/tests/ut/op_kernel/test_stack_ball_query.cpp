@@ -1,5 +1,5 @@
 /**
- * This program is free software, you can redistribute it and/or modify.
+ * This program is free software, you can redistribute it and/or modify it.
  * Copyright (c) 2025 Huawei Technologies Co., Ltd.
  * This file is a part of the CANN Open Software.
  * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
@@ -74,9 +74,10 @@ TEST_F(stack_ball_query_test, test_case_fp32)
     tilingData->tailCenterXyzPerCore = 0;
     tilingData->maxRadius = 0.2;
     tilingData->sampleNum = 5;
-    uint32_t block_dim = 2;
+    uint32_t block_dim = 1;
 
     ICPU_SET_TILING_KEY(1);
+    AscendC::SetKernelMode(KernelMode::AIV_MODE);
     ICPU_RUN_KF(
         stack_ball_query, block_dim, xyz, center_xyz, xyz_batch_cnt, center_xyz_batch_cnt, outputIdx, workspace,
         tiling);

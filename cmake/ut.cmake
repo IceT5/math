@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# This program is free software, you can redistribute it and/or modify.
+# This program is free software, you can redistribute it and/or modify it.
 # Copyright (c) 2025 Huawei Technologies Co., Ltd.
 # This file is a part of the CANN Open Software.
 # Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
@@ -44,7 +44,7 @@ if(UT_TEST_ALL OR OP_HOST_UT)
       ${OP_TILING_MODULE_NAME}_cases_obj PRIVATE ${UT_COMMON_INC} ${GTEST_INCLUDE} ${ASCEND_DIR}/include
                                                  ${ASCEND_DIR}/include/base/context_builder ${PROJECT_SOURCE_DIR}/common/inc
                                                  ${ASCEND_DIR}/include/op_common ${ASCEND_DIR}/include/tiling
-                                                 ${ASCEND_DIR}/include/op_common/op_host
+                                                 ${ASCEND_DIR}/include/op_common/op_host ${ASCEND_DIR}/include/toolchain
       )
     target_link_libraries(${OP_TILING_MODULE_NAME}_cases_obj PRIVATE $<BUILD_INTERFACE:intf_llt_pub_asan_cxx17> gtest)
 
@@ -101,10 +101,19 @@ if(UT_TEST_ALL OR OP_API_UT)
       add_library(${OP_API_MODULE_NAME}_cases_obj OBJECT)
     endif()
     target_sources(${OP_API_MODULE_NAME}_cases_obj PRIVATE ${UT_PATH}/op_api/stub/opdev/platform.cpp)
+    file(GLOB ACLNN_SRC_DIRS
+      ${PROJECT_SOURCE_DIR}/math/*/op_host/op_api
+      ${PROJECT_SOURCE_DIR}/conversion/*/op_host/op_api
+      ${PROJECT_SOURCE_DIR}/random/*/op_host/op_api
+      ${PROJECT_SOURCE_DIR}/math/*/op_api
+      ${PROJECT_SOURCE_DIR}/conversion/*/op_api
+      ${PROJECT_SOURCE_DIR}/random/*/op_api
+    )
     target_include_directories(
       ${OP_API_MODULE_NAME}_cases_obj
       PRIVATE ${JSON_INCLUDE_DIR} ${HI_PYTHON_INC_TEMP} ${UT_PATH}/op_api/stub ${OP_API_UT_COMMON_INC}
               ${ASCEND_DIR}/include ${ASCEND_DIR}/include/aclnn ${ASCEND_DIR}/include/aclnnop
+              ${ACLNN_SRC_DIRS}
       )
     target_link_libraries(${OP_API_MODULE_NAME}_cases_obj PRIVATE $<BUILD_INTERFACE:intf_llt_pub_asan_cxx17> gtest)
   endfunction()
@@ -200,7 +209,12 @@ if(UT_TEST_ALL
 
     if("${MODULE_UT_NAME}" STREQUAL "${OP_API_MODULE_NAME}")
       get_filename_component(OP_HOST_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
-      get_filename_component(UT_DIR ${OP_HOST_DIR} DIRECTORY)
+      get_filename_component(OP_HOST_NAME ${OP_HOST_DIR} NAME)
+      if("${OP_HOST_NAME}" STREQUAL "op_host")
+        get_filename_component(UT_DIR ${OP_HOST_DIR} DIRECTORY)
+      else()
+        get_filename_component(UT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
+      endif()
       get_filename_component(TESTS_DIR ${UT_DIR} DIRECTORY)
       get_filename_component(OP_NAME_DIR ${TESTS_DIR} DIRECTORY)
       get_filename_component(OP_NAME ${OP_NAME_DIR} NAME)
@@ -225,6 +239,25 @@ if(UT_TEST_ALL OR OP_KERNEL_UT)
       ""
       CACHE STRING "fastOp Test SocVersions"
     )
+
+  function(get_op_type_from_op_name OP_NAME OP_TYPE)
+    execute_process(
+      COMMAND
+        find ${CMAKE_CURRENT_SOURCE_DIR}/../../../op_host -name ${OP_NAME}_def.cpp -exec grep OP_ADD {} \;
+      OUTPUT_VARIABLE op_type
+      )
+    if(NOT op_type)
+      set(op_type "")
+    else()
+      string(REGEX REPLACE "OP_ADD\\(" "" op_type ${op_type})
+      string(REGEX REPLACE "\\).*$" "" op_type ${op_type})
+    endif()
+    set(${OP_TYPE}
+        ${op_type}
+        PARENT_SCOPE
+      )
+  endfunction()
+
   function(AddOpTestCase opName supportedSocVersion otherCompileOptions tilingSrcFiles)
     get_filename_component(UT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
     get_filename_component(TESTS_DIR ${UT_DIR} DIRECTORY)
@@ -240,15 +273,12 @@ if(UT_TEST_ALL OR OP_KERNEL_UT)
     file(GLOB KernelFile "${PROJECT_SOURCE_DIR}/*/${opName}/op_kernel/${opName}.cpp")
 
     # standardize opType
-    set(opType "")
-    string(REPLACE "_" ";" opTypeTemp "${opName}")
-    foreach(word IN LISTS opTypeTemp)
-      string(SUBSTRING "${word}" 0 1 firstLetter)
-      string(SUBSTRING "${word}" 1 -1 restOfWord)
-      string(TOUPPER "${firstLetter}" firstLetter)
-      string(TOLOWER "${restOfWord}" restOfWord)
-      set(opType "${opType}${firstLetter}${restOfWord}")
-    endforeach()
+    set(opType)
+    get_op_type_from_op_name("${opName}" opType)
+    if(NOT opType)
+      message(STATUS "[INFO] On [${compute_unit}], [${opName}] not need to compile.")
+      continue()
+    endif()
 
     # standardize tiling files
     string(REPLACE "," ";" tilingSrc "${tilingSrcFiles}")
@@ -264,6 +294,7 @@ if(UT_TEST_ALL OR OP_KERNEL_UT)
         PRIVATE ${ASCEND_DIR}/include/op_common/atvoss ${ASCEND_DIR}/include/op_common
                 ${ASCEND_DIR}/include/op_common/op_host ${PROJECT_SOURCE_DIR}/common/inc
                 ${ASCEND_DIR}/include/tiling ${ASCEND_DIR}/include/op_common/op_host
+                ${ASCEND_DIR}/include/toolchain
         )
       target_compile_definitions(${opName}_${socVersion}_tiling_tmp PRIVATE LOG_CPP _GLIBCXX_USE_CXX11_ABI=0)
       target_link_libraries(

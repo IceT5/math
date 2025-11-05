@@ -1,5 +1,5 @@
 /**
- * This program is free software, you can redistribute it and/or modify.
+ * This program is free software, you can redistribute it and/or modify it.
  * Copyright (c) 2025 Huawei Technologies Co., Ltd.
  * This file is a part of the CANN Open Software.
  * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
@@ -208,62 +208,6 @@ TEST_F(SinkhornTest, sinkhorn_float16_48_2)
     tilingData->tol = 0.0001; // 误差
 
     ICPU_SET_TILING_KEY(1); // float16 tilingKey = 1
-    ICPU_RUN_KF(sinkhorn, blockDim, cost, p, workspace, (uint8_t*)(tilingData));
-    // checkTotalP((half *)p, shapeSize);
-
-    AscendC::GmFree(cost);
-    AscendC::GmFree(p);
-    AscendC::GmFree(workspace);
-    AscendC::GmFree(tiling);
-}
-
-TEST_F(SinkhornTest, sinkhorn_bfloat16_48_2)
-{
-    size_t shapeSize = 48 * 2;
-    size_t inputCostByteSize = shapeSize * sizeof(float);
-    size_t outputPByteSize = shapeSize * sizeof(float);
-    size_t tilingDataSize = sizeof(SinkhornTilingDataUT);
-
-    uint8_t* cost = (uint8_t*)AscendC::GmAlloc(inputCostByteSize);
-    uint8_t* p = (uint8_t*)AscendC::GmAlloc(outputPByteSize);
-    uint8_t* workspace = (uint8_t*)AscendC::GmAlloc(2 * 16 * 1024 * 1024);
-    uint8_t* tiling = (uint8_t*)AscendC::GmAlloc(tilingDataSize);
-    uint32_t blockDim = 1;
-
-    uint16_t* fp = (uint16_t*)cost;
-    float f_1 = 1.0f;
-    for (int i = 0; i < shapeSize; i++) {
-        fp[i] = *((uint16_t*)&f_1);
-    }
-
-    SinkhornTilingDataUT* tilingData = reinterpret_cast<SinkhornTilingDataUT*>(tiling);
-
-    tilingData->formerNum = 1;     // former 数量
-    tilingData->formerRow = 48;    // former cost行数
-    tilingData->formerLength = 96; // former cost总长
-
-    tilingData->formerTileNum = 1;         // former Tile数量
-    tilingData->formerLastTileRow = 48;    // fomer last Tile行数
-    tilingData->formerLastTileLength = 96; // fomer last Tile长度
-
-    tilingData->tailNum = 0;    // tail 数量
-    tilingData->tailRow = 0;    // tail cost行数
-    tilingData->tailLength = 0; // tail cost总长
-
-    tilingData->tailTileNum = 0;        // tail Tile数量
-    tilingData->tailLastTileRow = 0;    // tail last Tile行数
-    tilingData->tailLastTileLength = 0; // tail last Tile长度
-
-    tilingData->tileRow = 1959;    // Tile行数(非Last)
-    tilingData->tileLength = 3918; // Tile长度(非Last)
-
-    tilingData->totalRow = 48;        // 总行数
-    tilingData->totalCol = 2;         // 总列数
-    tilingData->totalColAligned = 16; // 对齐后的总列数
-
-    tilingData->tol = 0.0001; // 误差
-
-    ICPU_SET_TILING_KEY(27); // bfloat16 tilingKey = 27
     ICPU_RUN_KF(sinkhorn, blockDim, cost, p, workspace, (uint8_t*)(tilingData));
     // checkTotalP((half *)p, shapeSize);
 

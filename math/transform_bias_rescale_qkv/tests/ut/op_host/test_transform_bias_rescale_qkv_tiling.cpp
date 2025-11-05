@@ -1,5 +1,5 @@
 /**
- * This program is free software, you can redistribute it and/or modify.
+ * This program is free software, you can redistribute it and/or modify it.
  * Copyright (c) 2025 Huawei Technologies Co., Ltd.
  * This file is a part of the CANN Open Software.
  * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
@@ -13,7 +13,6 @@
 #include <fstream>
 #include <vector>
 #include <gtest/gtest.h>
-#include "toolchain/slog.h"
 #include "base/registry/op_impl_space_registry_v2.h"
 #include "../../../op_host/transform_bias_rescale_qkv_tiling.h"
 #include "exe_graph/runtime/tiling_context.h"

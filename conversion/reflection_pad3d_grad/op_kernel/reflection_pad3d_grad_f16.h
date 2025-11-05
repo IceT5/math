@@ -1,5 +1,5 @@
 /**
- * This program is free software, you can redistribute it and/or modify.
+ * This program is free software, you can redistribute it and/or modify it.
  * Copyright (c) 2025 Huawei Technologies Co., Ltd.
  * This file is a part of the CANN Open Software.
  * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
@@ -124,7 +124,7 @@ public:
             curLen = preLen;
             curOffset = blockIdx * preLen + tailLen;
         }
-        yGm.SetGlobalBuffer(reinterpret_cast<__gm__ T*>(y) + curOffset);
+        yGm.SetGlobalBuffer(reinterpret_cast<__gm__ T*>(y) + curOffset, curLen);
         InitGlobalMemory<T>(yGm, curLen, 0);
         SyncAll();
     }
@@ -134,7 +134,7 @@ public:
         ClearOutput(y);
         xGm.SetGlobalBuffer(reinterpret_cast<__gm__ T*>(x) + ncOffset * curDepth * height * width);
         yGm.SetGlobalBuffer(reinterpret_cast<__gm__ T*>(y) + ncOffset * curOutDepth * outHeight * outWidth);
-        workspaceGm.SetGlobalBuffer(reinterpret_cast<__gm__ float*>(userWS) + (alignHeight * alignWidth) * blockIdx);
+        workspaceGm.SetGlobalBuffer(reinterpret_cast<__gm__ float*>(userWS) + (alignHeight * alignWidth) * blockIdx, alignHeight * alignWidth);
         InitGlobalMemory<float>(workspaceGm, alignHeight * alignWidth, (float)0.0);
         SyncAll();
         pipe.InitBuffer(inQueueX, BUFFER_NUM, (ubFactorElement * sizeof(T)));

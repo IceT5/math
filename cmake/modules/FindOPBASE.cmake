@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# This program is free software, you can redistribute it and/or modify.
+# This program is free software, you can redistribute it and/or modify it.
 # Copyright (c) 2025 Huawei Technologies Co., Ltd.
 # This file is a part of the CANN Open Software.
 # Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
@@ -17,8 +17,8 @@ endif()
 include(FindPackageHandleStandardArgs)
 
 set(OPBASE_HEAD_SEARCH_PATHS
-  ${ASCEND_DIR}/${SYSTEM_PREFIX}/include
-  ${TOP_DIR}/ops-base/include             # compile with ci
+  ${ASCEND_DIR}/${SYSTEM_PREFIX}/pkg_inc
+  ${TOP_DIR}/ops-base/pkg_inc             # compile with ci
 )
 
 set(OPBASE_LIB_SEARCH_PATHS ${ASCEND_DIR}/${SYSTEM_PREFIX})
