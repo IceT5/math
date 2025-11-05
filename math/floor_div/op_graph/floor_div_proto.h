@@ -13,8 +13,8 @@
  * \file floor_div_proto.h
  * \brief
 */
-#ifndef OPS_OP_PROTO_INC_MULV2_H_
-#define OPS_OP_PROTO_INC_MULV2_H_
+#ifndef OPS_OP_PROTO_INC_FLOOR_DIV_H_
+#define OPS_OP_PROTO_INC_FLOOR_DIV_H_
 
 #include "graph/operator_reg.h"
 #include "graph/types.h"

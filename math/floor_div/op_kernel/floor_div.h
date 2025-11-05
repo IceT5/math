@@ -13,8 +13,8 @@
  * \file floor_div.h
  * \brief
  * */
-#ifndef MULV2_H
-#define MULV2_H
+#ifndef FLOOR_DIV_H
+#define FLOOR_DIV_H
 
 #include "kernel_operator.h"
 #include "kernel_tiling/kernel_tiling.h"
@@ -118,6 +118,7 @@ __aicore__ inline void FloorDiv<T>::Compute(int32_t progress)
     AscendC::LocalTensor<T> xLocal = inputQueueX.DeQue<T>();
     AscendC::LocalTensor<T> yLocal = inputQueueY.DeQue<T>();
     AscendC::LocalTensor<T> zLocal = outputQueueZ.AllocTensor<T>();
+    AscendC::DumpTensor(xLocal, 121, 10);
     AscendC::LocalTensor<float> xFloat;
     AscendC::LocalTensor<float> yFloat;
     AscendC::LocalTensor<float> zFloat;

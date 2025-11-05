@@ -13,8 +13,8 @@
  * \file floor_div_tiling_key.h
  * \brief floor_div tiling key declare
  * */
-#ifndef __MULV2_TILING_KEY_H__
-#define __MULV2_TILING_KEY_H__
+#ifndef __FLOORDIV_TILING_KEY_H__
+#define __FLOORDIV_TILING_KEY_H__
 
 #include "ascendc/host_api/tiling/template_argument.h"
 
