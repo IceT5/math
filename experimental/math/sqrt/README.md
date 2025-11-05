@@ -80,8 +80,8 @@ sqrt                                    # Sqrt算子目录
     bash build_out/cann-ops-<vendor_name>-linux.<arch>.run
     ```
 ### 算子调用
-    - 执行调用
-    
+  - 执行调用
+
     ```bash
     bash build.sh --run_example sqrt eager cust --vendor_name=custom
     ```    
