@@ -136,6 +136,7 @@ usage() {
         echo "    bash build.sh --pkg --soc=ascend910b --vendor_name=customize -j16 -O3"
         echo "    bash build.sh --pkg --ops=add,sub --debug"
         echo "    bash build.sh --pkg --experimental --soc=ascend910b"
+        echo "    bash build.sh --pkg --experimental --soc=ascend910b --ops=abs"
         return
         ;;
       opkernel)
