@@ -10,4 +10,4 @@
 # ----------------------------------------------------------------------------
 
 add_modules_sources(OPTYPE floor_div ACLNNTYPE aclnn)
-set(SUPPORT_DTYPE_LIST "float;float16;int32;int16")
+set(SUPPORT_DTYPE_LIST "float;float16;int32;int8;uint8;bfloat16")

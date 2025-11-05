@@ -25,7 +25,7 @@ namespace NsFloorDiv {
 
 using namespace AscendC;
 
-constexpr int32_t BUFFER_NUM = 2;
+constexpr int32_t BUFFER_NUM = 1;
 
 template <typename T>
 class FloorDiv {
@@ -111,19 +111,19 @@ __aicore__ inline void FloorDiv<T>::Compute(int32_t progress)
     AscendC::LocalTensor<T> xLocal = inputQueueX.DeQue<T>();
     AscendC::LocalTensor<T> yLocal = inputQueueY.DeQue<T>();
     AscendC::LocalTensor<T> zLocal = outputQueueZ.AllocTensor<T>();
-    AscendC::LocalTensor<float> xFloat = tmp0.Get<float>();
-    AscendC::LocalTensor<float> yFloat = tmp1.Get<float>();
-    AscendC::LocalTensor<float> zFloat = tmp2.Get<float>();
+    AscendC::LocalTensor<float> xFloat = tmp0.DeQue<float>();
+    AscendC::LocalTensor<float> yFloat = tmp1.DeQue<float>();
+    AscendC::LocalTensor<float> zFloat = tmp2.DeQue<float>();
 
     if constexpr (std::is_same_v<T, float>) {
         AscendC::Div(yLocal, xLocal, yLocal, this->processDataNum);
         AscendC::Floor(zLocal, yLocal, this->processDataNum);
     } else {
-        // AscendC::Cast(xFloat, xLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
-        // AscendC::Cast(yFloat, yLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
-        // AscendC::Div(zFloat, xFloat, yFloat, this->processDataNum);
-        // AscendC::Floor(xFloat, zFloat, this->processDataNum);
-        // AscendC::Cast(zLocal, xFloat, AscendC::RoundMode::CAST_FLOOR, this->processDataNum);
+        AscendC::Cast(xFloat, xLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
+        AscendC::Cast(yFloat, yLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
+        AscendC::Div(zFloat, xFloat, yFloat, this->processDataNum);
+        AscendC::Floor(xFloat, zFloat, this->processDataNum);
+        AscendC::Cast(zLocal, xFloat, AscendC::RoundMode::CAST_FLOOR, this->processDataNum);
     }
     outputQueueZ.EnQue(zLocal);
     inputQueueX.FreeTensor(xLocal);

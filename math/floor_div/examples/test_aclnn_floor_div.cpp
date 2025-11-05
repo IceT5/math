@@ -14,7 +14,7 @@
 #include "acl/acl.h"
 #include "aclnn_floor_div.h"
 // 修改测试数据类型
-using DataType = float;
+using DataType = short;
 #define CHECK_RET(cond, return_expr) \
     do {                             \
         if (!(cond)) {               \
@@ -45,8 +45,8 @@ void PrintOutResult(std::vector<int64_t>& shape, void** deviceAddr)
         ACL_MEMCPY_DEVICE_TO_HOST);
     CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("copy result from device to host failed. ERROR: %d\n", ret); return);
     for (int64_t i = 0; i < size; i++) {
-         LOG_PRINT("mean result[%ld] is: %f\n", i, resultData[i]);       // float
-        //LOG_PRINT("mean result[%ld] is: %d\n", i, resultData[i]);       // int
+        LOG_PRINT("mean result[%ld] is: ", i);       // int
+        std::cout << resultData[i] << "\n";
     }
 }
 
@@ -100,22 +100,22 @@ int main()
     aclTensor* selfX = nullptr;
     void* selfXDeviceAddr = nullptr;
     std::vector<int64_t> selfXShape = {1, 1, 3, 4};
-    std::vector<DataType> selfXHostData(12, 7.0);
-    ret = CreateAclTensor(selfXHostData, selfXShape, &selfXDeviceAddr, aclDataType::ACL_FLOAT, &selfX);
+    std::vector<DataType> selfXHostData(12, -19);
+    ret = CreateAclTensor(selfXHostData, selfXShape, &selfXDeviceAddr, aclDataType::ACL_INT16, &selfX);
     CHECK_RET(ret == ACL_SUCCESS, return ret);
 
     aclTensor* selfY = nullptr;
     void* selfYDeviceAddr = nullptr;
     std::vector<int64_t> selfYShape = {1, 1, 3, 4};
-    std::vector<DataType> selfYHostData(12, 9.0);
-    ret = CreateAclTensor(selfYHostData, selfYShape, &selfYDeviceAddr, aclDataType::ACL_FLOAT, &selfY);
+    std::vector<DataType> selfYHostData(12, 9);
+    ret = CreateAclTensor(selfYHostData, selfYShape, &selfYDeviceAddr, aclDataType::ACL_INT16, &selfY);
     CHECK_RET(ret == ACL_SUCCESS, return ret);
 
     aclTensor* out = nullptr;
     void* outDeviceAddr = nullptr;
     std::vector<int64_t> outShape = {1, 1, 3, 4};
-    std::vector<DataType> outHostData(12, 3.0);
-    ret = CreateAclTensor(outHostData, outShape, &outDeviceAddr, aclDataType::ACL_FLOAT, &out);
+    std::vector<DataType> outHostData(12, 300);
+    ret = CreateAclTensor(outHostData, outShape, &outDeviceAddr, aclDataType::ACL_INT16, &out);
     CHECK_RET(ret == ACL_SUCCESS, return ret);
 
     // 3. 调用CANN算子库API，需要修改为具体的Api名称
