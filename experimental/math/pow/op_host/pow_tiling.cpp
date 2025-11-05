@@ -41,7 +41,7 @@ namespace optiling {
         // 获取ubsize coreNum
         auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
         ascendcPlatform.GetCoreMemSize(platform_ascendc::CoreMemType::UB, ubSize);
-        coreNum = ascendcPlatform.GetCoreNum();
+        coreNum = ascendcPlatform.GetCoreNumAiv();
         auto socVersion = ascendcPlatform.GetSocVersion();
         OP_CHECK_IF(coreNum == 0, OP_LOGE(context, "coreNum is 0"), return ge::GRAPH_FAILED);
         OP_CHECK_IF(ubSize == 0, OP_LOGE(context, "ubSize is 0"), return ge::GRAPH_FAILED);
