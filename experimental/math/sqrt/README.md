@@ -4,7 +4,8 @@
 
 ```
 sqrt                                    # Sqrt算子目录 
-├── docs                                # Sqrt算子文档目录 
+├── docs                                # 算子文档目录 
+│   └── sqrt.md                         # Sqrt算子文档
 ├── op_host                             # Host侧实现 
 │   ├── sqrt_def.cpp                    # 算子信息库，定义算子基本信息，如名称、输入输出、数据类型等 
 │   ├── sqrt_infershape.cpp             # InferShape实现，实现算子形状推导，在运行时推导输出shape 
