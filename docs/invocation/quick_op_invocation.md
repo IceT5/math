@@ -38,7 +38,7 @@
 
     根据实际环境，下载对应`Ascend-cann-toolkit_${cann_version}_linux-${arch}.run`包，下载链接为[toolkit x86_64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/8.5.0.alpha001/Ascend-cann-toolkit_8.5.0.alpha001_linux-x86_64.run)、[toolkit aarch64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/8.5.0.alpha001/Ascend-cann-toolkit_8.5.0.alpha001_linux-aarch64.run)。
     
-<span style="color:#e60000;">    // 鸿蒙有单独的toolkits组合包，`Ascend-cann-toolkit_${cann_version}_linux-${arch}-mobile-station.run`</span>
+<span style="color:#e60000;">    // 鸿蒙有单独的toolkits组合包，Ascend-cann-toolkit_${cann_version}_linux-${arch}-mobile-station.run</span>
     
     ```bash
     # 确保安装包具有可执行权限
@@ -51,6 +51,7 @@
     - \$\{install\_path\}：表示指定安装路径，默认安装在`/usr/local/Ascend`目录。
 
 2. **安装社区版CANN legacy包（运行态依赖）**
+<span style="color:#e60000;">     // 鸿蒙社区不涉及运行态依赖，不需要安装</span>
 
     运行算子时必须安装本包，若仅编译算子，可跳过本操作。
 
@@ -107,6 +108,7 @@
     # bash build.sh --pkg --soc=ascend910b --ops=abs
     ```
     - --soc：\$\{soc\_version\}表示NPU型号。Atlas A2 训练系列产品/Atlas 800I A2 推理产品/A200I A2 Box 异构组件使用"ascend910b"（默认），Atlas A3 训练系列产品/Atlas A3 推理系列产品使用"ascend910_93"。
+<span style="color:#e60000;">    // 需补充KirinX90支持</span>
     - --vendor_name（可选）：\$\{vendor\_name\}表示构建的自定义算子包名，默认名为custom。
     - --ops（可选）：\$\{op\_list\}表示待编译算子，不指定时默认编译所有算子。格式形如"abs,add_lora,..."，多算子之间用英文逗号","分隔。
     
@@ -137,6 +139,8 @@
     ```
     - --jit（可选）：设置后表示不编译算子二进制文件，如需使用aclnn调用算子，该选项无需设置。
     - --soc：\$\{soc\_version\}表示NPU型号。Atlas A2 训练系列产品/Atlas 800I A2 推理产品/A200I A2 Box 异构组件使用"ascend910b"（默认），Atlas A3 训练系列产品/Atlas A3 推理系列产品使用"ascend910_93"。
+    
+    <span style="color:#e60000;">    // 需补充KirinX90支持</span>
 
     若提示如下信息，说明编译成功。
 
@@ -159,6 +163,8 @@
 通过项目根目录build.sh脚本，可快速调用算子和UT用例，验证项目功能是否正常，build参数介绍参见[build参数说明](../context/build.md)。
 
 - **执行算子样例**
+
+<span style="color:#e60000;">    // 鸿蒙不支持单算子样例执行 </span>
   
     - 完成ops-math包安装后，执行命令如下：
         ```bash
