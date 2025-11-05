@@ -119,11 +119,11 @@ __aicore__ inline void FloorDiv<T>::Compute(int32_t progress)
         AscendC::Div(yLocal, xLocal, yLocal, this->processDataNum);
         AscendC::Floor(zLocal, yLocal, this->processDataNum);
     } else {
-        AscendC::Cast(xFloat, xLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
-        AscendC::Cast(yFloat, yLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
-        AscendC::Div(zFloat, xFloat, yFloat, this->processDataNum);
-        AscendC::Floor(xFloat, zFloat, this->processDataNum);
-        AscendC::Cast(zLocal, xFloat, AscendC::RoundMode::CAST_FLOOR, this->processDataNum);
+        // AscendC::Cast(xFloat, xLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
+        // AscendC::Cast(yFloat, yLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
+        // AscendC::Div(zFloat, xFloat, yFloat, this->processDataNum);
+        // AscendC::Floor(xFloat, zFloat, this->processDataNum);
+        // AscendC::Cast(zLocal, xFloat, AscendC::RoundMode::CAST_FLOOR, this->processDataNum);
     }
     outputQueueZ.EnQue(zLocal);
     inputQueueX.FreeTensor(xLocal);
