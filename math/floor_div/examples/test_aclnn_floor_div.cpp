@@ -46,7 +46,7 @@ void PrintOutResult(std::vector<int64_t>& shape, void** deviceAddr)
     CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("copy result from device to host failed. ERROR: %d\n", ret); return);
     for (int64_t i = 0; i < size; i++) {
         LOG_PRINT("mean result[%ld] is: ", i);       // int
-        std::cout << resultData[i] << "\n";
+        std::cout << (int)resultData[i] << "\n";
     }
 }
 
@@ -100,22 +100,25 @@ int main()
     aclTensor* selfX = nullptr;
     void* selfXDeviceAddr = nullptr;
     std::vector<int64_t> selfXShape = {1, 1, 3, 4};
-    std::vector<DataType> selfXHostData(12, -19);
-    ret = CreateAclTensor(selfXHostData, selfXShape, &selfXDeviceAddr, aclDataType::ACL_INT16, &selfX);
+    std::vector<DataType> selfXHostData(12);
+    for(int i = 0; i < selfXHostData.size(); i++) {
+        selfXHostData[i] = -i;
+    }
+    ret = CreateAclTensor(selfXHostData, selfXShape, &selfXDeviceAddr, aclDataType::ACL_BF16, &selfX);
     CHECK_RET(ret == ACL_SUCCESS, return ret);
 
     aclTensor* selfY = nullptr;
     void* selfYDeviceAddr = nullptr;
     std::vector<int64_t> selfYShape = {1, 1, 3, 4};
-    std::vector<DataType> selfYHostData(12, 9);
-    ret = CreateAclTensor(selfYHostData, selfYShape, &selfYDeviceAddr, aclDataType::ACL_INT16, &selfY);
+    std::vector<DataType> selfYHostData(12, 3);
+    ret = CreateAclTensor(selfYHostData, selfYShape, &selfYDeviceAddr, aclDataType::ACL_BF16, &selfY);
     CHECK_RET(ret == ACL_SUCCESS, return ret);
 
     aclTensor* out = nullptr;
     void* outDeviceAddr = nullptr;
     std::vector<int64_t> outShape = {1, 1, 3, 4};
-    std::vector<DataType> outHostData(12, 300);
-    ret = CreateAclTensor(outHostData, outShape, &outDeviceAddr, aclDataType::ACL_INT16, &out);
+    std::vector<DataType> outHostData(12, 1);
+    ret = CreateAclTensor(outHostData, outShape, &outDeviceAddr, aclDataType::ACL_BF16, &out);
     CHECK_RET(ret == ACL_SUCCESS, return ret);
 
     // 3. 调用CANN算子库API，需要修改为具体的Api名称

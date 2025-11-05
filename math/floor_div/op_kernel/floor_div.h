@@ -25,7 +25,7 @@ namespace NsFloorDiv {
 
 using namespace AscendC;
 
-constexpr int32_t BUFFER_NUM = 1;
+constexpr int32_t BUFFER_NUM = 2;
 
 template <typename T>
 class FloorDiv {
@@ -44,7 +44,7 @@ private:
     TPipe pipe;
     TQue<QuePosition::VECIN, BUFFER_NUM> inputQueueX;
     TQue<QuePosition::VECIN, BUFFER_NUM> inputQueueY;
-    AscendC::TBuf<AscendC::TPosition::VECCALC> tmp0, tmp1, tmp2;
+    AscendC::TBuf<AscendC::TPosition::VECCALC> tmp0, tmp1, tmp2, tmp3, tmp01, tmp11, tmp21, tmp31;
     TQue<QuePosition::VECOUT, BUFFER_NUM> outputQueueZ;
     GlobalTensor<T> inputGMX;
     GlobalTensor<T> inputGMY;
@@ -84,6 +84,11 @@ __aicore__ inline void FloorDiv<T>::Init(GM_ADDR x, GM_ADDR y, GM_ADDR z, const 
         pipe.InitBuffer(tmp0, this->tileDataNum * sizeof(float));
         pipe.InitBuffer(tmp1, this->tileDataNum * sizeof(float));
         pipe.InitBuffer(tmp2, this->tileDataNum * sizeof(float));
+        pipe.InitBuffer(tmp3, this->tileDataNum * sizeof(half));
+        pipe.InitBuffer(tmp01, this->tileDataNum * sizeof(float));
+        pipe.InitBuffer(tmp11, this->tileDataNum * sizeof(float));
+        pipe.InitBuffer(tmp21, this->tileDataNum * sizeof(float));
+        pipe.InitBuffer(tmp31, this->tileDataNum * sizeof(half));
     }
 
 template <typename T>
@@ -111,9 +116,18 @@ __aicore__ inline void FloorDiv<T>::Compute(int32_t progress)
     AscendC::LocalTensor<T> xLocal = inputQueueX.DeQue<T>();
     AscendC::LocalTensor<T> yLocal = inputQueueY.DeQue<T>();
     AscendC::LocalTensor<T> zLocal = outputQueueZ.AllocTensor<T>();
-    AscendC::LocalTensor<float> xFloat = tmp0.DeQue<float>();
-    AscendC::LocalTensor<float> yFloat = tmp1.DeQue<float>();
-    AscendC::LocalTensor<float> zFloat = tmp2.DeQue<float>();
+    AscendC::LocalTensor<float> xFloat;
+    AscendC::LocalTensor<float> yFloat;
+    AscendC::LocalTensor<float> zFloat;
+    if(progress & 1) {
+        xFloat = tmp0.Get<float>()
+        yFloat = tmp1.Get<float>()
+        zFloat = tmp2.Get<float>();
+    } else {
+        xFloat = tmp01.Get<float>()
+        yFloat = tmp11.Get<float>()
+        zFloat = tmp21.Get<float>();
+    }
 
     if constexpr (std::is_same_v<T, float>) {
         AscendC::Div(yLocal, xLocal, yLocal, this->processDataNum);
@@ -123,7 +137,18 @@ __aicore__ inline void FloorDiv<T>::Compute(int32_t progress)
         AscendC::Cast(yFloat, yLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
         AscendC::Div(zFloat, xFloat, yFloat, this->processDataNum);
         AscendC::Floor(xFloat, zFloat, this->processDataNum);
-        AscendC::Cast(zLocal, xFloat, AscendC::RoundMode::CAST_FLOOR, this->processDataNum);
+        if constexpr (std::is_same_v<T, int8_t> || std::is_same_v<T, uint8_t>) {
+            AscendC::LocalTensor<half> zHalf;
+            if(progress & 1){
+                zHalf = tmp3.Get<half>();
+            } else {
+                zHalf = tmp31.Get<half>();
+            }
+            AscendC::Cast(zHalf, xFloat, AscendC::RoundMode::CAST_FLOOR, this->processDataNum);
+            AscendC::Cast(zLocal, zHalf, AscendC::RoundMode::CAST_FLOOR, this->processDataNum);
+        } else {
+            AscendC::Cast(zLocal, xFloat, AscendC::RoundMode::CAST_FLOOR, this->processDataNum);
+        }
     }
     outputQueueZ.EnQue(zLocal);
     inputQueueX.FreeTensor(xLocal);
