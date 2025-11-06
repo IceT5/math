@@ -2,7 +2,7 @@
 
 > 说明：  
 > 1. 算子开发过程中涉及的基本概念如Tiling、Kernel、Ascend C接口等，详细介绍请参考[《Ascend C算子开发》](https://hiascend.com/document/redirect/CannCommunityOpdevAscendC)。  
-> 2. aicore算子是使用Ascend C语言开发，运行在aicore硬件单元算子，aicpu算子是使用C++语言开发，运行在aicpu硬件单元算子，如果你想贡献aicpu算子，请参考[AI CPU算子开发指南](./aicpu_develop_guide.md)。
+> 2. AI CORE算子是使用Ascend C语言开发，运行在AI CORE硬件单元算子，AI CPU算子是使用C++语言开发，运行在AI CPU硬件单元算子，如果你想贡献aicpu算子，请参考[AI CPU算子开发指南](./aicpu_develop_guide.md)。
 
 开发指南以`AddExample`算子开发为例，介绍新算子开发流程以及涉及的交付件，流程图如下，完整样例代码请访问项目`examples`目录。
 
@@ -21,8 +21,11 @@
 
 ## 工程创建
 **1. 环境部署**
+
 开发算子前，请参考[环境准备](../invocation/quick_op_invocation.md#环境准备)完成环境搭建。
+
 **2. 目录创建**
+
 目录创建是算子开发的重要步骤，为后续代码编写、编译构建和调试提供统一的目录结构和文件组织方式。
 
 本项目`build.sh`，支持快速创建算子目录。进入项目根目录，执行以下命令：
@@ -65,10 +68,16 @@ ${op_name}                              # 替换为实际算子名的小写下�
 算子定义需要完成两个交付件：`README.md` `${op_name}_def.cpp`
 
 **交付件1：README.md**
-开发算子前需要先确定目标算子的功能和计算逻辑。以自定义`AddExample`算子说明为例，请参考[AddExample算子说明](../../examples/add_example/README.md)。
+
+开发算子前需要先确定目标算子的功能和计算逻辑。
+
+以自定义`AddExample`算子说明为例，请参考[AddExample算子说明](../../examples/add_example/README.md)。
 
 **交付件2：${op_name}_def.cpp**
-算子原型定义。以自定义`AddExample`算子说明为例，请参考[AddExample算子原型定义](../../examples/add_example/op_host/add_example_def.cpp)。
+
+算子原型定义。
+
+以自定义`AddExample`算子说明为例，请参考[AddExample算子原型定义](../../examples/add_example/op_host/add_example_def.cpp)。
 ## Tiling实现
 
 ### Tiling简介
@@ -80,6 +89,7 @@ ${op_name}                              # 替换为实际算子名的小写下�
 ### 代码实现
 
 Tiling一共需要三个交付件：`${op_name}_tiling.cpp` `${op_name}_tiling_key.h` `${op_name}_tiling_data.h`
+
 **交付件1：${op_name}_tiling.cpp**
 
 Tiling主要切分逻辑。
@@ -368,7 +378,7 @@ __aicore__ inline void AddExample<T>::Process()
 
 1. **UT验证。**
 
-    算子开发过程中，可通过UT验证（如tiling/kernel/aclnn UT）方式进行快速验证，方法请参考[算子调用方式](../invocation/quick_op_invocation.md)。
+    算子开发过程中，可通过UT验证（如tiling/kernel UT）方式进行快速验证，方法请参考[tiling UT](../invocation/quick_op_invocation.md)/[kernel UT]()。
 
 2. **aclnn调用验证。**
 
