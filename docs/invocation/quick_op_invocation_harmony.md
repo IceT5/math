@@ -133,11 +133,9 @@ ops-math包或者自定义算子包安装后，可以使用atc模型转换工具
 
 模型转换成功后，需要调用鸿蒙应用开发接口，完成鸿蒙设备算子运行。详细介绍参考[鸿蒙应用开发](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cann-kit-guide)。
 
+
+
 通过项目根目录build.sh脚本，可快速调用UT用例，验证项目功能是否正常，build参数介绍参见[build参数说明](../context/build.md)。
-
-- **执行算子样例**
-
-    
 
 - **执行算子UT**
 
