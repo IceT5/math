@@ -21,8 +21,11 @@
 
 ## 工程创建
 **1. 环境部署**
+
 开发算子前，请参考[环境准备](../invocation/quick_op_invocation.md#环境准备)完成环境搭建。
+
 **2. 目录创建**
+
 目录创建是算子开发的重要步骤，为后续代码编写、编译构建和调试提供统一的目录结构和文件组织方式。
 
 本项目`build.sh`，支持快速创建算子目录。进入项目根目录，执行以下命令：
@@ -65,10 +68,16 @@ ${op_name}                              # 替换为实际算子名的小写下�
 算子定义需要完成两个交付件：`README.md` `${op_name}_def.cpp`
 
 **交付件1：README.md**
-开发算子前需要先确定目标算子的功能和计算逻辑。以自定义`AddExample`算子说明为例，请参考[AddExample算子说明](../../examples/add_example/README.md)。
+
+开发算子前需要先确定目标算子的功能和计算逻辑。
+
+以自定义`AddExample`算子说明为例，请参考[AddExample算子说明](../../examples/add_example/README.md)。
 
 **交付件2：${op_name}_def.cpp**
-算子原型定义。以自定义`AddExample`算子说明为例，请参考[AddExample算子原型定义](../../examples/add_example/op_host/add_example_def.cpp)。
+
+算子原型定义。
+
+以自定义`AddExample`算子说明为例，请参考[AddExample算子原型定义](../../examples/add_example/op_host/add_example_def.cpp)。
 ## Tiling实现
 
 ### Tiling简介
@@ -80,6 +89,7 @@ ${op_name}                              # 替换为实际算子名的小写下�
 ### 代码实现
 
 Tiling一共需要三个交付件：`${op_name}_tiling.cpp` `${op_name}_tiling_key.h` `${op_name}_tiling_data.h`
+
 **交付件1：${op_name}_tiling.cpp**
 
 Tiling主要切分逻辑。
