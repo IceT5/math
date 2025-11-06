@@ -81,7 +81,7 @@ ge::graphStatus GetShapeAttrsInfo(gert::TilingContext* context, int64_t& totalId
     auto wDim = inputShapeX.GetDim(INDEXTHREE);
     totalIdx = nDim * cDim * hDim * wDim;
     // dtype校验
-    const std::set<ge::DataType> supportedDtype = {ge::DT_FLOAT, ge::DT_INT32, ge::DT_INT16, ge::DT_FLOAT16};
+    const std::set<ge::DataType> supportedDtype = {ge::DT_FLOAT, ge::DT_INT32, ge::DT_INT8, ge::DT_FLOAT16, ge::DT_UINT8, ge::DT_BF16};
     auto inputDesc = context->GetInputDesc(0);
     OP_CHECK_NULL_WITH_CONTEXT(context, inputDesc);
     dataType = inputDesc->GetDataType();
@@ -206,11 +206,17 @@ static ge::graphStatus FloorDivTilingFunc(gert::TilingContext* context)
     } else if (dataType == ge::DT_INT32) {
         tilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_1);
         context->SetTilingKey(tilingKey);
-    } else if (dataType == ge::DT_INT16) {
+    } else if (dataType == ge::DT_INT8) {
         tilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_2);
         context->SetTilingKey(tilingKey);
     } else if (dataType == ge::DT_FLOAT16) {
         tilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_3);
+        context->SetTilingKey(tilingKey);        
+    } else if (dataType == ge::DT_UINT8) {
+        tilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_4);
+        context->SetTilingKey(tilingKey);        
+    } else if (dataType == ge::DT_BF16) {
+        tilingKey = GET_TPL_TILING_KEY(ELEMENTWISE_TPL_SCH_MODE_5);
         context->SetTilingKey(tilingKey);        
     } else {
         OP_LOGE(context, "get dtype error");

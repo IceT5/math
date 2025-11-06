@@ -13,8 +13,8 @@
  * \file floor_div.h
  * \brief
  * */
-#ifndef MULV2_H
-#define MULV2_H
+#ifndef FLOOR_DIV_H
+#define FLOOR_DIV_H
 
 #include "kernel_operator.h"
 #include "kernel_tiling/kernel_tiling.h"
@@ -25,7 +25,7 @@ namespace NsFloorDiv {
 
 using namespace AscendC;
 
-constexpr int32_t BUFFER_NUM = 2;
+constexpr int32_t BUFFER_NUM = 1;
 
 template <typename T>
 class FloorDiv {
@@ -44,7 +44,7 @@ private:
     TPipe pipe;
     TQue<QuePosition::VECIN, BUFFER_NUM> inputQueueX;
     TQue<QuePosition::VECIN, BUFFER_NUM> inputQueueY;
-    AscendC::TBuf<AscendC::TPosition::VECCALC> tmp0, tmp1, tmp2;
+    TQue<QuePosition::TSCM, 1> tmp0, tmp1, tmp01, tmp11;
     TQue<QuePosition::VECOUT, BUFFER_NUM> outputQueueZ;
     GlobalTensor<T> inputGMX;
     GlobalTensor<T> inputGMY;
@@ -81,9 +81,10 @@ __aicore__ inline void FloorDiv<T>::Init(GM_ADDR x, GM_ADDR y, GM_ADDR z, const 
         pipe.InitBuffer(inputQueueX, BUFFER_NUM, this->tileDataNum * sizeof(T));
         pipe.InitBuffer(inputQueueY, BUFFER_NUM, this->tileDataNum * sizeof(T));
         pipe.InitBuffer(outputQueueZ, BUFFER_NUM, this->tileDataNum * sizeof(T));
-        pipe.InitBuffer(tmp0, this->tileDataNum * sizeof(float));
-        pipe.InitBuffer(tmp1, this->tileDataNum * sizeof(float));
-        pipe.InitBuffer(tmp2, this->tileDataNum * sizeof(float));
+        pipe.InitBuffer(tmp0, 1, this->tileDataNum * sizeof(float));
+        pipe.InitBuffer(tmp1, 1, this->tileDataNum * sizeof(half));
+        pipe.InitBuffer(tmp01, 1, this->tileDataNum * sizeof(float));
+        pipe.InitBuffer(tmp11, 1, this->tileDataNum * sizeof(half));
     }
 
 template <typename T>
@@ -111,23 +112,41 @@ __aicore__ inline void FloorDiv<T>::Compute(int32_t progress)
     AscendC::LocalTensor<T> xLocal = inputQueueX.DeQue<T>();
     AscendC::LocalTensor<T> yLocal = inputQueueY.DeQue<T>();
     AscendC::LocalTensor<T> zLocal = outputQueueZ.AllocTensor<T>();
-    AscendC::LocalTensor<float> xFloat = tmp0.Get<float>();
-    AscendC::LocalTensor<float> yFloat = tmp1.Get<float>();
-    AscendC::LocalTensor<float> zFloat = tmp2.Get<float>();
-
+    AscendC::LocalTensor<float> xFloat = tmp0.AllocTensor<float>();
+    AscendC::LocalTensor<float> yFloat = tmp01.AllocTensor<float>();
+    AscendC::LocalTensor<half> xHalf = tmp1.AllocTensor<half>();
+    AscendC::LocalTensor<half> yHalf = tmp11.AllocTensor<half>();
+    AscendC::DumpTensor(xLocal, 119, 10);
+    AscendC::DumpTensor(yLocal, 120, 10);
     if constexpr (std::is_same_v<T, float>) {
         AscendC::Div(yLocal, xLocal, yLocal, this->processDataNum);
         AscendC::Floor(zLocal, yLocal, this->processDataNum);
+    } else if constexpr (std::is_same_v<T, int8_t> || std::is_same_v<T, uint8_t>) {
+        AscendC::Cast(xHalf, xLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
+         AscendC::Cast(yHalf, yLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
+        AscendC::DumpTensor(xHalf, 138, 10);
+        AscendC::DumpTensor(yHalf, 139, 10);
+                        // AscendC::Div(xHalf, xHalf, yHalf, this->processDataNum);
+        // AscendC::Floor(yHalf, xHalf, this->processDataNum);
+        // AscendC::Cast(zLocal, yHalf, AscendC::RoundMode::CAST_FLOOR, this->processDataNum);
     } else {
-        // AscendC::Cast(xFloat, xLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
-        // AscendC::Cast(yFloat, yLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
-        // AscendC::Div(zFloat, xFloat, yFloat, this->processDataNum);
-        // AscendC::Floor(xFloat, zFloat, this->processDataNum);
-        // AscendC::Cast(zLocal, xFloat, AscendC::RoundMode::CAST_FLOOR, this->processDataNum);
+        AscendC::Cast(xFloat, xLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
+        AscendC::Cast(yFloat, yLocal, AscendC::RoundMode::CAST_NONE, this->processDataNum);
+        AscendC::DumpTensor(xFloat, 139, 10);
+        AscendC::DumpTensor(yFloat, 140, 10);
+        AscendC::Div(yFloat, xFloat, yFloat, this->processDataNum);
+        AscendC::DumpTensor(yFloat, 142, 10);
+        AscendC::Floor(xFloat, yFloat, this->processDataNum);
+        AscendC::DumpTensor(xFloat, 144, 10);
+        AscendC::Cast(zLocal, xFloat, AscendC::RoundMode::CAST_FLOOR, this->processDataNum);
     }
     outputQueueZ.EnQue(zLocal);
     inputQueueX.FreeTensor(xLocal);
     inputQueueY.FreeTensor(yLocal);
+    tmp0.FreeTensor(xFloat);
+    tmp01.FreeTensor(yFloat);
+    tmp1.FreeTensor(xHalf);
+    tmp11.FreeTensor(yHalf);
 }
 
 template <typename T>

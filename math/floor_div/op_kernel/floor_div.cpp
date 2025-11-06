@@ -19,8 +19,10 @@ enum class FloorDivTilingKey : uint32_t
 {
     TILING_KEY_EXAMPLE_FLOAT = 0,
     TILING_KEY_EXAMPLE_INT32 = 1,
-    TILING_KEY_EXAMPLE_INT16 = 2,
+    TILING_KEY_EXAMPLE_INT8 = 2,
     TILING_KEY_EXAMPLE_HALF = 3,
+    TILING_KEY_EXAMPLE_UINT8 = 4,
+    TILING_KEY_EXAMPLE_BF16 = 5
 };
 
 template <uint32_t schMode>
@@ -38,13 +40,23 @@ __global__ __aicore__ void floor_div(GM_ADDR x, GM_ADDR y, GM_ADDR z, GM_ADDR wo
         op.Init(x, y, z, &tilingData);        // 算子kernel实例初始化
         op.Process();                         // 算子kernel实例执行
     }
-    else if constexpr (schMode == static_cast<uint32_t>(FloorDivTilingKey::TILING_KEY_EXAMPLE_INT16)) {
-        NsFloorDiv::FloorDiv<int16_t> op; // 算子kernel实例获取
+    else if constexpr (schMode == static_cast<uint32_t>(FloorDivTilingKey::TILING_KEY_EXAMPLE_INT8)) {
+        NsFloorDiv::FloorDiv<int8_t> op; // 算子kernel实例获取
         op.Init(x, y, z, &tilingData);      // 算子kernel实例初始化
         op.Process();                       // 算子kernel实例执行
     }
     else if constexpr (schMode == static_cast<uint32_t>(FloorDivTilingKey::TILING_KEY_EXAMPLE_HALF)) {
         NsFloorDiv::FloorDiv<half> op; // 算子kernel实例获取
+        op.Init(x, y, z, &tilingData);        // 算子kernel实例初始化
+        op.Process();                         // 算子kernel实例执行
+    }
+    else if constexpr (schMode == static_cast<uint32_t>(FloorDivTilingKey::TILING_KEY_EXAMPLE_UINT8)) {
+        NsFloorDiv::FloorDiv<uint8_t> op; // 算子kernel实例获取
+        op.Init(x, y, z, &tilingData);        // 算子kernel实例初始化
+        op.Process();                         // 算子kernel实例执行
+    }
+    else if constexpr (schMode == static_cast<uint32_t>(FloorDivTilingKey::TILING_KEY_EXAMPLE_BF16)) {
+        NsFloorDiv::FloorDiv<bfloat16_t> op; // 算子kernel实例获取
         op.Init(x, y, z, &tilingData);        // 算子kernel实例初始化
         op.Process();                         // 算子kernel实例执行
     }
