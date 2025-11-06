@@ -1,4 +1,4 @@
-# aclnnSelect
+# aclnnSWhere
 
 ## 产品支持情况
 
@@ -12,7 +12,7 @@
 + 计算公式如下：
 
 $$
-out_i=select(self_i,other_i,condition_i)=\begin{cases}
+out_i=SWhere(self_i,other_i,condition_i)=\begin{cases}
   self_i, & \text{if condition}_i \\
   other_i, & \text{otherwise}
    \end{cases}
@@ -20,12 +20,12 @@ $$
 
 ## 函数原型
 
-每个算子分为[两段式接口](./common/两段式接口.md)，必须先调用“aclnnSelectGetWorkspaceSize”接口获取计算所需workspace大小以及包含了算子计算流程的执行器，再调用“aclnnSelect”接口执行计算。
+每个算子分为[两段式接口](./common/两段式接口.md)，必须先调用“aclnnSWhereGetWorkspaceSize”接口获取计算所需workspace大小以及包含了算子计算流程的执行器，再调用“aclnnSWhere”接口执行计算。
 
-- `aclnnStatus aclnnSelectGetWorkspaceSize(const aclTensor *condition, const aclTensor *self, const aclTensor *other, aclTensor *out, uint64_t *workspaceSize, aclOpExecutor **executor)`
-- `aclnnStatus aclnnSelect(void *workspace, uint64_t workspaceSize, aclOpExecutor *executor, aclrtStream stream)`
+- `aclnnStatus aclnnSWhereGetWorkspaceSize(const aclTensor *condition, const aclTensor *self, const aclTensor *other, aclTensor *out, uint64_t *workspaceSize, aclOpExecutor **executor)`
+- `aclnnStatus aclnnSWhere(void *workspace, uint64_t workspaceSize, aclOpExecutor *executor, aclrtStream stream)`
 
-## aclnnSelectGetWorkspaceSize
+## aclnnSWhereGetWorkspaceSize
 
 * **参数说明**:
   - condition（aclTensor*, 计算输入）：公式中的输入`condition`，Device侧的aclTensor，数据类型支持UINT8、BOOL，支持[非连续的Tensor](common/非连续的Tensor.md)，shape需要与self和other满足[broadcast关系](./common/broadcast关系.md)。支持[非连续的Tensor](./common/非连续的Tensor.md)，[数据格式](./common/数据格式.md)支持ND，数据维度不支持8维以上。
@@ -52,12 +52,12 @@ $$
                                       3.self、other、condition broadcast推导失败或broadcast结果与out的shape不相同。
 ```
 
-## aclnnSelect
+## aclnnSWhere
 
 * **参数说明**:
 
   - workspace（void \*, 入参）：在Device侧申请的workspace内存地址。
-  - workspaceSize（uint64_t, 入参）：在Device侧申请的workspace大小，由第一段接口aclnnSelectGetWorkspaceSize获取。
+  - workspaceSize（uint64_t, 入参）：在Device侧申请的workspace大小，由第一段接口aclnnSWhereGetWorkspaceSize获取。
   - executor(aclOpExecutor \*, 入参)：op执行器，包含了算子计算流程。
   - stream（aclrtStream, 入参）：指定执行任务的Stream。
 
@@ -176,18 +176,18 @@ int main() {
   // 3. 调用CANN算子库API
   uint64_t workspaceSize = 0;
   aclOpExecutor* executor;
-  // 调用aclnnSelect第一段接口
-  ret = aclnnSelectGetWorkspaceSize(condition, self, other, out, &workspaceSize, &executor);
-  CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("aclnnSelectGetWorkspaceSize failed. ERROR: %d\n", ret); return ret);
+  // 调用aclnnSWhere第一段接口
+  ret = aclnnSWhereGetWorkspaceSize(condition, self, other, out, &workspaceSize, &executor);
+  CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("aclnnSWhereGetWorkspaceSize failed. ERROR: %d\n", ret); return ret);
   // 根据第一段接口计算出的workspaceSize申请device内存
   void* workspaceAddr = nullptr;
   if (workspaceSize > 0) {
     ret = aclrtMalloc(&workspaceAddr, workspaceSize, ACL_MEM_MALLOC_HUGE_FIRST);
     CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("allocate workspace failed. ERROR: %d\n", ret); return ret;);
   }
-  // 调用aclnnSelect第二段接口
-  ret = aclnnSelect(workspaceAddr, workspaceSize, executor, stream);
-  CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("aclnnSelect failed. ERROR: %d\n", ret); return ret);
+  // 调用aclnnSWhere第二段接口
+  ret = aclnnSWhere(workspaceAddr, workspaceSize, executor, stream);
+  CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("aclnnSWhere failed. ERROR: %d\n", ret); return ret);
   // 4. （固定写法）同步等待任务执行结束
   ret = aclrtSynchronizeStream(stream);
   CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("aclrtSynchronizeStream failed. ERROR: %d\n", ret); return ret);
