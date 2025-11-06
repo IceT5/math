@@ -378,7 +378,8 @@ __aicore__ inline void AddExample<T>::Process()
 
 1. **UT验证。**
 
-    算子开发过程中，可通过UT验证（如tiling/kernel/aclnn UT）方式进行快速验证，方法请参考[算子调用方式](../invocation/quick_op_invocation.md)。
+    算子开发过程中，可通过UT验证（如tiling/kernel）方式进行快速验证，如需查看详细实现，请参考[tiling UT](../../examples/add_example/tests/ut/op_host/test_add_example_tiling.cpp)/[kernel UT](../../examples/add_example/tests/ut/op_kernel/test_add_example.cpp)。
+
 
 2. **aclnn调用验证。**
 
