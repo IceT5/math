@@ -119,11 +119,80 @@ __3)tilingkey规划策略__
 1)由于支持Ascend C开发的硬件中算子支持float16、float32、int32数据的输入，可以直接将bfloat16的数据都转成float32进行计算，其余数据类型保持原类型计算。  
 2)在kernel侧的copyin阶段完成获取，首先获取host侧存储各个输入shape的一维数组，通过特定的函数完成指定数组元素的地址映射。  
 3)根据不同的数据类型执行不同的比较。
-## 3.3支持硬件
+## 3.3 AscendC 流程设计
+```mermaid
+graph TD
+    A[开始] --> B[Host侧初始化]
+    B --> C[Tiling设计]
+    
+    subgraph C [Host侧Tiling设计]
+        C1[获取设备信息] --> C2[计算最优数据块大小]
+        C2 --> C3{能否平分?}
+        C3 -->|是| C4[均匀分块]
+        C3 -->|否| C5[尾块处理]
+        C4 --> C6[生成分块信息]
+        C5 --> C6
+    end
+    
+    C6 --> D[Kernel侧Init阶段]
+    
+    subgraph D [Kernel初始化]
+        D1[传入全局数据地址] --> D2[初始化GlobalTensor]
+        D2 --> D3[初始化输入队列]
+        D3 --> D4[初始化输出队列]
+        D4 --> D5[分配内存空间]
+    end
+    
+    D5 --> E[Process阶段]
+    
+    subgraph E [Process处理流程]
+        F[CopyIn阶段]
+        G[Compute阶段]
+        H[CopyOut阶段]
+        
+        subgraph F [CopyIn数据搬入]
+            F1[输入队列取localTensor x,y] --> F2[GlobalTensor拷贝到localTensor]
+            F2 --> F3[localTensor入输入队列]
+        end
+        
+        F3 --> G
+        
+        subgraph G [Compute计算]
+            G1[输入队列数据出队] --> G2[输出队列取localTensor z]
+            G2 --> G3[分配z内存空间]
+            G3 --> G4[x != y 比较计算]
+            G4 --> G5[结果存入z]
+            G5 --> G6[释放输入队列x,y]
+            G6 --> G7[z结果入输出队列]
+        end
+        
+        G7 --> H
+        
+        subgraph H [CopyOut数据搬出]
+            H1[输出队列取结果] --> H2[结果拷贝到GlobalTensor]
+            H2 --> H3[释放输出队列]
+        end
+    end
+    
+    H3 --> I{是否处理完所有块?}
+    I -->|否| E
+    I -->|是| J[结束]
+    
+    %% 样式定义
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px;
+    classDef process fill:#e1f5fe,stroke:#01579b,stroke-width:1px;
+    classDef decision fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
+    classDef startEnd fill:#c8e6c9,stroke:#2e7d32,stroke-width:1px;
+    
+    class A,J startEnd;
+    class C3,I decision;
+    class C,D,E,F,G,H process;
+```
+## 3.4支持硬件
 |  硬件   | 支持  |
 |  ----  | ----  |
 | Atlas 800I/T A2  | &#x2705; |
-## 3.4算子约束限制
+## 3.5算子约束限制
 * 不支持广播；
 * 不支持double数据类型；
 * 不支持int64;
