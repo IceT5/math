@@ -14,8 +14,8 @@
 #include "acl/acl.h"
 #include "aclnn_floor_div.h"
 // 修改测试数据类型
-using DataType = int32_t;
-#define ACL_TYPE aclDataType::ACL_INT32
+using DataType = short;
+#define ACL_TYPE aclDataType::ACL_FLOAT16
 #define CHECK_RET(cond, return_expr) \
     do {                             \
         if (!(cond)) {               \
@@ -47,7 +47,7 @@ void PrintOutResult(std::vector<int64_t>& shape, void** deviceAddr)
     CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("copy result from device to host failed. ERROR: %d\n", ret); return);
     for (int64_t i = 0; i < size; i++) {
          LOG_PRINT("mean result[%ld] is: ", i);       // float
-         std::cout << resultData[i] << std::endl;
+         std::cout << (int)resultData[i] << std::endl;
         //LOG_PRINT("mean result[%ld] is: %d\n", i, resultData[i]);       // int
     }
 }
@@ -102,7 +102,9 @@ int main()
     aclTensor* selfX = nullptr;
     void* selfXDeviceAddr = nullptr;
     std::vector<int64_t> selfXShape = {1, 1, 3, 4};
-    std::vector<DataType> selfXHostData(12);
+    // float16: 19328 => 15
+    // bf16: 16752 => 15
+    std::vector<DataType> selfXHostData(12, 15);
     for(int i = 0; i < selfXHostData.size(); i++) {
         selfXHostData[i] = (DataType)(i - (int)selfXHostData.size() / 2);
     }
@@ -112,7 +114,8 @@ int main()
     aclTensor* selfY = nullptr;
     void* selfYDeviceAddr = nullptr;
     std::vector<int64_t> selfYShape = {1, 1, 3, 4};
-    std::vector<DataType> selfYHostData(12, 2.0);
+    // float16, bf16: 16384 => 2
+    std::vector<DataType> selfYHostData(12, 2);
     ret = CreateAclTensor(selfYHostData, selfYShape, &selfYDeviceAddr, ACL_TYPE, &selfY);
     CHECK_RET(ret == ACL_SUCCESS, return ret);
 

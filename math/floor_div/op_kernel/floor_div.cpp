@@ -31,7 +31,7 @@ __global__ __aicore__ void floor_div(GM_ADDR x, GM_ADDR y, GM_ADDR z, GM_ADDR wo
     REGISTER_TILING_DEFAULT(FloorDivTilingData);
     GET_TILING_DATA_WITH_STRUCT(FloorDivTilingData, tilingData, tiling);
     if constexpr (schMode == static_cast<uint32_t>(FloorDivTilingKey::TILING_KEY_EXAMPLE_FLOAT)) {
-        NsFloorDiv::FloorDiv<float> op; // 算子kernel实例获取
+        NsFloorDiv::FloorDiv_FLOAT<float> op; // 算子kernel实例获取
         op.Init(x, y, z, &tilingData);      // 算子kernel实例初始化
         op.Process();                       // 算子kernel实例执行
     }
@@ -41,7 +41,7 @@ __global__ __aicore__ void floor_div(GM_ADDR x, GM_ADDR y, GM_ADDR z, GM_ADDR wo
         op.Process();                         // 算子kernel实例执行
     }
     else if constexpr (schMode == static_cast<uint32_t>(FloorDivTilingKey::TILING_KEY_EXAMPLE_INT8)) {
-        NsFloorDiv::FloorDiv<int8_t> op; // 算子kernel实例获取
+        NsFloorDiv::FloorDiv_INT8_UINT8<int8_t> op; // 算子kernel实例获取
         op.Init(x, y, z, &tilingData);      // 算子kernel实例初始化
         op.Process();                       // 算子kernel实例执行
     }
@@ -51,7 +51,7 @@ __global__ __aicore__ void floor_div(GM_ADDR x, GM_ADDR y, GM_ADDR z, GM_ADDR wo
         op.Process();                         // 算子kernel实例执行
     }
     else if constexpr (schMode == static_cast<uint32_t>(FloorDivTilingKey::TILING_KEY_EXAMPLE_UINT8)) {
-        NsFloorDiv::FloorDiv<uint8_t> op; // 算子kernel实例获取
+        NsFloorDiv::FloorDiv_INT8_UINT8<uint8_t> op; // 算子kernel实例获取
         op.Init(x, y, z, &tilingData);        // 算子kernel实例初始化
         op.Process();                         // 算子kernel实例执行
     }
