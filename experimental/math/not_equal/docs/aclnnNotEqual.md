@@ -158,7 +158,7 @@ graph TD
         F3 --> G
         
         subgraph G [Compute计算]
-            G1[输入队列数据出队] --> G2[输出队列取localTensor z]
+            G1[输入队列数据出队] --> G2[输出队列定义localTensor z]
             G2 --> G3[分配z内存空间]
             G3 --> G4[x != y 比较计算]
             G4 --> G5[结果存入z]
