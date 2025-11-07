@@ -34,6 +34,7 @@ protected:
     static void SetUpTestCase()
     {
         std::cout << "is_inf_test SetUp" << std::endl;
+        std::cout << "is_inf_test SetUp" << std::endl;
         const string cmd = "cp -rf " + dataPath + " ./";
         system(cmd.c_str());
         system("chmod -R 755 ./is_inf_data/");
