@@ -67,19 +67,20 @@ ge::graphStatus GetShapeAttrsInfo(gert::TilingContext* context, int64_t& totalId
 
     // shape校验
     OP_CHECK_IF(
-        inputShapeX.GetDimNum() != DIMS_LIMIT || inputShapeY.GetDimNum() != DIMS_LIMIT ||
-            outShapeZ.GetDimNum() != DIMS_LIMIT,
-        OP_LOGE(
-            context, "FloorDiv: inputx,inputy,outputz shape dim = %zu, %zu, %zu, should be equal 4",
-            inputShapeX.GetDimNum(), inputShapeY.GetDimNum(), outShapeZ.GetDimNum()),
+        inputShapeX.GetDimNum() != inputShapeY.GetDimNum() || inputShapeY.GetDimNum() != outShapeZ.GetDimNum(),
+        OP_LOGE(context, "FloorDiv: inputx,inputy,outputz shape should equal"),
         return ge::GRAPH_FAILED);
 
     // 获取shape dim值
-    auto nDim = inputShapeX.GetDim(INDEXZERO);
-    auto cDim = inputShapeX.GetDim(INDEXONE);
-    auto hDim = inputShapeX.GetDim(INDEXTWO);
-    auto wDim = inputShapeX.GetDim(INDEXTHREE);
-    totalIdx = nDim * cDim * hDim * wDim;
+    // auto nDim = inputShapeX.GetDim(INDEXZERO);
+    // auto cDim = inputShapeX.GetDim(INDEXONE);
+    // auto hDim = inputShapeX.GetDim(INDEXTWO);
+    // auto wDim = inputShapeX.GetDim(INDEXTHREE);
+    totalIdx = 1;
+    for(uint32_t i = 0; i < inputShapeX.GetDimNum(); i++) {
+        totalIdx *= inputShapeX.GetDim(i);
+    }
+    // totalIdx = nDim * cDim * hDim * wDim;
     // dtype校验
     const std::set<ge::DataType> supportedDtype = {ge::DT_FLOAT, ge::DT_INT32, ge::DT_INT8, ge::DT_FLOAT16, ge::DT_UINT8, ge::DT_BF16};
     auto inputDesc = context->GetInputDesc(0);
