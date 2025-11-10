@@ -48,6 +48,10 @@ set(ASCEND_ALL_COMPUTE_UNIT "ascend310p;ascend910;ascend910b;ascend910_93" CACHE
 set(ASCEND_OP_NAME "" CACHE STRING "operators that need to be compiled")
 set(VENDOR_NAME "custom" CACHE STRING "vendor name")
 
+if(DEFINED EXTRA_COMPILE_OPTIONS)
+    add_compile_options(${EXTRA_COMPILE_OPTIONS})
+endif()
+
 if("${BUILD_MODE}" STREQUAL "-O0" OR "${BUILD_MODE}" STREQUAL "-O1" OR
    "${BUILD_MODE}" STREQUAL "-O2" OR "${BUILD_MODE}" STREQUAL "-O3"
   )

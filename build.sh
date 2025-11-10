@@ -22,7 +22,7 @@ SUPPORTED_LONG_OPTS=(
   "help" "ops=" "soc=" "vendor_name=" "debug" "cov" "noexec" "aicpu" "opkernel" "jit"
   "pkg" "disable_asan" "valgrind" "make_clean"
   "ophost" "opapi" "opgraph" "ophost_test" "opapi_test" "opgraph_test" "opkernel_test"
-  "run_example" "genop=" "genop_aicpu=" "experimental"
+  "run_example" "genop=" "genop_aicpu=" "experimental" "extra_compile_options="
 )
 
 in_array() {
@@ -122,21 +122,22 @@ usage() {
       package)
         echo "Package Build Options:"
         echo $dotted_line
-        echo "    --pkg                  Build run package with kernel bin"
-        echo "    --jit                  Build run package without kernel bin"
-        echo "    --soc=soc_version      Compile for specified Ascend SoC (comma-separated for multiple)"
-        echo "    --vendor_name=name     Specify custom operator package vendor name"
-        echo "    --ops=op1,op2,...      Compile specified operators (comma-separated for multiple)"
-        echo "    -j[n]                  Compile thread nums, default is 8, eg: -j8"
-        echo "    -O[n]                  Compile optimization options, support [O0 O1 O2 O3], eg:-O3"
-        echo "    --debug                Build with debug mode"
-        echo "    --experimental         Build experimental version"
+        echo "    --pkg                               Build run package with kernel bin"
+        echo "    --jit                               Build run package without kernel bin"
+        echo "    --soc=soc_version                   Compile for specified Ascend SoC (comma-separated for multiple)"
+        echo "    --vendor_name=name                  Specify custom operator package vendor name"
+        echo "    --ops=op1,op2,...                   Compile specified operators (comma-separated for multiple)"
+        echo "    -j[n]                               Compile thread nums, default is 8, eg: -j8"
+        echo "    -O[n]                               Compile optimization options, support [O0 O1 O2 O3], eg:-O3"
+        echo "    --debug                             Build with debug mode"
+        echo "    --experimental                      Build experimental version"
+        echo "    --extra_compile_options='opt1 opt2' add extra compile options to build proccess"
         echo $dotted_line
         echo "Examples:"
         echo "    bash build.sh --pkg --soc=ascend910b --vendor_name=customize -j16 -O3"
         echo "    bash build.sh --pkg --ops=add,sub --debug"
         echo "    bash build.sh --pkg --experimental --soc=ascend910b"
-        echo "    bash build.sh --pkg --experimental --soc=ascend910b --ops=abs"
+        echo "    bash build.sh --pkg --experimental --soc=ascend910b --ops=abs --extra_compile_options='--cce-enable-sanitizer'"
         return
         ;;
       opkernel)
@@ -337,6 +338,7 @@ usage() {
   echo "    --run_example Compile and execute the test_aclnn_xxx.cpp/test_geir_xxx.cpp"
   echo "    --genop Create the initial directory for op"
   echo "    --genop_aicpu Create the initial directory for AI CPU op"
+  echo "    --extra_compile_options add extra compile options to build proccess"
   echo "to be continued ..."
 }
 
@@ -624,6 +626,9 @@ checkopts() {
           ENABLE_CUSTOM=TRUE
           ;;
         debug) ENABLE_DEBUG=TRUE ;;
+        extra_compile_options=*)
+          EXTRA_COMPILE_OPTIONS=${OPTARG#*=}
+          ;;
         cov) ENABLE_CONVERAGE=TRUE ;;
         noexec) ENABLE_UT_EXEC=FALSE ;;
         aicpu) AICPU_ONLY=TRUE ;;
@@ -749,6 +754,9 @@ assemble_cmake_args() {
   fi
   if [[ "x$BUILD_MODE" != "x" ]]; then
     CMAKE_ARGS="$CMAKE_ARGS -DBUILD_MODE=${BUILD_MODE}"
+  fi
+  if [[ "x$EXTRA_COMPILE_OPTIONS" != "x" ]]; then
+    CMAKE_ARGS="$CMAKE_ARGS -DEXTRA_COMPILE_OPTIONS=${EXTRA_COMPILE_OPTIONS}"
   fi
   if [[ "$OP_HOST_UT" == "TRUE" ]]; then
     CMAKE_ARGS="$CMAKE_ARGS -DOP_HOST_UT=TRUE"
