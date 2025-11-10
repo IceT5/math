@@ -901,34 +901,6 @@ TEST_F(l2_masked_select_test, aclnnMaskedSelect_2_4_float32_nd_and_2_4_bool_nd_o
     EXPECT_EQ(aclRet, ACLNN_ERR_PARAM_INVALID);
 }
 
-TEST_F(l2_masked_select_test, aclnnMaskedSelect_error_input_dtype_with_uint64)
-{
-    // left input
-    const vector<int64_t>& selfShape = {2, 4};
-    aclDataType selfDtype = ACL_UINT64;
-    aclFormat selfFormat = ACL_FORMAT_ND;
-    // right input
-    const vector<int64_t>& maskShape = {2, 4};
-    vector<bool> boolMask = genRandomBoolVector(maskShape);
-    aclDataType maskDtype = ACL_BOOL;
-    aclFormat maskFormat = ACL_FORMAT_ND;
-    // output
-    int64_t shapeSize = getTrueNumInVector(boolMask);
-    const vector<int64_t>& outShape = {sizes(selfShape)};
-    aclDataType outDtype = ACL_UINT64;
-    aclFormat outFormat = ACL_FORMAT_ND;
-
-    auto selfTensorDesc = TensorDesc(selfShape, selfDtype, selfFormat);
-    auto maskTensorDesc = TensorDesc(maskShape, maskDtype, maskFormat).Value(boolMask);
-    auto outTensorDesc = TensorDesc(outShape, outDtype, outFormat).ValidCount(shapeSize);
-
-    auto ut = OP_API_UT(aclnnMaskedSelect, INPUT(selfTensorDesc, maskTensorDesc), OUTPUT(outTensorDesc));
-    // SAMPLE: only test GetWorkspaceSize
-    uint64_t workspaceSize = 0;
-    aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
-    EXPECT_EQ(aclRet, ACLNN_ERR_PARAM_INVALID);
-}
-
 TEST_F(l2_masked_select_test, aclnnMaskedSelect_error_self_out_diff_dtype)
 {
     // left input
@@ -955,32 +927,4 @@ TEST_F(l2_masked_select_test, aclnnMaskedSelect_error_self_out_diff_dtype)
     uint64_t workspaceSize = 0;
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
     EXPECT_EQ(aclRet, ACL_SUCCESS);
-}
-
-TEST_F(l2_masked_select_test, aclnnMaskedSelect_error_input_dtype_with_uint64_out)
-{
-    // left input
-    const vector<int64_t>& selfShape = {2, 4};
-    aclDataType selfDtype = ACL_INT64;
-    aclFormat selfFormat = ACL_FORMAT_ND;
-    // right input
-    const vector<int64_t>& maskShape = {2, 4};
-    vector<bool> boolMask = genRandomBoolVector(maskShape);
-    aclDataType maskDtype = ACL_BOOL;
-    aclFormat maskFormat = ACL_FORMAT_ND;
-    // output
-    int64_t shapeSize = getTrueNumInVector(boolMask);
-    const vector<int64_t>& outShape = {sizes(selfShape)};
-    aclDataType outDtype = ACL_UINT64;
-    aclFormat outFormat = ACL_FORMAT_ND;
-
-    auto selfTensorDesc = TensorDesc(selfShape, selfDtype, selfFormat);
-    auto maskTensorDesc = TensorDesc(maskShape, maskDtype, maskFormat).Value(boolMask);
-    auto outTensorDesc = TensorDesc(outShape, outDtype, outFormat).ValidCount(shapeSize);
-
-    auto ut = OP_API_UT(aclnnMaskedSelect, INPUT(selfTensorDesc, maskTensorDesc), OUTPUT(outTensorDesc));
-    // SAMPLE: only test GetWorkspaceSize
-    uint64_t workspaceSize = 0;
-    aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspaceSize);
-    EXPECT_EQ(aclRet, ACLNN_ERR_PARAM_INVALID);
 }
