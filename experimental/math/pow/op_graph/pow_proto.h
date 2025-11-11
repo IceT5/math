@@ -24,19 +24,27 @@ namespace ge {
 * @brief Computes the pow of a tensor.
 
 *@par Inputs:
-* @li x: A tensor of type float16, float32, bf16, int8, uint8, int16, int32.
-* @li exponent: A tensor of type float16, float32, bf16, int8, uint8, int16, int32.
+* @li x: A tensor of type float16, float32, bfloat16, int8, uint8, int16, int32.
+* @li exponent: A tensor of type float16, float32, bfloat16, int8, uint8, int16, int32.
 *@par Outputs:
-* y: A tensor of type float16, float32, bf16, int8, uint8, int16, int32.
+* y: A tensor of type float16, float32, bfloat16, int8, uint8, int16, int32.
 
 *@par Third-party framework compatibility
 * Compatible with the Pytorch operator Pow.
+
+*@par Restrictions:
+* @li x and exponent must have the same dtype.
+* @li x and exponent must be broadcast-compatible (following PyTorch's broadcasting rules).
+* @li The output tensor y must have the same shape as the broadcast result of x and exponent.
+* @li If x is integer type and exponent is negative, the behavior is undefined (consistent with PyTorch).
 */
+#define POW_TYPES \
+  DT_BF16, DT_FLOAT, DT_FLOAT16, DT_INT8, DT_UINT8, DT_INT16, DT_INT32
 
 REG_OP(Pow)
-    .INPUT(x, TensorType({DT_BF16, DT_FLOAT, DT_FLOAT16, DT_INT8, DT_UINT8, DT_INT16, DT_INT32}))
-    .INPUT(exponent, TensorType({DT_BF16, DT_FLOAT, DT_FLOAT16, DT_INT8, DT_UINT8, DT_INT16, DT_INT32}))
-    .OUTPUT(y, TensorType({DT_BF16, DT_FLOAT, DT_FLOAT16, DT_INT8, DT_UINT8, DT_INT16, DT_INT32}))
+    .INPUT(x, TensorType({POW_TYPES}))
+    .INPUT(exponent, TensorType({POW_TYPES}))
+    .OUTPUT(y, TensorType({POW_TYPES}))
     .OP_END_FACTORY_REG(Pow);
 
 } // namespace ge

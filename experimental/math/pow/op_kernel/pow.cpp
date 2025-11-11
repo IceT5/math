@@ -27,6 +27,6 @@ __global__ __aicore__ void pow(GM_ADDR x, GM_ADDR exponent, GM_ADDR y, GM_ADDR w
     REGISTER_TILING_DEFAULT(PowTilingData);
     GET_TILING_DATA_WITH_STRUCT(PowTilingData, tilingData, tiling);
     MyPow::KernelPow<DTYPE_X,DTYPE_Y> op; 
-    op.Init(x, exponent, y,tilingData.smallCoreDataNum,tilingData.bigCoreDataNum, tilingData.finalBigTileNum,tilingData.finalSmallTileNum, tilingData.tileDataNum,tilingData.smallTailDataNum, tilingData.bigTailDataNum,tilingData.tailBlockNum);      // 算子kernel实例初始化
+    op.Init(x, exponent, y, &tilingData);      // 算子kernel实例初始化
     op.Process();
 }
