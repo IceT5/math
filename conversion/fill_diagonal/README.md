@@ -42,9 +42,9 @@
   </tr>
   <tr>
     <td>fillValue</td>
-    <td>输入/输出张量</td>
-    <td>表示输入/输出张量，数据类型需要是可转换为FLOAT的数据类型。</td>
-    <td>BFLOAT16、FLOAT16、FLOAT、DOUBLE、INT8、INT16、INT32、INT64、UINT8、BOO</td>
+    <td>输入属性</td>
+    <td>表示填充值，数据类型需要是可转换为FLOAT的数据类型。</td>
+    <td>可转换为FLOAT的数据类型</td>
     <td>-</td>
   </tr>
   <tr>
