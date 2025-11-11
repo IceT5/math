@@ -67,5 +67,4 @@
 
 | 调用方式  | 样例代码                                                     | 说明                                                         |
 | --------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| aclnn接口 | [test_aclnn_inplace_fill_diagonal](./examples/test_aclnn_fill_diagonal_v2.cpp) | 通过[aclnnInplaceFillDiagonal](docs/aclnnInplaceFillDiagonal.md)接口方式调用InplaceFillDiagonal算子。 |
-
+| 图模式调用 | [test_geir_fill_diagonal_v2](./examples/test_geir_fill_diagonal_v2.cpp) | 通过[算子IR](op_graph/fill_diagonal_v2_proto.h)接口方式调用FillDiagonalV2算子。 |
