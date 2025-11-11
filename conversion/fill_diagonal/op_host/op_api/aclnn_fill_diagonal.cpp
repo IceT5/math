@@ -111,7 +111,6 @@ static bool CheckNotOverflow(const aclTensor* selfRef, const aclScalar* fillValu
     int8_t overFlowFlag = 1;
     int8_t floatFlag = 1;
     int8_t intFlag = 2;
-
     switch (dataType) {
         case op::DataType::DT_FLOAT: {
             overFlowFlag = fillValue->CheckOverflows<float>() ? overFlowFlag << floatFlag : overFlowFlag;
@@ -151,12 +150,10 @@ static bool CheckNotOverflow(const aclTensor* selfRef, const aclScalar* fillValu
     }
 
     if ((overFlowFlag >> floatFlag) == 1) {
-        OP_LOGE(
-            ACLNN_ERR_PARAM_INVALID, "value cannot be converted to type %s without overflow : %lf.",
+        OP_LOGE(ACLNN_ERR_PARAM_INVALID, "value cannot be converted to type %s without overflow : %lf.",
             op::ToString(dataType).GetString(), fillValue->ToDouble());
     } else if ((overFlowFlag >> intFlag) == 1) {
-        OP_LOGE(
-            ACLNN_ERR_PARAM_INVALID, "value cannot be converted to type %s without overflow : %ld.",
+        OP_LOGE(ACLNN_ERR_PARAM_INVALID, "value cannot be converted to type %s without overflow : %ld.",
             op::ToString(dataType).GetString(), fillValue->ToInt64());
     }
     return overFlowFlag == 1;
