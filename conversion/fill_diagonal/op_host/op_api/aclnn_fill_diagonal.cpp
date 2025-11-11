@@ -148,7 +148,6 @@ static bool CheckNotOverflow(const aclTensor* selfRef, const aclScalar* fillValu
             return true;
         }
     }
-
     if ((overFlowFlag >> floatFlag) == 1) {
         OP_LOGE(ACLNN_ERR_PARAM_INVALID, "value cannot be converted to type %s without overflow : %lf.",
             op::ToString(dataType).GetString(), fillValue->ToDouble());
