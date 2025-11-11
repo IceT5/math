@@ -129,13 +129,13 @@
     \$\{install\_path\}：表示指定安装路径，需要与toolkit包安装在相同路径，默认安装在`/usr/local/Ascend`目录。
 
 ## 本地验证
-ops-math包或者自定义算子包安装后，可以使用atc模型转换工具转换包含对应算子的onnx模型或者air模型。详细介绍参考[atc参数说明](https://google.github.io/googletest/advanced.html#running-a-subset-of-the-tests)。
+ops-math包或者自定义算子包安装后，可以使用ATC模型转换工具将开源框架的网络模型以及Ascend IR定义的单算子描述文件（JSON格式）转换为麒麟AI处理器支持的.om格式离线模型。详细介绍参考[atc参数说明](https://www.hiascend.com/document/detail/zh/canncommercial/82RC1/devaids/atctool/atlasatc_16_0005.html)。
 
-模型转换成功后，需要调用鸿蒙应用开发接口，完成鸿蒙设备算子运行。详细介绍参考[鸿蒙应用开发](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cann-kit-guide)。
+模型转换成功后，需要调用鸿蒙应用开发接口完成模型在鸿蒙设备上运行。详细介绍参考[鸿蒙应用开发](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cann-kit-guide)。
 
 
 
-通过项目根目录build.sh脚本，可快速调用UT用例，验证项目功能是否正常，build参数介绍参见[build参数说明](../context/build.md)。
+此外通过项目根目录build.sh脚本，可快速调用UT用例，验证项目功能是否正常，build参数介绍参见[build参数说明](../context/build.md)。
 
 - **执行算子UT**
 
