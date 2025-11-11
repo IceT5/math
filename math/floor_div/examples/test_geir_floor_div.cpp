@@ -179,9 +179,9 @@ int CreateOppInGraph(
     Status ret = SUCCESS;
     // 自定义代码：添加单算子定义到图中
     auto add1 = op::FloorDiv("add1");
-    std::vector<int64_t> xShape = {32, 4, 4, 4};
-    ADD_INPUT(1, x1, inDtype, xShape,1.0);
-    ADD_INPUT(2, x2, inDtype, xShape,25.0);
+    std::vector<int64_t> xShape = {2,10,23,177};
+    ADD_INPUT(1, x1, inDtype, xShape, 15);
+    ADD_INPUT(2, x2, inDtype, xShape, 2);
 
     ADD_OUTPUT(1, y, inDtype, xShape);
 
@@ -211,7 +211,7 @@ int main(int argc, char* argv[])
     std::cout << argv[1] << std::endl;
     char* endptr;
     //修改类型
-    DataType inDtype = DT_FLOAT;
+    DataType inDtype = DT_BF16;
 
     std::cout << inDtype << std::endl;
 
@@ -280,20 +280,21 @@ int main(int argc, char* argv[])
         uint32_t data_size = output_shape * GetDataTypeSize(output[i].GetTensorDesc().GetDataType());
         WriteDataToFile((const char*)output_file.c_str(), data_size, output_data_i);
         //新加3行打印
-        float* result = (float*)output_data_i;
-        //int32_t* result = (int32_t*)output_data_i;
+        // float* result = (float*)output_data_i;
+        // int32_t* result = (int32_t*)output_data_i;
+        int8_t* result = (int8_t*)output_data_i;
         for (int64_t j = 0; j < 8; j++) {
-            LOG_PRINT("result[%ld] is: %f\n", j, result[j]);
-            //LOG_PRINT("result[%ld] is: %d\n", j, result[j]);
+            // LOG_PRINT("result[%ld] is: %f\n", j, result[j]);
+            LOG_PRINT("result[%ld] is: %d\n", j, (int)result[j]);
         }
     }
 
     ge::AscendString error_msg = ge::GEGetErrorMsgV2();
     std::string error_str(error_msg.GetString());
-    std::cout << "Error message: " << error_str << std::endl;
+    printf("Error message: %s\n", error_str.c_str());
     ge::AscendString warning_msg = ge::GEGetWarningMsgV2();
     std::string warning_str(warning_msg.GetString());
-    std::cout << "Warning message: " << warning_str << std::endl;
+    printf("Warning message: %s\n", warning_str);
     printf("%s - INFO - [XIR]: Precision is ok\n", GetTime().c_str());
     printf("%s - INFO - [XIR]: Start to finalize ir graph session\n", GetTime().c_str());
     ret = ge::GEFinalize();
