@@ -2,8 +2,8 @@
 > **说明1**：本项目阐述如何与社区版CANN开发套件包配合使用，对于商发版（8.3.RC1版本）CANN开发套件包，其使用指导请参见“[商发版本说明](commercial_release.md)”，此处不详细介绍。
 >
 > **说明2**：本项目可调用的算子参见[算子列表](../op_list.md)，算子对应aclnn接口参见[aclnn列表](../op_api_list.md)。
-
-<span style="color:#e60000;">// 鸿蒙不支持</span>
+>
+> **说明3**：面向鸿蒙设备，通过atc工具转换模型，调用鸿蒙运行态接口完成算子调用，详细参考[鸿蒙调用指南](quick_op_invocation_harmony.md)。
 
 ## 前提条件
 

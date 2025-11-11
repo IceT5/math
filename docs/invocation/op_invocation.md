@@ -9,6 +9,7 @@
 
 - aclnn调用 **（推荐）**：以算子aclnnXxx接口方式（一套基于C语言的API，无需IR定义）调用算子。
 - 图模式调用：以IR（Intermediate Representation）构图方式调用算子。
+- 鸿蒙调用：面向鸿蒙设备，通过atc工具转换模型，调用鸿蒙运行态接口完成算子调用，详细参考[鸿蒙调用指南](quick_op_invocation_harmony.md)
 
 ## aclnn调用
 
