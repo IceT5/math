@@ -76,14 +76,12 @@ __aicore__ inline void KernelPow<TYPE_X, TYPE_Y>::Init(GM_ADDR x, GM_ADDR expone
     uint32_t coreNum = GetBlockIdx();
     uint32_t globalBufferIndex = tilingData->bigCoreDataNum * GetBlockIdx();
     this->tileDataNum = tilingData->tileDataNum;
-    if (coreNum < tilingData->tailBlockNum)
-    {
+    if (coreNum < tilingData->tailBlockNum) {
         this->coreDataNum = tilingData->bigCoreDataNum;
         this->tileNum = tilingData->finalBigTileNum;
         this->tailDataNum = tilingData->bigTailDataNum;
     }
-    else
-    {
+    else {
         this->coreDataNum = tilingData->smallCoreDataNum;
         this->tileNum = tilingData->finalSmallTileNum;
         this->tailDataNum = tilingData->smallTailDataNum;
@@ -96,11 +94,10 @@ __aicore__ inline void KernelPow<TYPE_X, TYPE_Y>::Init(GM_ADDR x, GM_ADDR expone
     pipe.InitBuffer(outQueueY, BUFFER_NUM, this->tileDataNum * sizeof(TYPE_Y));
     pipe.InitBuffer(absTmp, this->tileDataNum * sizeof(float));
     pipe.InitBuffer(zeroTmp, this->tileDataNum * sizeof(float));
-    if constexpr (IsSameType<TYPE_X, float32_t>::value || IsSameType<TYPE_X, int32_t>::value){
+    if constexpr (IsSameType<TYPE_X, float32_t>::value || IsSameType<TYPE_X, int32_t>::value) {
         pipe.InitBuffer(maskTmp, this->tileDataNum * sizeof(uint8_t));
     }
-    else
-    {
+    else {
         pipe.InitBuffer(xCastTmp, this->tileDataNum * sizeof(float));
         pipe.InitBuffer(expCastTmp, this->tileDataNum * sizeof(float));
 
@@ -196,8 +193,7 @@ __aicore__ inline void KernelPow<TYPE_X, TYPE_Y>::Compute(int32_t progress)
     LocalTensor<TYPE_X> expLocal = xLocal[this->processDataNum];
     LocalTensor<TYPE_Y> yLocal = outQueueY.AllocTensor<TYPE_Y>();
     if constexpr ( IsSameType<TYPE_X, half>::value || IsSameType<TYPE_X, bfloat16_t>::value
-                     || IsSameType<TYPE_X, int16_t>::value)
-    {
+                     || IsSameType<TYPE_X, int16_t>::value) {
         LocalTensor<float> xLocalFp = xCastTmp.Get<float>();
         LocalTensor<float> expLocalFp = expCastTmp.Get<float>();
         LocalTensor<float> yLocalFp = xLocal.template ReinterpretCast<float>();
@@ -207,7 +203,7 @@ __aicore__ inline void KernelPow<TYPE_X, TYPE_Y>::Compute(int32_t progress)
         PowCompute(xLocalFp, expLocalFp, yLocalFp, mask);
         Cast(yLocal, yLocalFp, RoundMode::CAST_RINT, this->processDataNum);
     }
-    if constexpr (IsSameType<TYPE_X, int32_t>::value){
+    if constexpr (IsSameType<TYPE_X, int32_t>::value) {
         LocalTensor<float> xLocalFp = xLocal.template ReinterpretCast<float>();
         LocalTensor<float> expLocalFp = expLocal.template ReinterpretCast<float>();
         LocalTensor<float> yLocalFp = yLocal.template ReinterpretCast<float>();
@@ -217,7 +213,7 @@ __aicore__ inline void KernelPow<TYPE_X, TYPE_Y>::Compute(int32_t progress)
         PowCompute(xLocalFp, expLocalFp, yLocalFp, mask);
         Cast(yLocal, yLocalFp, RoundMode::CAST_RINT, this->processDataNum);
     }
-    if constexpr ( IsSameType<TYPE_X, uint8_t>::value){
+    if constexpr ( IsSameType<TYPE_X, uint8_t>::value) {
         LocalTensor<float> xLocalFp = xCastTmp.Get<float>();
         LocalTensor<float> expLocalFp = expCastTmp.Get<float>();
         LocalTensor<float> yLocalFp = yCastTmp.Get<float>();
@@ -230,7 +226,7 @@ __aicore__ inline void KernelPow<TYPE_X, TYPE_Y>::Compute(int32_t progress)
         Cast(tmpLocal, yLocalFp, RoundMode::CAST_RINT, this->processDataNum);
         Cast(yLocal, tmpLocal, RoundMode::CAST_RINT, this->processDataNum);
     }
-    if constexpr ( IsSameType<TYPE_X, int8_t>::value){
+    if constexpr ( IsSameType<TYPE_X, int8_t>::value) {
         LocalTensor<float> xLocalFp = xCastTmp.Get<float>();
         LocalTensor<float> expLocalFp = expCastTmp.Get<float>();
         LocalTensor<float> yLocalFp = yCastTmp.Get<float>();
@@ -244,8 +240,7 @@ __aicore__ inline void KernelPow<TYPE_X, TYPE_Y>::Compute(int32_t progress)
         Cast(tmpLocal, yLocalFp, RoundMode::CAST_RINT, this->processDataNum);
         Cast(yLocal, tmpLocal, RoundMode::CAST_RINT, this->processDataNum);
     }
-    if constexpr ( IsSameType<TYPE_X, float32_t>::value)
-    {
+    if constexpr ( IsSameType<TYPE_X, float32_t>::value) {
         LocalTensor<uint8_t> mask = maskTmp.Get<uint8_t>();
         PowCompute(xLocal, expLocal, yLocal, mask);
     }
@@ -258,8 +253,7 @@ __aicore__ inline void KernelPow<TYPE_X, TYPE_Y>::Process()
 {
     int32_t loopCount = this->tileNum;
     this->processDataNum = this->tileDataNum;
-    for (int32_t i = 0; i < loopCount-1; i++)
-    {
+    for (int32_t i = 0; i < loopCount-1; i++) {
         CopyIn(i);
         Compute(i);
         CopyOut(i);
