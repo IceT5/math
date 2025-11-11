@@ -232,11 +232,13 @@ macro(add_modules_sources)
     )
 
   file(GLOB OPAPI_HEADERS ${SOURCE_DIR}/op_api/aclnn_*.h)
+  file(GLOB OPAPI_HEADERS ${SOURCE_DIR}/op_api/acl_*.h)
   if(OPAPI_HEADERS)
     target_sources(${OPHOST_NAME}_aclnn_exclude_headers INTERFACE ${OPAPI_HEADERS})
   endif()
 
   file(GLOB OPAPI_L2_SRCS ${SOURCE_DIR}/op_api/aclnn_*.cpp)
+  file(GLOB OPAPI_L2_SRCS ${SOURCE_DIR}/op_api/acl_*.cpp)
   if(OPAPI_L2_SRCS)
     add_opapi_modules()
     target_sources(${OPHOST_NAME}_opapi_obj PRIVATE ${OPAPI_L2_SRCS})
