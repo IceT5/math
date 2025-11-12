@@ -5,11 +5,11 @@
 
 OnesLike算子现状分析
 对TBE版本的OnesLike进行功能分析，当前支持的能力如下：
-1 输入 x 支持 float16、float32、int32、int8、uint8、bfloat16 六种格式。
+1 输入 x 支持 float16、float32、int32、int8、uint8、bfloat16、bool 七种格式。
 2 算子要求输出 y 与输入 x 形状完全一致，通过广播操作将常量 1 扩展为与 x 相同的形状。
 3 逻辑表达式y=1
-4类型处理逻辑：对于 bfloat16类型输入，先生成 float16 类型的常量 1，广播后转换为 float32，再调用 round 操作对齐 bfloat16 精度；对于 int8和uint8 输入，先以 float16 生成常量 1 并广播，再转换回原类型（启用整数转换标志确保精度）；对于 float16、float32、int32 输入，直接生成同类型的常量 1 并广播，保持类型一致。
-5使用 broadcast cast round 等接口实现广播、类型转换、对齐操作。
+4类型处理逻辑：对于 bfloat16类型输入，先生成 float16 类型的常量 1，广播后转换为 float32，再调用 round 操作对齐 bfloat16 精度；对于 int8和uint8 输入，先以 float16 生成常量 1 并广播，再转换回原类型（启用整数转换标志确保精度）；对于 float16、float32、int32 输入，直接生成同类型的常量 1 并广播，保持类型一致；对于bool类型输入，先将bool类型强制映射为int8类型再安照上述对int8处理的方式处理。
+5使用 broadcast cast_to round 等接口实现广播、类型转换、对齐操作。
 
 OnesLike算子TBE版本的整体流程图：
 ```mermaid
@@ -18,26 +18,27 @@ graph TD
     B --> C[2.校验dtype合法性（支持6种类型）+类型适配处理]
     C --> D{分支判断：输入dtype}
     D -->|bfloat16| E1[生成float16常量1]
-    E1 --> F1[tbe.broadcast：匹配输入形状]
-    F1 --> G1[cast_to：转为float32]
-    G1 --> H1[round：对齐bfloat16精度]
-    H1 --> I[类型转换模块]
+    E1 -->|float16| F1[tbe.broadcast：匹配输入形状]
+    F1 -->|float16| G1[cast_to：转为float32]
+    G1 -->|float32| H1[round：对齐bfloat16精度]
+    H1 -->|bfloat16| I[3.输出张量y（同形状+同dtype（bool类型输出为int8）+全1）]
     D -->|int8/uint8| E2[生成float16常量1]
-    E2 --> F2[tbe.broadcast：匹配输入形状]
-    F2 --> G2[cast_to：转为目标类型（启用f162IntegerFlag）]
-    G2 --> I
+    E2 -->|float16| F2[tbe.broadcast：匹配输入形状]
+    F2 -->|float16| G2[cast_to：转为目标类型（启用f162IntegerFlag）]
+    G2 -->|int8/uint8| I
     D -->|float16/float32/int32| E3[生成同dtype常量1]
-    E3 --> F3[tbe.broadcast：匹配输入形状]
-    F3 --> G3[cast_to：保持原dtype]
-    G3 --> I
-    I --> J[3.输出张量y（同形状+同dtype+全1）]
+    E3 -->|float16/float32/int32| F3[tbe.broadcast：匹配输入形状]
+    F3 -->|float16/float32/int32| G3[cast_to：保持原dtype]
+    G3 -->|float16/float32/int32| I
+    D -->|bool|E4[强制映射为int8类型]-->E2
+    
 ```
 算子原型
 
 | 名称 | 类别 | dtype | format | shape | 介绍 |
 |------|------|-------|--------|-------|------|
-| x | 输入 | fp16/fp32/int32/int8/uint8/bfloat16 | ND | all | 输入张量，用于指定输出张量的形状和数据类型 |
-| y | 输出 | 与输入 x 一致 | ND | 与输入 x 一致 | 本算子输出：与输入 x 同形、同 dtype 的全 1 张量（y[i] = 1） |
+| x | 输入 | fp16/fp32/int32/int8/uint8/bfloat16/bool | ND | all | 输入张量，用于指定输出张量的形状和数据类型 |
+| y | 输出 | 与输入 x 一致(输入类型为bool输出类型则为int8) | ND | 与输入 x 一致 | 本算子输出：与输入 x 同形、同 dtype（bool类型输入输出为int8） 的全 1 张量（y[i] = 1） |
 
 算子支持型号
 Atlas A2 训练系列产品/Atlas 800I A2推理产品
@@ -68,26 +69,27 @@ tilingkey规划策略：
 
 kernel侧设计方案：
 进行Init和Process两个阶段，其中Process包括数据搬入（CopyIn）、计算（Compute）、搬出（CopyOut）三个阶段,但无需输入数据参与计算，故而省略数据搬入（CopyIn），因此只有计算（Compute）、搬出（CopyOut）两个阶段。
-根据不同的tilingkey进入不同的process，进而进入不同的Compute，从而调用Duplicate接口对输出张量用不同数据类型的1填充。
+根据不同的tilingkey进入不同的process，进而进入不同的Compute。对于bfloat16类型广播生成float16类型全1张量，再转化为float32类型，再对齐bfloat16精度；对于bool类型，强制映射为int8类型按照int8逻辑处理；对于int8/uint8类型广播生成float16类型全1张量，再强制转化为原类型；对于float16/float32/int32类型直接广播生成同类型全1张量即可。
 Ascend C的OneLike算子流程见下图：
 ```mermaid
 graph TD
     A[输入张量x] --> B[获取输入张量x的形状与数据类型]
     B --> C{分支判断：输入dtype}
-    C -->|bfloat16| D1[生成float16立即数1]
-    D1 --> E1[broadcast：将1广播到临时张量tmp1中]
-    E1 --> F1[cast：tmp1转为float32类型到tmp2]
-    F1 --> G1[round：对齐bfloat16精度到yLocal]
-    G1 --> I[CopyOut]
-    C -->|int8/uint8| D2[生成float16立即数1]
-    D2 --> E2[broadcast：广播立即数1到临时张量tmp中]
-    E2 --> F2[cast：tmp转化为对应dtype类型到yLocal中]
-    F2 --> I
-    C -->|float16/float32/int32| D3[生成同dtype立即数1]
-    D3 --> E3[broadcast：广播到yLocal中]
-   
-    E3 --> I
-    I --> J[3.输出张量y（同形状+同dtype+全1）]
+    C -->|bfloat16| D1[生成float16一维全1广播源张量]
+    D1 -->|float16| E1[broadcast：将1广播到临时张量tmp1中]
+    E1 -->|float16| F1[cast：tmp1转为float32类型到tmp2]
+    F1 -->|float32| G1[round：对齐bfloat16精度到yLocal]
+    G1 -->|bfloat16| I[CopyOut]
+    C -->|int8/uint8| D2[生成float16一维全1广播源张量]
+    D2 -->|float16| E2[broadcast：广播1到临时张量tmp中]
+    E2 -->|float16| F2[cast：tmp转化为对应dtype类型到yLocal中]
+    F2 -->|int8/uint8| I
+    C -->|float16/float32/int32| D3[生成同dtype一维全1广播源张量]
+    D3 -->|float16/float32/int32| E3[broadcast：广播1到yLocal中] 
+    E3 -->|float16/float32/int32| I
+    C-->|bool|D4[强制映射为int8类型]
+    D4-->D2
+    I --> J[3.输出张量y（同形状+同dtype（bool型输出为int8）+全1）]
 ```
 
 ## 关联的Issue
