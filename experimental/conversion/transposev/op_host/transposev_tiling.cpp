@@ -37,12 +37,12 @@
 namespace optiling {
 
 using namespace Ops::Math::OpTiling;
-const uint32_t BLOCK_SIZE = 32;
-const uint32_t BUFFER_NUM = 2;
+constexpr uint32_t BLOCK_SIZE = 32;
+constexpr uint32_t BUFFER_NUM = 2;
 int64_t dim = 8;
-
-const uint32_t WS_SYS_SIZE = 16U * 1024U * 1024U;
-const int32_t DIMS_LIMIT = 4;
+constexpr uint32_t MAX_DIM = 8;
+constexpr uint32_t WS_SYS_SIZE = 16U * 1024U * 1024U;
+constexpr int32_t DIMS_LIMIT = 4;
 
 constexpr uint32_t INDEXZERO = 0;
 constexpr uint32_t INDEXONE = 1;
@@ -59,7 +59,6 @@ static ge::graphStatus GetPlatformInfo(gert::TilingContext* context, uint64_t& u
     OP_CHECK_NULL_WITH_CONTEXT(context, platformInfoPtr);
     auto ascendcPlatform = platform_ascendc::PlatformAscendC(platformInfoPtr);
     coreNum = ascendcPlatform.GetCoreNumAiv();
-    //coreNum = 1;
     OP_CHECK_IF(coreNum == 0, OP_LOGE(context, "coreNum is 0"), return ge::GRAPH_FAILED);
     ascendcPlatform.GetCoreMemSize(platform_ascendc::CoreMemType::UB, ubSize);
     OP_CHECK_IF(ubSize == 0, OP_LOGE(context, "ubSize is 0"), return ge::GRAPH_FAILED);
@@ -143,11 +142,13 @@ static ge::graphStatus TransposevTilingFunc(gert::TilingContext* context)
     // ub-based tileBlockNum guard (避免为0)
     uint32_t ubDataNumber = 0;
     switch (inputBytes) {
-        case 1:  ubDataNumber = 23U; break;
-        case 2:  ubDataNumber = 13U; break;
-        case 4:  ubDataNumber = 7U;  break;
-        case 8:  ubDataNumber = 4U;  break;
-        default: ubDataNumber = 23U;  break;   // 未知类型按 1 B 处理
+        // 核内每次处理的元素个数为n，中间计算需要使用的临时tensor为6*n个元素（每个元素大小4字节）
+        // 数值的计算方式为：6*n*4B / inputBytes + 1
+        case 1:  ubDataNumber = 25U; break;    // 输入元素的数据类型长度为1B
+        case 2:  ubDataNumber = 13U; break;    // 输入元素的数据类型长度为2B
+        case 4:  ubDataNumber = 7U;  break;    // 输入元素的数据类型长度为4B
+        case 8:  ubDataNumber = 4U;  break;    // 输入元素的数据类型长度为8B
+        default: ubDataNumber = 25U;  break;   // 未知类型按 1 B 处理
     }
     uint64_t tmp = (ubSize / BLOCK_SIZE / BUFFER_NUM);
     uint32_t tileBlockNum = 1U;
@@ -202,7 +203,7 @@ static ge::graphStatus TransposevTilingFunc(gert::TilingContext* context)
     const auto xShape = context->GetInputTensor(0)->GetOriginShape();  
     dim = static_cast<int64_t>(xShape.GetDimNum());   
     tiling->dims = static_cast<int64_t>(dim);
-    for(int32_t i=0;i<8;i++){                                          
+    for(int32_t i=0;i<MAX_DIM;i++){                                          
         tiling->shape[i] = static_cast<int64_t>(0);
     }
     for(int32_t i=0;i<dim;i++){                                           
