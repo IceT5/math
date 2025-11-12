@@ -11,7 +11,6 @@
 - Atlas A2训练系列产品
 - Atlas 200I/500 A2推理产品
 
-产品形态详细说明请参见[昇腾产品形态说明](http://www.hiascend.com/document/redirect/CannCommunityProductForm)
 
 ## 算子描述
 - 功能描述
