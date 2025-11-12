@@ -8,23 +8,25 @@
 # BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------
+if (BUILD_TORCH_OPS)
+    set(OPERATOR_NAME "isfinite")
+    message(STATUS "BUILD_TORCH_OPS ON in ${OPERATOR_NAME}")
+    
+    set(OPERATOR_TARGET "${OPERATOR_NAME}_objects")
+    set(OPERATOR_CONFIG "${OPERATOR_NAME}:${OPERATOR_TARGET}" PARENT_SCOPE)
 
-message(STATUS "BUILD_TORCH_OPS ON in isfinite")
-# ISFINITE operation sources
-file(GLOB ISFINITE_NPU_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+    file(GLOB OPERATOR_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
-# set(ISFINITE_SOURCES ${ISFINITE_CPP_HEADER} ${ISFINITE_CPP_SOURCES} ${ISFINITE_NPU_SOURCES})
-set(ISFINITE_SOURCES ${ISFINITE_NPU_SOURCES})
-# Mark .cpp files with special properties
-set_source_files_properties(
-    ${ISFINITE_NPU_SOURCES} PROPERTIES
-    LANGUAGE CXX
-    COMPILE_FLAGS "--cce-soc-version=Ascend910B1 --cce-soc-core-type=VecCore --cce-auto-sync -xcce"
-)
+    # Mark .cpp files with special properties
+    set_source_files_properties(
+        ${OPERATOR_SOURCES} PROPERTIES
+        LANGUAGE CXX
+        COMPILE_FLAGS "--cce-soc-version=Ascend910B1 --cce-soc-core-type=VecCore --cce-auto-sync -xcce"
+    )
 
-# Create object library
-add_library(is_finite_objects OBJECT ${ISFINITE_SOURCES})
+    add_library(${OPERATOR_TARGET} OBJECT ${OPERATOR_SOURCES})
 
-target_compile_options(is_finite_objects PRIVATE ${COMMON_COMPILE_OPTIONS})
-target_include_directories(is_finite_objects PRIVATE ${COMMON_INCLUDE_DIRS})
-return()
+    target_compile_options(${OPERATOR_TARGET} PRIVATE ${COMMON_COMPILE_OPTIONS})
+    target_include_directories(${OPERATOR_TARGET} PRIVATE ${COMMON_INCLUDE_DIRS})
+    return()
+endif()

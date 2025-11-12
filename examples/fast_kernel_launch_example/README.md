@@ -143,68 +143,72 @@ compare CPU Result vs NPU Result: True
 
 
 ## 开发新算子 | Developing New Operators
-1. 编写算子调用文件
+1. 编写算子调用文件，以添加算子my_ops为例
    
-    在 `ascend_ops/csrc/` 目录下添加新的算子目录 `mykernel`，在 `mykernel` 目录下添加新的算子调用文件 `mykernel_torch.cpp`
+    在 `csrc` 目录下添加新的算子目录 `my_ops`，在 `my_ops` 目录下添加新的算子调用文件 `my_ops_torch.cpp`
     ```c++
     __global__ __aicore__ void mykernel(GM_ADDR input, GM_ADDR output, int64_t num_element) {
         // 您的算子kernel实现
     }
 
-    void mykernel_api(aclrtStream stream, const at::Tensor& x, const at::Tensor& y) {
+    void my_ops_api(aclrtStream stream, const at::Tensor& x, const at::Tensor& y) {
         // 您的算子入口实现，在该方法中使用<<<>>>的方式调用算子kernel
         mykernel<<<blockDim, nullptr, stream>>>(x, y, num_element);
     }
 
-    torch::Tensor mykernel_npu(torch::Tensor x, torch::Tensor y) {
+    torch::Tensor my_ops_npu(torch::Tensor x, torch::Tensor y) {
         // 您的算子wrapper接口，用于向pytorch注册自定义接口
         AT_DISPATCH_FLOATING_TYPES_AND2(
-            at::kHalf, at::kBFloat16, x.scalar_type(), "mykernel_npu", [&] { mykernel_api(stream, x, y); });
+            at::kHalf, at::kBFloat16, x.scalar_type(), "my_ops_npu", [&] { my_ops_api(stream, x, y); });
     }
 
     // PyTorch提供的宏，用于在特定后端注册算子
     TORCH_LIBRARY_IMPL(ascend_ops, PrivateUse1, m)
     {
-        m.impl("mykernel", mykernel_npu);
+        m.impl("my_ops", my_ops_npu);
     }
     ```
 
-2. 在`mykernel`目录下创建`CMakeLists.txt`
+2. 在`my_ops`目录下创建`CMakeLists.txt`
    
-    将如下样例中的mykernel，替换为自己的算子名称
     ```cmake
-    message(STATUS "BUILD_TORCH_OPS ON in mykernel")
-    # MYKERNEL operation sources
-    file(GLOB MYKERNEL_NPU_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+    if (BUILD_TORCH_OPS)
+        # 使用您的实际算子名替换my_ops
+        set(OPERATOR_NAME "my_ops")
+        message(STATUS "BUILD_TORCH_OPS ON in ${OPERATOR_NAME}")
+        
+        set(OPERATOR_TARGET "${OPERATOR_NAME}_objects")
+        set(OPERATOR_CONFIG "${OPERATOR_NAME}:${OPERATOR_TARGER}" PARENT_SCOPE)
 
-    set(MYKERNEL_SOURCES ${MYKERNEL_NPU_SOURCES})
-    # Mark .cpp files with special properties
-    set_source_files_properties(
-        ${MYKERNEL_NPU_SOURCES} PROPERTIES
-        LANGUAGE CXX
-        COMPILE_FLAGS "--cce-soc-version=Ascend910B1 --cce-soc-core-type=VecCore --cce-auto-sync -xcce"
-    )
+        file(GLOB OPERATOR_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
-    # Create object library
-    add_library(mykernel_objects OBJECT ${MYKERNEL_SOURCES})
+        # Mark .cpp files with special properties
+        set_source_files_properties(
+            ${OPERATOR_SOURCES} PROPERTIES
+            LANGUAGE CXX
+            COMPILE_FLAGS "--cce-soc-version=Ascend910B1 --cce-soc-core-type=VecCore --cce-auto-sync -xcce"
+        )
 
-    target_compile_options(mykernel_objects PRIVATE ${COMMON_COMPILE_OPTIONS})
-    target_include_directories(mykernel_objects PRIVATE ${COMMON_INCLUDE_DIRS})
-    return()
+        add_library(${OPERATOR_TARGET} OBJECT ${OPERATOR_SOURCES})
+
+        target_compile_options(${OPERATOR_TARGET} PRIVATE ${COMMON_COMPILE_OPTIONS})
+        target_include_directories(${OPERATOR_TARGET} PRIVATE ${COMMON_INCLUDE_DIRS})
+        return()
+    endif()
     ```
 
-3. 在 `ascend_ops/csrc/npu_ops_def.cpp`中添加TORCH_LIBRARY_IMPL定义
+3. 在 `csrc/npu_ops_def.cpp`中添加TORCH_LIBRARY_IMPL定义
    
     ```c++
     TORCH_LIBRARY_IMPL(ascend_ops, PrivateUse1, m) {
-        m.impl("mykernel", mykernel_npu);
+        m.impl("my_ops", my_ops_npu);
     }
     ```
 
 4. (可选)在 `ascend_ops/ops.py`中封装自定义接口
     ```python
-    def mykernel(x: Tensor) -> Tensor:
-        return torch.ops.ascend_ops.mykernel.default(x)
+    def my_ops(x: Tensor) -> Tensor:
+        return torch.ops.ascend_ops.my_ops.default(x)
     ```
 
 5. 使用开发模式进行编译
@@ -214,5 +218,5 @@ compare CPU Result vs NPU Result: True
 
 6. 编写测试脚本并测试新算子
     ```python
-    torch.ops.ascend_ops.mykernel(x)
+    torch.ops.ascend_ops.my_ops(x)
     ```

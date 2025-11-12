@@ -92,6 +92,7 @@ set(COMMON_INCLUDE_DIRS
     ${ASCEND_HOME}/compiler/ascendc/include/basic_api/impl
     ${ASCEND_HOME}/compiler/ascendc/include/basic_api/interface
     ${ASCEND_HOME}/compiler/ascendc/include/highlevel_api
+    ${ASCEND_HOME}/compiler/ascendc/include/highlevel_api/tiling
     ${ASCEND_HOME}/compiler/ascendc/impl/aicore/basic_api
     ${CMAKE_CURRENT_SOURCE_DIR}/../..
     ${CMAKE_CURRENT_SOURCE_DIR}/../../common/inc
@@ -134,9 +135,17 @@ foreach(OP_DIR ${OPERATOR_DIRS})
 
         # 检查目录中是否有 CMakeLists.txt
         if(EXISTS "${OP_DIR}/CMakeLists.txt")
-            message(STATUS "Found operator: ${OP_NAME}")
+            unset(OPERATOR_CONFIG)
             add_subdirectory(ascend_ops/csrc/${OP_NAME})
-            list(APPEND OPERATOR_TARGETS $<TARGET_OBJECTS:${OP_NAME}_objects>)
+            if(OPERATOR_CONFIG)
+                string(REPLACE ":" ";" CONFIG_LIST ${OPERATOR_CONFIG})
+                list(GET CONFIG_LIST 0 OP_NAME)
+                list(GET CONFIG_LIST 1 OP_TARGET)
+                message(STATUS "Found operator: ${OP_NAME}")
+                list(APPEND OPERATOR_TARGETS $<TARGET_OBJECTS:${OP_TARGET}>)
+            else()
+                message(WARNING "No operator config found in ${SUB_DIR}")
+            endif()
         endif()
     endif()
 endforeach()
