@@ -149,7 +149,8 @@ flowchart TD
 
 进行Init和Process两个阶段，其中Process包括计算（Compute）、搬出（CopyOut）两个阶段。
 
-1. Ascend C 的 tanh_grad算子流程见下图。
+1.	依照TBE实现，由于支持Ascend C开发的硬件中AscendC::Addcdiv支持float16、float32和int32数据的输入，可以直接将float16的数据都转成float32进行计算，其余数据类型保持原类型计算。
+2. Ascend C 的 tanh_grad算子流程见下图。
 
 ```mermaid
 
