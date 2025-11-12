@@ -21,44 +21,170 @@
 
 调用`Ascend C`的`API`接口`Sqrt`进行实现。对于16位的数据类型将其通过`Cast`接口转换为32位浮点数进行计算。
 
-## 算子执行接口
+## 函数原型
 
-每个算子分为两段式接口，必须先调用“aclnnSqrtGetWorkspaceSize”接口获取计算所需workspace大小以及包含了算子计算流程的执行器，再调用“aclnnSqrt”接口执行计算。
+每个算子分为[两段式接口](../../../../docs/context/两段式接口.md)，必须先调用“aclnnAbsGetWorkspaceSize”接口获取计算所需workspace大小以及包含了算子计算流程的执行器，再调用“aclnnAbs”接口执行计算。
+```Cpp
+aclnnStatus aclnnSqrtGetWorkspaceSize(
+  const aclTensor *self, 
+  aclTensor       *out, 
+  uint64_t        *workspaceSize, 
+  aclOpExecutor  **executor)
+```
 
-* `aclnnStatus aclnnSqrtGetWorkspaceSize(const aclTensor* x, const aclTensor* out, uint64_t* workspaceSize, aclOpExecutor** executor)`
-* `aclnnStatus aclnnSqrt(void* workspace, uint64_t workspaceSize, aclOpExecutor* executor, aclrtStream stream)`
 
-**说明**：
-
-- 算子执行接口对外屏蔽了算子内部实现逻辑以及不同代际NPU的差异，且开发者无需编译算子，实现了算子的精简调用。
-- 若开发者不使用算子执行接口的调用算子，也可以定义基于Ascend IR的算子描述文件，通过ATC工具编译获得算子om文件，然后加载模型文件执行算子，详细调用方法可参见《应用开发指南》的[单算子调用 > 单算子模型执行](https://hiascend.com/document/redirect/CannCommunityCppOpcall)章节。
-
+```Cpp
+aclnnStatus aclnnSqrt(
+  void              *workspace, 
+  uint64_t           workspaceSize, 
+  aclOpExecutor     *executor, 
+  const aclrtStream  stream)
+```
 ### aclnnSqrtGetWorkspaceSize
 
 - **参数说明：**
 
-  - x（aclTensor\*，计算输入）：必选参数，Device侧的aclTensor，公式中的输入x，数据类型支持FLOAT16、BFLOAT16、FLOAT32，数据格式支持ND。
-  - out（aclTensor\*，计算输出）：Device侧的aclTensor，公式中的输出y，数据类型支持FLOAT16、BFLOAT16、FLOAT32，数据格式支持ND，输出维度与x一致。
-  - workspaceSize（uint64\_t\*，出参）：返回用户需要在Device侧申请的workspace大小。
-  - executor（aclOpExecutor\*\*，出参）：返回op执行器，包含了算子计算流程。
+- **参数说明：**
+  
+  <table style="undefined;table-layout: fixed; width: 1494px"><colgroup>
+  <col style="width: 146px">
+  <col style="width: 110px">
+  <col style="width: 301px">
+  <col style="width: 219px">
+  <col style="width: 328px">
+  <col style="width: 101px">
+  <col style="width: 143px">
+  <col style="width: 146px">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>参数名</th>
+      <th>输入/输出</th>
+      <th>描述</th>
+      <th>使用说明</th>
+      <th>数据类型</th>
+      <th>数据格式</th>
+      <th>维度(shape)</th>
+      <th>非连续Tensor</th>
+    </tr></thead>
+  <tbody>
+    <tr>
+      <td>self</td>
+      <td>输入</td>
+      <td>待进行sqrt计算的入参，公式中的self。</td>
+      <td>无</td>
+      <td>FLOAT、FLOAT16、BFLOAT16</td>
+      <td>ND</td>
+      <td>0-8</td>
+      <td>√</td>
+    </tr>
+    <tr>
+      <td>out</td>
+      <td>输出</td>
+      <td>待进行sqrt计算的出参，公式中的out。</td>
+      <td>shape与self相同。</td>
+      <td>FLOAT、FLOAT16、BFLOAT16</td>
+      <td>ND</td>
+      <td>0-8</td>
+      <td>√</td>
+    </tr>
+    <tr>
+      <td>workspaceSize</td>
+      <td>输出</td>
+      <td>返回需要在Device侧申请的workspace大小。</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>executor</td>
+      <td>输出</td>
+      <td>返回op执行器，包含了算子计算流程。</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+    </tr>
+  </tbody>
+  </table>
 - **返回值：**
 
-  返回aclnnStatus状态码，具体参见[aclnn返回码](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/800alpha003/apiref/aolapi/context/common/aclnn%E8%BF%94%E5%9B%9E%E7%A0%81_fuse.md)。
+  aclnnStatus：返回状态码，具体参见[aclnn返回码](../../../../docs/context/aclnn返回码.md)。
 
-  ```
-  第一段接口完成入参校验，若出现以下错误码，则对应原因为：
-  - 返回161001（ACLNN_ERR_PARAM_NULLPTR）：如果传入参数是必选输入，输出或者必选属性，且是空指针，则返回161001。
-  - 返回161002（ACLNN_ERR_PARAM_INVALID）：x、out的数据类型和数据格式不在支持的范围内。
-  ```
+  第一段接口会完成入参校验，出现以下场景时报错：
+  
+  <table style="undefined;table-layout: fixed;width: 1155px"><colgroup>
+  <col style="width: 319px">
+  <col style="width: 144px">
+  <col style="width: 671px">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>返回码</th>
+      <th>错误码</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ACLNN_ERR_PARAM_NULLPTR</td>
+      <td>161001</td>
+      <td>传入的tensor是空指针。</td>
+    </tr>
+    <tr>
+      <td rowspan="8">ACLNN_ERR_PARAM_INVALID</td>
+      <td rowspan="8">161002</td>
+      <td>self的数据类型和数据格式不在支持的范围之内。</td>
+    </tr>
+    <tr>
+      <td>self的数据维度超过了8维。</td>
+    </tr>
+    <tr>
+      <td>self和out的数据形状不一致。</td>
+    </tr>
+  </tbody></table>
 
 ### aclnnSqrt
 
 - **参数说明：**
 
-  - workspace（void\*，入参）：在Device侧申请的workspace内存起址。
-  - workspaceSize（uint64\_t，入参）：在Device侧申请的workspace大小，由第一段接口aclnnSqrtGetWorkspaceSize获取。
-  - executor（aclOpExecutor\*，入参）：op执行器，包含了算子计算流程。
-  - stream（aclrtStream，入参）：指定执行任务的AscendCL stream流。
+  <table style="undefined;table-layout: fixed; width: 953px"><colgroup>
+  <col style="width: 173px">
+  <col style="width: 112px">
+  <col style="width: 668px">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>参数名</th>
+      <th>输入/输出</th>
+      <th>描述</th>
+    </tr></thead>
+  <tbody>
+    <tr>
+      <td>workspace</td>
+      <td>输入</td>
+      <td>在Device侧申请的workspace内存地址。</td>
+    </tr>
+    <tr>
+      <td>workspaceSize</td>
+      <td>输入</td>
+      <td>在Device侧申请的workspace大小，由第一段接口aclnnSqrtGetWorkspaceSize获取。</td>
+    </tr>
+    <tr>
+      <td>executor</td>
+      <td>输入</td>
+      <td>op执行器，包含了算子计算流程。</td>
+    </tr>
+    <tr>
+      <td>stream</td>
+      <td>输入</td>
+      <td>指定执行任务的Stream。</td>
+    </tr>
+  </tbody>
+  </table>
 
 - **返回值：**
 
@@ -67,21 +193,8 @@ aclnnStatus：返回状态码，具体参见[aclnn返回码](../../../../docs/co
 
 ## 约束与限制
 
-- x，out的数据类型支持FLOAT16、BFLOAT16、FLOAT32，数据格式只支持ND
+- self，out的数据类型支持FLOAT16、BFLOAT16、FLOAT32，数据格式只支持ND
 
-## 算子原型
-
-<table>
-<tr><th align="center">算子类型(OpType)</th><th colspan="4" align="center">Sqrt</th></tr> 
-<tr><td align="center"> </td><td align="center">name</td><td align="center">type</td><td align="center">data type</td><td align="center">format</td></tr>  
-<tr><td rowspan="2" align="center">算子输入</td>
- 
-<tr><td align="center">x</td><td align="center">tensor</td><td align="center">float32,float16,bfloat16</td><td align="center">ND</td></tr>  
-
-<tr><td rowspan="1" align="center">算子输出</td>
-<td align="center">y</td><td align="center">tensor</td><td align="center">float32,float16,bfloat16</td><td align="center">ND</td></tr>  
-<tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">sqrt</td></tr>  
-</table>
 
 ## 调用示例
 
