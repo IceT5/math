@@ -1,12 +1,12 @@
-声明：本文使用[Creative Commons License version 4.0](https://creativecommons.org/licenses/by/4.0/legalcode)许可协议，转载、引用或修改等操作请遵循此许可协议。
+# aclnnSqrt
 
-# Sqrt
+## 产品支持情况
 
-## 支持的产品型号
+| 产品                                                                            | 是否支持 |
+| :------------------------------------------------------------------------------ | :------: |
+| <term>Atlas A2 训练系列产品</term>                        |    √     |
+| <term>Atlas 200I/500 A2推理产品</term> |    √     |
 
-Atlas A2 训练系列产品/Atlas 200I/500 A2推理产品
-
-产品形态详细说明请参见[昇腾产品形态说明](https://www.hiascend.com/document/redirect/CannCommunityProductForm)。
 
 ## 功能描述
 
@@ -59,9 +59,10 @@ Atlas A2 训练系列产品/Atlas 200I/500 A2推理产品
   - workspaceSize（uint64\_t，入参）：在Device侧申请的workspace大小，由第一段接口aclnnSqrtGetWorkspaceSize获取。
   - executor（aclOpExecutor\*，入参）：op执行器，包含了算子计算流程。
   - stream（aclrtStream，入参）：指定执行任务的AscendCL stream流。
+
 - **返回值：**
 
-  返回aclnnStatus状态码，具体参见[aclnn返回码](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/800alpha003/apiref/aolapi/context/common/aclnn%E8%BF%94%E5%9B%9E%E7%A0%81_fuse.md)。
+aclnnStatus：返回状态码，具体参见[aclnn返回码](../../../../docs/context/aclnn返回码.md)。
 
 
 ## 约束与限制

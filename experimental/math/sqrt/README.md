@@ -1,33 +1,10 @@
 # Sqrt
 
-## 目录结构介绍
-
-```
-sqrt                                    # Sqrt算子目录 
-├── docs                                # 算子文档目录 
-│   └── sqrt.md                         # Sqrt算子文档
-├── op_host                             # Host侧实现 
-│   ├── sqrt_def.cpp                    # 算子信息库，定义算子基本信息，如名称、输入输出、数据类型等 
-│   ├── sqrt_infershape.cpp             # InferShape实现，实现算子形状推导，在运行时推导输出shape 
-│   ├── sqrt_tiling.cpp                 # Tiling实现，将张量划分为多个小块，区分数据类型进行并行计算 
-│   └── CMakeLists.txt                  # Host侧cmakelist文件 
-└── op_kernel                           # Device侧Kernel实现 
-│   ├── sqrt_tiling_key.h               # Tilingkey文件，定义Tiling策略的Key，标识不同的划分方式 
-│   ├── sqrt_tiling_data.h              # Tilingdata文件，存储Tiling策略相关的配置数据，如块大小、并行度 
-│   ├── sqrt.cpp                        # Kernel入口文件，包含主函数和调度逻辑 
-│   └── sqrt.h                          # Kernel实现文件，定义Kernel头文件，包含函数声明、结构定义、逻辑实现 
-├── op_graph                            # 图融合相关实现 
-│   ├── CMakeLists.txt                  # op_graph侧cmakelist文件 
-│   ├── sqrt_graph_infer.cpp            # InferDataType文件，实现算子类型推导，在运行时推导输出dataType 
-│   └── sqrt_proto.h                    # 算子原型定义，用于图优化和融合阶段识别算子 
-├── test                                # 测试目录 
-│   ├── CMakeLists.txt                  # 算子测试cmakelist入口 
-│   └── ut                              # ut测试目录
-│       ├── op_host                     # Host侧测试文件目录 
-│       ├── op_kernel                   # Device侧测试文件目录 
-│       └── CMakeLists.txt              # 算子ut测试cmakelist入口 
-└── CMakeLists.txt                      # 算子cmakelist入口 
-```
+## 贡献说明
+| 贡献者      | 贡献方              | 贡献算子 | 贡献时间       | 贡献内容     |
+|----------|------------------|------|------------|----------|
+| Nice_try | 西北工业大学-智能感知交互实验室 | Sqrt | 2024/12/24 | 新增Sqrt算子 |
+| liuxiqiang | 个人开发者 | Sqrt | 2025/11/12 | Sqrt算子适配开源仓 |
 
 ## 支持的产品型号
 
@@ -78,7 +55,7 @@ sqrt                                    # Sqrt算子目录
   - 部署算子包
 
     ```bash
-    bash build_out/cann-ops-<vendor_name>-linux.<arch>.run
+    ./build_out/cann-ops-<vendor_name>-linux.<arch>.run
     ```
 ### 算子调用
   - 执行调用
@@ -86,3 +63,9 @@ sqrt                                    # Sqrt算子目录
     ```bash
     bash build.sh --run_example sqrt eager cust --vendor_name=custom
     ```    
+
+## 调用说明
+
+| 调用方式 | 调用样例                                                                   | 说明                                                           |
+|--------------|------------------------------------------------------------------------|--------------------------------------------------------------|
+| aclnn调用 | [test_aclnn_sqrt](./examples/test_aclnn_sqrt.cpp) | 通过[aclnnSqrt](./docs/aclnnSqrt.md)接口方式调用Sqrt算子。 |    
