@@ -153,5 +153,19 @@ flowchart TD
 2. Ascend C 的 tanh_grad算子流程见下图。
 
 ```mermaid
-
+graph TD
+    A[input] --> B[调用shape_util.broadcast_shapes]
+    B --> C{dtype == float16}
+    C --是--> D[case to float32]
+    C --否--> E[保持原类型]
+    D --> F[vmul]
+    E --> F[vmul]
+    F --> H[vmuls]
+    H --> I[adds]
+    I --> J[vmul]
+   J --> K{dtype == float16}
+   K--是--> L[case to float16]
+    K --否--> M[保持原类型]
+     L --> N[return]
+    M --> N[return]
 ```
