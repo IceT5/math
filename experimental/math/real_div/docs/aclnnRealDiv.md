@@ -14,20 +14,20 @@
 
 For float32、float16:
 $$
-out=self/other
+y=x1/x2
 $$
 For bfloat16、int32:
 $$
-dtype=self.dtype
-out=cast(cast(self, float32)/cast(other, float32), dtype)
+dtype=x1.dtype
+y=cast(cast(x1, float32)/cast(x2, float32), dtype)
 $$
 For bool:
 $$
-out=cast(self, float32)/cast(other, float32)
+y=cast(x1, float32)/cast(x2, float32)
 $$
 ## 函数原型
 
-每个算子分为[两段式接口](../../../docs/context/两段式接口.md)，必须先调用“aclnnRealDivGetWorkspaceSize”接口获取计算所需workspace大小以及包含了算子计算流程的执行器，再调用“aclnnRealDiv”接口执行计算。
+每个算子分为[两段式接口](../../../../docs/context/两段式接口.md)，必须先调用“aclnnRealDivGetWorkspaceSize”接口获取计算所需workspace大小以及包含了算子计算流程的执行器，再调用“aclnnRealDiv”接口执行计算。
 ```Cpp
 aclnnStatus aclnnRealDivGetWorkspaceSize(
   const aclTensor *self, 
@@ -74,7 +74,7 @@ aclnnStatus aclnnRealDiv(
     <tr>
       <td>self</td>
       <td>输入</td>
-      <td>待进行real_div计算的入参，公式中的self。</td>
+      <td>待进行real_div计算的入参，公式中的x1。</td>
       <td>无</td>
       <td>FLOAT、FLOAT16、BFLOAT16、INT32、BOOL</td>
       <td>ND</td>
@@ -84,7 +84,7 @@ aclnnStatus aclnnRealDiv(
     <tr>
       <td>other</td>
       <td>输入</td>
-      <td>待进行real_div计算的入参，公式中的other。</td>
+      <td>待进行real_div计算的入参，公式中的x2。</td>
       <td>无</td>
       <td>FLOAT、FLOAT16、BFLOAT16、INT32、BOOL</td>
       <td>ND</td>
@@ -94,7 +94,7 @@ aclnnStatus aclnnRealDiv(
     <tr>
       <td>out</td>
       <td>输出</td>
-      <td>待进行real_div计算的出参，公式中的out。</td>
+      <td>待进行real_div计算的出参，公式中的y。</td>
       <td>shape与self相同。</td>
       <td>FLOAT、FLOAT16、BFLOAT16、INT32、FLOAT</td>
       <td>ND</td>
@@ -127,7 +127,7 @@ aclnnStatus aclnnRealDiv(
   
 - **返回值：**
   
-  aclnnStatus：返回状态码，具体参见[aclnn返回码](../../../docs/context/aclnn返回码.md)。
+  aclnnStatus：返回状态码，具体参见[aclnn返回码](../../../../docs/context/aclnn返回码.md)。
 
   第一段接口会完成入参校验，出现以下场景时报错：
   
@@ -203,7 +203,7 @@ aclnnStatus aclnnRealDiv(
 
 - **返回值：**
 
-  aclnnStatus：返回状态码，具体参见[aclnn返回码](../../../docs/context/aclnn返回码.md)。
+  aclnnStatus：返回状态码，具体参见[aclnn返回码](../../../../docs/context/aclnn返回码.md)。
 
 ## 约束说明
 
@@ -211,7 +211,7 @@ aclnnStatus aclnnRealDiv(
 
 ## 调用示例
 
-示例代码如下，仅供参考，具体编译和执行过程请参考[编译与运行样例](../../../docs/context/编译与运行样例.md)。
+示例代码如下，仅供参考，具体编译和执行过程请参考[编译与运行样例](../../../../docs/context/编译与运行样例.md)。
 
 ```Cpp
 #include <iostream>
