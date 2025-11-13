@@ -1,0 +1,985 @@
+{
+    "op_type": "SelectV2",
+    "op_list": [
+        {
+            "bin_filename": "SelectV2_a1532827238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "bool",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "float32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "float32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "float32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a1643827238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "uint8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "float32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "float32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "float32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a1753827238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "bool",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "float16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "float16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "float16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a1864827238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "uint8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "float16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "float16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "float16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a1975827238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "bool",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "bfloat16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "bfloat16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "bfloat16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a1222227238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "uint8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "bfloat16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "bfloat16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "bfloat16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a1333327238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "bool",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "int32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "int32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "int32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a1444427238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "uint8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "int32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "int32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "int32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a1555527238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "bool",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "uint32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "uint32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "uint32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a1666627238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "uint8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "uint32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "uint32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "uint32",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a1777727238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "bool",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "int8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "int8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "int8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a1888827238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "uint8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "int8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "int8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "int8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a1999927238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "bool",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "uint8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "uint8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "uint8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a2000027238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "uint8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "uint8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "uint8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "uint8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a2111127238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "bool",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "bool",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "bool",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "bool",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a2222227238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "uint8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "bool",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "bool",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "bool",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a3000027238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "bool",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "int16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "int16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "int16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a3111127238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "uint8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "int16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "int16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "int16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a3333327238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "bool",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "uint16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "uint16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "uint16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        },
+        {
+            "bin_filename": "SelectV2_a3222227238e1555db7b997c7bce2928",
+            "inputs": [
+                {
+                    "name": "condition",
+                    "index": 0,
+                    "dtype": "uint8",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x1",
+                    "index": 1,
+                    "dtype": "uint16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                },
+                {
+                    "name": "x2",
+                    "index": 2,
+                    "dtype": "uint16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "y",
+                    "index": 0,
+                    "dtype": "uint16",
+                    "format": "ND",
+                    "paramType": "required",
+                    "shape": [
+                        -2
+                    ]
+                }
+            ],
+            "attrs": [
+             ]
+        }
+    ]
+}
