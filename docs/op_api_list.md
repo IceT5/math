@@ -140,7 +140,7 @@
 | [aclnnNeScalar&aclnnInplaceNeScalar](../math/not_equal/docs/aclnnNeScalar&aclnnInplaceNeScalar.md)|计算selfRef中的元素的值与other的值是否不相等。|
 | [aclnnNeTensor&aclnnInplaceNeTensor](../math/not_equal/docs/aclnnNeTensor&aclnnInplaceNeTensor.md)|计算self（selfRef）中的元素的值与other的值是否不相等。|
 | [aclnnNpuFormatCast](../../conversion/npu_format_cast/docs/aclnnNpuFormatCast.md)|完成ND←→NZ的转换功能。|
-| [aclnnOneHot](../math/one_hot/docs/aclnnOneHot.md)|[aclnnOneHot](../math/one_hot/docs/aclnnOneHot.md)|
+| [aclnnOneHot](../math/one_hot/docs/aclnnOneHot.md)|对长度为n的输入self，经过one_hot的计算后得到一个元素数量为n*k的输出out。 |
 | [aclnnPdist](../math/pdist/docs/aclnnPdist.md)|计算输入self中每对行向量的p范数距离。|
 | [aclnnPdistForward](../math/pdist/docs/aclnnPdistForward.md)|计算输入self中每对行向量的p范数距离。|
 | [aclnnPermute](../../conversion/transpose/docs/aclnnPermute.md)|对tensor的任意维度进行调换。如输入self是shape为[2, 3, 5]的tensor，dims为(2, 0, 1)，则输出是shape为[5, 2, 3]的tensor。|
