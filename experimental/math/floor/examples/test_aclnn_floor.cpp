@@ -101,7 +101,7 @@ void CpuFloor(const std::vector<float>& input, std::vector<float>& output)
     }
 }
 
-// 验证精度 - 要求绝对准确
+// 验证精度
 bool VerifyResult(const std::vector<float>& gpuResult, const std::vector<float>& cpuResult)
 {
     if (gpuResult.size() != cpuResult.size()) {
@@ -152,15 +152,14 @@ int CreateAclTensor(
 }
 
 // 统一的测试函数
-int RunTest(aclrtStream stream, const std::vector<int64_t>& shape, aclDataType dataType, const char* typeName)
+int RunTest(aclrtStream stream, aclDataType dataType, const char* typeName)
 {
-    
-    int64_t totalElements = GetShapeSize(shape);
     
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dis(-100.0f, 100.0f);
-
+    
+    std::vector<int64_t> shape = {1024, 1024, 4};
     const int totalIters = 11;
     const int warmupIters = 1;
     const int testIters = totalIters - warmupIters;
@@ -170,6 +169,8 @@ int RunTest(aclrtStream stream, const std::vector<int64_t>& shape, aclDataType d
     double maxTime = 0.0;
     std::vector<double> times;
     times.reserve(testIters);
+    
+    int64_t totalElements = GetShapeSize(shape);
 
     for (int i = 0; i < totalIters; ++i) {
         std::vector<float> selfHostDataFloat(totalElements);
@@ -319,24 +320,22 @@ int main()
     auto ret = Init(deviceId, &stream);
     CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("Init acl failed. ERROR: %d\n", ret); return ret);
 
-    std::vector<int64_t> shape = {1024, 1024, 4};
-
     // 测试 Float32
-    ret = RunTest(stream, shape, ACL_FLOAT, "Float32");
+    ret = RunTest(stream, ACL_FLOAT, "Float32");
     if (ret != 0) {
         LOG_PRINT("Float32 test failed\n");
         return ret;
     }
 
     // 测试 Float16
-    ret = RunTest(stream, shape, ACL_FLOAT16, "Float16");
+    ret = RunTest(stream, ACL_FLOAT16, "Float16");
     if (ret != 0) {
         LOG_PRINT("Float16 test failed\n");
         return ret;
     }
 
     // 测试 BFloat16
-    ret = RunTest(stream, shape, ACL_BF16, "BFloat16");
+    ret = RunTest(stream, ACL_BF16, "BFloat16");
     if (ret != 0) {
         LOG_PRINT("BFloat16 test failed\n");
         return ret;
