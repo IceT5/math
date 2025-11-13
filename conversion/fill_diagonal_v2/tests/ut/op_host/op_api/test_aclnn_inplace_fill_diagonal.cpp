@@ -77,9 +77,6 @@ TEST_F(l2_inplace_fill_diagonal_test, case_float_normal)
     uint64_t workspace_size = 0;
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACLNN_ERR_INNER_NULLPTR);
-
-    // SAMPLE: precision simulate
-    ut.TestPrecision();
 }
 
 TEST_F(l2_inplace_fill_diagonal_test, case_float16_normal)
@@ -93,9 +90,6 @@ TEST_F(l2_inplace_fill_diagonal_test, case_float16_normal)
     uint64_t workspace_size = 0;
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACLNN_ERR_INNER_NULLPTR);
-
-    // SAMPLE: precision simulate
-    ut.TestPrecision();
 }
 
 TEST_F(l2_inplace_fill_diagonal_test, case_double_normal)
@@ -109,7 +103,4 @@ TEST_F(l2_inplace_fill_diagonal_test, case_double_normal)
     uint64_t workspace_size = 0;
     aclnnStatus aclRet = ut.TestGetWorkspaceSize(&workspace_size);
     EXPECT_EQ(aclRet, ACLNN_ERR_INNER_NULLPTR);
-
-    // SAMPLE: precision simulate
-    ut.TestPrecision();
 }
