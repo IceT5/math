@@ -153,7 +153,6 @@ __aicore__ inline void KernelSelectV2<TYPE_X, TYPE_Y>::Compute(int32_t progress)
         outQueueY.EnQue<half>(yLocal);
         inQueueC.FreeTensor(condLocal);
         inQueueX.FreeTensor(xLocal);                        
-
     }
     if constexpr ((std::is_same_v<TYPE_Y, uint8_t>) || (std::is_same_v<TYPE_Y, int8_t>) || (std::is_same_v<TYPE_Y, bool>)) {
         AscendC::LocalTensor<int8_t> xLocal = inQueueX.DeQue<int8_t>();
