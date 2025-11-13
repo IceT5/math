@@ -185,8 +185,6 @@ struct ${op_name}TilingData {
     int64_t tileNum;
 };
 ```
-<<<<<<< HEAD
-=======
 再在\$\{op\_name\}\_tiling.cpp实现关键操作代码，代码如下，`AddExample`算子完整代码请参考`examples/add_example/op_host`目录下[add_example_tiling.cpp](../../examples/add_example/op_host/add_example_tiling.cpp)。
 
 ```CPP
@@ -221,7 +219,6 @@ if (dataType == ge::DT_FLOAT) {
 }
 ```
 注意，TilingKey可通过模板化编程实现，示例代码如下，完整代码请参考`examples/add_example/op_kernel`下[add_example_tiling_key.h](../../examples/add_example/op_kernel/add_example_tiling_key.h)。
-
 ```C++
 #define ELEMENTWISE_TPL_SCH_MODE_0 0
 #define ELEMENTWISE_TPL_SCH_MODE_1 1
@@ -237,7 +234,6 @@ ASCENDC_TPL_SEL(
     ASCENDC_TPL_ARGS_SEL(
         ASCENDC_TPL_UINT_SEL(schMode, ASCENDC_TPL_UI_LIST, ELEMENTWISE_TPL_SCH_MODE_0, ELEMENTWISE_TPL_SCH_MODE_1)));
 ```
->>>>>>> 679eb34 (readme修改)
 
 如需实现复杂参数组合完成分支选择（涉及多TilingKey场景），请参考[《Ascend C算子开发》](https://hiascend.com/document/redirect/CannCommunityOpdevAscendC)中"算子实现 > 工程化算子开发 > Host侧Tiling实现 > Tiling模板编程"。
 
@@ -440,4 +436,3 @@ __aicore__ inline void AddExample<T>::Process()
 ## 附录
 
 自定义算子如需运行图模式，不需要aclnn适配，详细内容请参考[图模式开发指南](./graph_develop_guide.md)。
->>>>>>> 54bc564 (guide modify)
