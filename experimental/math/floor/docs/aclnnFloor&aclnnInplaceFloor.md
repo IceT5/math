@@ -176,8 +176,8 @@ int main() {
   aclTensor* self = nullptr;
   aclTensor* out = nullptr;
 
-  std::vector<float> selfHostData = {1, -1, -1, -2, 2, -2, -3, 3};
-  std::vector<float> outHostData = {1, -1, -1, -2, 2, -2, -3, 3};
+  std::vector<float> selfHostData = {1.2, -1.3, -1.7, -2.2, 2.3, -2.7, -3.2, 3.3};
+  std::vector<float> outHostData = {1.0, -2.0, -2.0, -3.0, 2.0, -3.0, -4.0, 4.0};
 
   ret = CreateAclTensor(selfHostData, selfShape, &selfDeviceAddr, aclDataType::ACL_FLOAT, &self);
   CHECK_RET(ret == ACL_SUCCESS, return ret);

@@ -102,7 +102,7 @@ rm -rf /usr/local/Ascend/latest/opp/vendors/*
 
 7.再次执行测试
 ```bash
-bash build.sh --run_example floor eager cust --vendor_name=custom --experimental
+bash build.sh --run_example floor eager --experimental
 ```
 
 ### 测试结果
