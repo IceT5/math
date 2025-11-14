@@ -431,6 +431,42 @@ set_create_libs() {
   fi
 }
 
+pick_ut() {
+  local default=$1
+  local to_set=$2
+  local switch=$3
+
+  OP_API_UT=${default}
+  OP_HOST_UT=${default}
+  OP_GRAPH_UT=${default}
+  OP_KERNEL_UT=${default}
+
+  if [[ "${switch}" =~ "OP_API_UT" ]]; then
+    OP_API_UT=${to_set}
+  fi
+  if [[ "${switch}" =~ "OP_HOST_UT" ]]; then
+    OP_HOST_UT=${to_set}
+  fi
+  if [[ "${switch}" =~ "OP_GRAPH_UT" ]]; then
+    OP_GRAPH_UT=${to_set}
+  fi
+  if [[ "${switch}" =~ "OP_KERNEL_UT" ]]; then
+    OP_KERNEL_UT=${to_set}
+  fi
+}
+
+set_ut_global(){
+  if [[ "${UT_TEST_ALL}" =~ "TRUE" ]] && [[ "x${DISABLE_UT}" != "x" ]]  ; then
+    UT_TEST_ALL=FALSE
+    pick_ut TRUE FALSE "${DISABLE_UT}"
+  fi
+
+  if [[ "x${ONLY_UT}" != "x" ]]; then
+    UT_TEST_ALL=FALSE
+    pick_ut FALSE TRUE "${ONLY_UT}"
+  fi
+}
+
 set_ut_mode() {
   if [[ "$ENABLE_TEST" != "TRUE" ]]; then
     return
@@ -499,6 +535,7 @@ checkopts() {
   ENABLE_PACKAGE=FALSE
   ENABLE_TEST=FALSE
   ENABLE_EXPERIMENTAL=FALSE
+  EXEC_UT=FALSE
   AICPU_ONLY=FALSE
   OP_API_UT=FALSE
   OP_HOST_UT=FALSE
@@ -517,6 +554,8 @@ checkopts() {
   ENABLE_GENOP_AICPU=FALSE
   GENOP_TYPE=""
   GENOP_NAME=""
+  DISABLE_UT=""
+  ONLY_UT=""
 
   # 首先检查所有参数是否合法
   for arg in "$@"; do
@@ -599,6 +638,7 @@ checkopts() {
       u) ENABLE_TEST=TRUE ;;
       f)
         CHANGED_FILES=$OPTARG
+        UT_MODE=TRUE
         CI_MODE=TRUE
         ;;
       -) case $OPTARG in
@@ -697,6 +737,76 @@ checkopts() {
   check_param
   set_create_libs
   set_ut_mode
+}
+
+parse_changed_files() {
+  CHANGED_FILES=$1
+
+  if [[ "$CHANGED_FILES" != /* ]]; then
+    CHANGED_FILES=$PWD/$CHANGED_FILES
+  fi
+
+  echo "changed files is "$CHANGED_FILES
+  echo '-----------------------------------------------'
+  echo "changed lines:"
+  cat $CHANGED_FILES
+  echo '-----------------------------------------------'
+
+  if [[ "$UT_MODE" == "TRUE" ]]; then
+    related_ut=`python3 scripts/parse_changed_files.py $1`
+    COMPILED_OPS = `python3 scripts/parse_changed_ops.py $1`
+    echo "related ut "$related_ut
+    echo "related ops "$COMPILED_OPS
+  else
+    echo "ut mode not true "
+  fi
+
+  if [[ "$CHANGED_FILES" != "" ]] && [[ "x${ONLY_UT}" != "x" ]]; then
+    ut_to_test=""
+    only_ut=(${ONLY_UT//,/ })
+    for only in ${only_ut[@]}
+    do
+      if [[ "$related_ut" =~ "$only" ]]; then
+        echo "${only} is triggered!"
+        ut_to_test="${only},${ut_to_test}"
+      fi
+    done
+    related_ut=$ut_to_test
+    if [[ "x$related_ut" == "x" ]]; then
+      EXEC_UT=FALSE
+    fi
+  fi  
+
+  if [[ "$UT_MODE" == "TRUE" ]]; then
+      if [[ "$related_ut" =~ "OP_HOST_UT" ]] && [[ ! "${DISABLE_UT}" =~ "OP_HOST_UT" ]]; then
+        echo "OP_HOST_UT is triggered!"
+        OP_HOST_UT=TRUE
+        EXEC_UT=TRUE
+      fi
+      if [[ "$related_ut" =~ "OP_API_UT" ]] && [[ ! "${DISABLE_UT}" =~ "OP_API_UT" ]]; then
+        echo "OP_API_UT is triggered!"
+        OP_API_UT=TRUE
+        EXEC_UT=TRUE
+      fi
+      if [[ "$related_ut" =~ "OP_GRAPH_UT" ]] && [[ ! "${DISABLE_UT}" =~ "OP_GRAPH_UT" ]]; then
+        echo "OP_GRAPH_UT is triggered!"
+        OP_GRAPH_UT=TRUE
+        EXEC_UT=TRUE
+      fi
+      if [[ "$related_ut" =~ "OP_KERNEL_UT" ]] && [[ ! "${DISABLE_UT}" =~ "OP_KERNEL_UT" ]]; then
+        echo "OP_KERNEL_UT is triggered!"
+        OP_KERNEL_UT=TRUE
+        EXEC_UT=TRUE
+      fi
+  fi
+  if [[ "$UT_MODE" == "TRUE" ]]; then
+    if [[ "$EXEC_UT" =~ "FALSE" ]];then
+      echo "no ut matched! no need to run!"
+      echo "---------------- CANN build finished ----------------"
+      #for ci,2 means no need to run c++ ut;then ci will skip check coverage
+      #exit 200
+    fi
+  fi
 }
 
 custom_cmake_args() {
@@ -1054,6 +1164,15 @@ main() {
     echo "compile thread num:$THREAD_NUM over core num:$CORE_NUMS, adjust to core num"
     THREAD_NUM=$CORE_NUMS
   fi
+  
+  if [[ "$CHANGED_FILES" != "" ]]; then
+    UT_TEST_ALL=FALSE
+    set_ut_global
+    parse_changed_files $CHANGED_FILES
+  else
+    set_ut_global
+  fi
+
   assemble_cmake_args
   echo "CMAKE_ARGS: ${CMAKE_ARGS}"
   if [ "$ENABLE_CREATE_LIB" == "TRUE" ]; then
