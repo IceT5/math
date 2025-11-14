@@ -499,6 +499,7 @@ checkopts() {
   ENABLE_PACKAGE=FALSE
   ENABLE_TEST=FALSE
   ENABLE_EXPERIMENTAL=FALSE
+  ENABLE_UT_EXEC=FALSE
   AICPU_ONLY=FALSE
   OP_API_UT=FALSE
   OP_HOST_UT=FALSE
@@ -611,6 +612,7 @@ checkopts() {
       u) ENABLE_TEST=TRUE ;;
       f)
         CHANGED_FILES=$OPTARG
+        UT_MODE=TRUE
         CI_MODE=TRUE
         ;;
       -) case $OPTARG in
@@ -708,7 +710,68 @@ checkopts() {
 
   check_param
   set_create_libs
+  parse_changed_files
   set_ut_mode
+}
+
+parse_changed_files() {
+  if [[ -z "$CHANGED_FILES" ]]; then
+    exit 1
+  fi
+
+  if [[ "$CHANGED_FILES" != /* ]]; then
+    CHANGED_FILES=$PWD/$CHANGED_FILES
+  fi
+
+  echo "changed files is "$CHANGED_FILES
+  echo $dotted_line
+  echo "changed lines:"
+  cat $CHANGED_FILES
+  echo $dotted_line
+
+  if [[ "$UT_MODE" == "TRUE" ]]; then
+    related_ut=`python3 scripts/parse_changed_files.py $1`
+    COMPILED_OPS=`python3 scripts/parse_changed_ops.py $1`
+    echo "related ut "$related_ut
+    echo "related ops "$COMPILED_OPS
+  else
+    echo "ut mode not true "
+  fi
+
+  if [[ "$CHANGED_FILES" != "" ]]; then
+    if [[ "x$related_ut" == "x" ]]; then
+      ENABLE_UT_EXEC=FALSE
+    fi
+  fi  
+
+  if [[ "$UT_MODE" == "TRUE" ]]; then
+      if [[ "$related_ut" =~ "OP_HOST_UT" ]] ; then
+        echo "OP_HOST_UT is triggered!"
+        OP_HOST_UT=TRUE
+        ENABLE_UT_EXEC=TRUE
+      fi
+      if [[ "$related_ut" =~ "OP_API_UT" ]]; then
+        echo "OP_API_UT is triggered!"
+        OP_API_UT=TRUE
+        ENABLE_UT_EXEC=TRUE
+      fi
+      if [[ "$related_ut" =~ "OP_GRAPH_UT" ]]; then
+        echo "OP_GRAPH_UT is triggered!"
+        OP_GRAPH_UT=TRUE
+        ENABLE_UT_EXEC=TRUE
+      fi
+      if [[ "$related_ut" =~ "OP_KERNEL_UT" ]]; then
+        echo "OP_KERNEL_UT is triggered!"
+        OP_KERNEL_UT=TRUE
+        ENABLE_UT_EXEC=TRUE
+      fi
+  fi
+  if [[ "$UT_MODE" == "TRUE" ]]; then
+    if [[ "$ENABLE_UT_EXEC" =~ "FALSE" ]];then
+      echo "no ut matched! no need to run!"
+      echo "---------------- CANN build finished ----------------"
+    fi
+  fi
 }
 
 custom_cmake_args() {
