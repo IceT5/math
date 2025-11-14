@@ -74,4 +74,4 @@
 | 调用方式 | 调用样例                                                                   | 说明                                                             |
 |--------------|------------------------------------------------------------------------|----------------------------------------------------------------|
 | aclnn调用 | [test_aclnn_pad_v4_grad.cpp](exampels/test_aclnn_pad_v4_grad.cpp) | 通过[aclnnReflectionPad1dBackward](docs/aclnnReflectionPad1dBackward.md)接口方式调用PadV4Grad算子。    |
-| aclnn调用 | [test_aclnn_reflection_pad2d_backward](examples/test_aclnn_reflection_pad2d_backward.cpp) | 通过[aclnnReflectionPad2dBackward](docs/aclnnReflectionPad2dBackward.md)接口方式调用PadV4Grad算子。    |
+| aclnn调用 | [test_aclnn_reflection_pad2d_backward](examples/test_aclnn_reflection_pad2d_backward.cpp) | 通过[aclnnReflectionPad2dBackward](docs/aclnnReflectionPad2dBackward.md)接口方式调用PadV4Grad算子。(PadV4Grad与pad_v3_grad_replicate公用aclnn接口，需联合编译bash build.sh --pkg --soc=${soc_version} [--vendor_name=${vendor_name}] --ops=pad_v4_grad,pad_v3_grad_replicate)    |
